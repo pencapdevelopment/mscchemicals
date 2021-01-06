@@ -300,32 +300,32 @@ self.__precacheManifest = [
     "url": "/mscchemicals/static/media/fa-regular-400.bdadb6ce.woff2"
   },
   {
-    "revision": "0b5e3a5451fc62d9023ccafc85bc89db",
-    "url": "/mscchemicals/static/media/fa-regular-400.0b5e3a54.woff"
-  },
-  {
     "revision": "b48c48ea8457846a5695b139c377d3d1",
     "url": "/mscchemicals/static/media/fa-regular-400.b48c48ea.ttf"
+  },
+  {
+    "revision": "0b5e3a5451fc62d9023ccafc85bc89db",
+    "url": "/mscchemicals/static/media/fa-regular-400.0b5e3a54.woff"
   },
   {
     "revision": "0c41971339b9fc5b1cefb0abad1e2e69",
     "url": "/mscchemicals/static/media/fa-regular-400.0c419713.svg"
   },
   {
-    "revision": "f29ad0031ad2c1c14b771ce504e2bfa7",
-    "url": "/mscchemicals/static/media/fa-solid-900.f29ad003.eot"
-  },
-  {
     "revision": "fb493903265cad425ccdf8e04fc2de61",
     "url": "/mscchemicals/static/media/fa-solid-900.fb493903.woff2"
   },
   {
-    "revision": "bcb927a742a8370b76642fd1a9a749c0",
-    "url": "/mscchemicals/static/media/fa-solid-900.bcb927a7.woff"
+    "revision": "f29ad0031ad2c1c14b771ce504e2bfa7",
+    "url": "/mscchemicals/static/media/fa-solid-900.f29ad003.eot"
   },
   {
     "revision": "48f54f63d7711d0912a9a10205538fc4",
     "url": "/mscchemicals/static/media/fa-solid-900.48f54f63.ttf"
+  },
+  {
+    "revision": "bcb927a742a8370b76642fd1a9a749c0",
+    "url": "/mscchemicals/static/media/fa-solid-900.bcb927a7.woff"
   },
   {
     "revision": "4478b4d7022cad174e4c04246fe622ef",
@@ -336,12 +336,12 @@ self.__precacheManifest = [
     "url": "/mscchemicals/static/media/Simple-Line-Icons.f33df365.eot"
   },
   {
-    "revision": "0cb0b9c589c0624c9c78dd3d83e946f6",
-    "url": "/mscchemicals/static/media/Simple-Line-Icons.0cb0b9c5.woff2"
-  },
-  {
     "revision": "d2285965fe34b05465047401b8595dd0",
     "url": "/mscchemicals/static/media/Simple-Line-Icons.d2285965.ttf"
+  },
+  {
+    "revision": "0cb0b9c589c0624c9c78dd3d83e946f6",
+    "url": "/mscchemicals/static/media/Simple-Line-Icons.0cb0b9c5.woff2"
   },
   {
     "revision": "2fe2efe63441d830b1acd106c1fe8734",
