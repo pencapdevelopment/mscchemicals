@@ -22,7 +22,7 @@ import Moment from 'react-moment';
 //     MuiPickersUtilsProvider,
 // } from '@material-ui/pickers';
 // import Event from '@material-ui/icons/Event';
-
+import Divider from '@material-ui/core/Divider';
 import {
     Table, Modal,
 
@@ -245,7 +245,18 @@ class Add extends Component {
 
         this.setState({ formWizard });
     }
+addProduct = () => {
+        var formWizard = this.state.formWizard;
 
+        var products = formWizard.obj.products;
+        var idx = products.length;
+        products.push({ quantity: '', amount: '' })
+        formWizard.selectedProducts.push('');
+
+        this.setState({ formWizard }, o => {
+            this.productASRef[idx].setInitialField(formWizard.selectedProducts[idx]);
+        });
+    }
     addProduct = () => {
         var formWizard = this.state.formWizard;
 
@@ -410,16 +421,20 @@ class Add extends Component {
                     </ModalBody>
                 </Modal>
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="salesEnquiryForm">
-                    <div className="row">
-                        <div className="col-md-9">
-                            <h4>Sales_ID</h4>
+                    <div className="row  " style={{fontSize:"15px"}}>
+                        <div className="col-md-6">
+                           Sales_ID
+                        
                             <p>{this.state.formWizard.obj.code}</p>
                         </div>
-                        <div className="col-md-3">
-                            <h4>Enquiry Date</h4>
-                            <Moment format="DD MMM YY">{this.state.formWizard.obj.enquiryDate}</Moment>
+                        <div class="col-md-1"></div>
+                        <div className="col-md-5 " >
+                            Enquiry Date
+                            
+                           <p><Moment format="DD MMM YY">{this.state.formWizard.obj.enquiryDate}</Moment></p> 
                         </div>
                     </div>
+                
 
                     {/* <div className="row">
                         <div className="col-md-4">
@@ -498,13 +513,14 @@ class Add extends Component {
 
                             </fieldset>
                         </div>
-                        <div className="col-1 mt-4">
-                            <Button className="ml-2" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
+                        <div className="col-2 mt-4">
+                            {/*<Button className="ml-2 btn-primary" style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="outlined" color="#fff" size="sm" onClick={this.addProduct} title="Add Product">
                                 <em className="fas fa-plus"></em> Add
-                                        </Button>
+                                        </Button> */}
+                            <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="contained" color="secondary" size="small" >+ Add Company </Button>
                         </div>
 
-                        <div className="col-md-4  offset-md-3">
+                        <div className="col-md-4  offset-md-2" style={{marginTop:"4px"}}>
                             <fieldset>
                                 <FormControl>
                                     {/* <FormLabel component="legend">Type</FormLabel> */}
@@ -554,7 +570,7 @@ class Add extends Component {
                             </fieldset> */}
                         </div>
                         {this.state.formWizard.obj.type === 'V' &&
-                            <div className="col-md-4 offset-md-3">
+                            <div className="col-md-4 offset-md-3" style={{marginTop:"-24px"}}>
                                 <TextField
                                     name="phone"
                                     type="text"
@@ -576,7 +592,7 @@ class Add extends Component {
                             </div>
                         }
                         {this.state.formWizard.obj.type === 'B' &&
-                            <div className="col-md-4 offset-md-3">
+                            <div className="col-md-4 offset-md-3" style={{marginTop:"-24px"}}>
                                 <TextField
                                     name="email"
                                     type="text"
@@ -600,7 +616,7 @@ class Add extends Component {
                                     value={this.state.formWizard.obj.source} onChange={e => this.setField("source", e)} />
                             </fieldset>
                         </div>
-                        <div className="col-md-5 offset-md-3">
+                        <div className="col-md-5  offset-md-3 " style={{marginTop:"-30px",marginBottom:"-3px"}}>
                             {/*<fieldset>
                                 <FormControl>
                                     <InputLabel>Enquiry Status</InputLabel>
@@ -626,7 +642,13 @@ class Add extends Component {
                             </fieldset>
                         </div>
                     </div>
-                    <div className="row">
+                    <div className="row" style={{padding:"20px"}}>
+                        <div className="col-md-12 " >
+                      {/* <span  >Products</span>  */}  
+                        </div>
+                    </div>
+                  <Divider /> 
+                    <div className="row" style={{marginTop:"10px"}}>
                         {/* <div className="col-md-6"> 
                             <fieldset>
                                 <TextareaAutosize placeholder="Description" fullWidth={true} rowsMin={3} name="description"
@@ -636,15 +658,51 @@ class Add extends Component {
                                     value={this.state.formWizard.obj.description} onChange={e => this.setField("description", e)} />
                             </fieldset>
                         </div> */}
-                        <div className="col-md-6">
+                        <div className="col-md-3">
+                            
                             <div className="mt-2">
-                                <h4>
+                            <fieldset>
+                                <FormControl>
+                                    <AutoSuggest url="companies"
+                                        name="companyName"
+                                        displayColumns="name"
+                                        label=" Products"
+
+                                        onRef={ref => {
+                                            (this.companyASRef = ref)
+                                            if (ref) {
+                                                this.companyASRef.load();
+                                            }
+                                        }}
+                                        placeholder="Search Company by name"
+                                        arrayName="companies"
+                                        helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                        error={errors?.companyName_auto_suggest?.length > 0}
+                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+
+                                        projection="company_auto_suggest"
+                                        value={this.state.formWizard.obj.selectedCompany}
+                                        onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                        queryString="&name" ></AutoSuggest>
+                                       
+                                </FormControl>
+
+                            </fieldset>
+                            
+                               {/* <h4>
                                     Products
                             <Button className="ml-2" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
                                         <em className="fas fa-plus mr-1"></em> Add
                             </Button>
-                                </h4>
-                            </div></div></div>
+                                </h4>*/}
+                            </div></div>
+                            <div className="col-2 mt-4">
+                           {/*} <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} className="ml-2" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
+                                        <em className="fas fa-plus mr-1"></em> Add
+                            </Button>*/}
+                            <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="contained" color="secondary" size="small" onClick={this.addProduct}>+ Add Product</Button>
+                            </div>
+                            </div>
 
                     {this.state.formWizard.obj.products && this.state.formWizard.obj.products.length > 0 &&
                         <div className="row">
@@ -711,7 +769,7 @@ class Add extends Component {
                                                         </fieldset>
                                                     </td>
                                                     <td className="va-middle">
-                                                        <Button variant="outlined" color="secondary" size="sm" onClick={e => this.deleteProduct(i)} title="Delete Product">
+                                                        <Button variant="outlined" style={{color:"red",borderColor:"red"}} color="secondary" size="sm" onClick={e => this.deleteProduct(i)} title="Delete Product">
                                                             <em className="fas fa-trash"></em>
                                                         </Button>
                                                     </td>
@@ -721,15 +779,59 @@ class Add extends Component {
                                 </Table>
                             </div>
                         </div>}
-                    <div className="row">
-                        <div className="col-md-3">
-                            <div className="mt-2">
-                                <h4>
-                                    Assigned Users
-                                    </h4>
-                            </div>
+                        <div className="row" style={{padding:"10px"}}>
+                        <div className="col-md-12 " >
+                         {/* <span>Sales</span> */}   
                         </div>
-                        <div class="col-md-6">{this.state.objects.map((obj, i) => {
+                    </div>
+                    <Divider />
+                    
+                    <div className="row" style={{marginTop:"10px"}}>
+	                    <div className="col-3">
+                           
+                            <fieldset>
+                                <FormControl>
+                                    <AutoSuggest url="companies"
+                                        name="companyName"
+                                        displayColumns="name"
+                                        label="Assign"
+
+                                        onRef={ref => {
+                                            (this.companyASRef = ref)
+                                            if (ref) {
+                                                this.companyASRef.load();
+                                            }
+                                        }}
+                                        placeholder="Search Company by name"
+                                        arrayName="companies"
+                                        helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                        error={errors?.companyName_auto_suggest?.length > 0}
+                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+
+                                        projection="company_auto_suggest"
+                                        value={this.state.formWizard.obj.selectedCompany}
+                                        onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                        queryString="&name" ></AutoSuggest>
+
+                                </FormControl>
+
+                            </fieldset>
+                        </div>
+                        <div className="col-md-2 " style={{marginTop:"30px"}}>
+                        
+                        <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="contained" color="secondary" size="small" onClick={this.toggleModalAssign}>+ Assign User</Button>
+                        </div>
+</div>
+                    <div className="row">
+                     
+                     {/*  <div className="col-md-1">
+                           <div className="mt-2">
+                                <h4>
+                                    Assign
+                                    </h4>
+                            </div> 
+                        </div>*/}   
+                        <div class="col-md-9" style={{marginLeft:"4px"}}>{this.state.objects.map((obj, i) => {
                             return (
                                 <Chip
                                     avatar={
@@ -745,12 +847,16 @@ class Add extends Component {
                                 />
                             )
                         })}</div>
-                        <div class="col-md-3"><Button variant="contained" color="secondary" size="small" onClick={this.toggleModalAssign}>+ Assign User</Button></div>
+                        {/*<div class="col-md-3"><Button variant="contained" color="secondary" size="small" onClick={this.toggleModalAssign}>+ Assign User</Button></div>*/}
                     </div>
-                    <div className="text-center mt-3">
-                        <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
+                    <div className="row" >
+                    <div className=" col-md-12 text-center mt-3" >
+                        <Button style={{backgroundColor:"red"}} variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
                         <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save & Continue</Button>
                     </div>
+                    </div>
+                   
+                    
                 </Form>
             </ContentWrapper>)
     }

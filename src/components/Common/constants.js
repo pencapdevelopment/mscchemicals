@@ -32,8 +32,8 @@ export const APP_MEDIAQUERY = {
 
 
 // export const server_url = 'http://192.168.1.13:8080/';
-// export const server_url = '/';
-export const server_url = 'https://mscservicesapi.herokuapp.com/';
+export const server_url = '/';
+// export const server_url = 'https://mscservicesapi.herokuapp.com/';
 export const context_path = 'msc-api/'
 
 export function getSqlDate(date) {

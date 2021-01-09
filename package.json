@@ -5,8 +5,8 @@
   "author": "@themicon_co",
   "license": "https://wrapbootstrap.com/help/licenses",
   "private": true,
-  "homepage": "https://hungry-bhaskara-60ee5e.netlify.app/",
-  "proxy":"https://mscservicesapi.herokuapp.com/",
+  "homepage": ".",
+  "proxy":"http://192.168.0.72:8081/",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",

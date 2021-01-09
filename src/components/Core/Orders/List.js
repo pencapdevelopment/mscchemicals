@@ -200,7 +200,7 @@ class List extends Component {
         return (<ContentWrapper>
             <div className="row">
                 <div className="col-md-2">
-                    <h4 className="float-right">Filters : </h4>
+                    <h4 className="float-right" >Filters : </h4>
                 </div>
                 <div className="col-md-2 form-group">
                     <TextField
