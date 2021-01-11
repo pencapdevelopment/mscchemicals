@@ -146,6 +146,7 @@ class Add extends Component {
             });
     }
 
+
     updateObj(id) {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
@@ -207,7 +208,7 @@ class Add extends Component {
 
         var objects = this.state.objects;
         objects.push(this.state.user);
-        this.setState({ objects, modalassign: !this.state.modalassign });
+       this.setState({ objects, modalassign: !this.state.modalassign });
     }
     handleDelete = (i) => {
         var objects = this.state.objects;
@@ -393,7 +394,7 @@ addProduct = () => {
 
         return (
             <ContentWrapper>
-                <Modal isOpen={this.state.modalassign} toggle={this.toggleModalAssign} size={'md'}>
+                {/*<Modal isOpen={this.state.modalassign} toggle={this.toggleModalAssign} size={'md'}>
                     <ModalHeader toggle={this.toggleModalAssign}>
                         Assign User
                         </ModalHeader>
@@ -419,7 +420,7 @@ addProduct = () => {
                             <Button variant="contained" color="primary" onClick={e => this.saveUser()}>Save</Button>
                         </div>
                     </ModalBody>
-                </Modal>
+                            </Modal>*/}
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="salesEnquiryForm">
                     <div className="row  " style={{fontSize:"15px"}}>
                         <div className="col-md-6">
@@ -663,26 +664,23 @@ addProduct = () => {
                             <div className="mt-2">
                             <fieldset>
                                 <FormControl>
-                                    <AutoSuggest url="companies"
-                                        name="companyName"
+                                    <AutoSuggest url="products"
+                                        name="productName"
                                         displayColumns="name"
-                                        label=" Products"
+                                        label=" Product"
 
-                                        onRef={ref => {
-                                            (this.companyASRef = ref)
-                                            if (ref) {
-                                                this.companyASRef.load();
-                                            }
-                                        }}
-                                        placeholder="Search Company by name"
-                                        arrayName="companies"
+                                       
+                                        placeholder="Search product by name"
+                                        arrayName="products"
                                         helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
-                                        error={errors?.companyName_auto_suggest?.length > 0}
+                                        error={errors?.productName_auto_suggest?.length > 0}
                                         inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                   
 
-                                        projection="company_auto_suggest"
-                                        value={this.state.formWizard.obj.selectedCompany}
-                                        onSelect={e => this.setAutoSuggest('company', e?.id)}
+
+                                        projection="product_auto_suggest"
+                                        value={this.state.formWizard.obj.selectedProduct}
+                                        onSelect={e => this.setAutoSuggest('product', e?.id)}
                                         queryString="&name" ></AutoSuggest>
                                        
                                 </FormControl>
@@ -791,35 +789,28 @@ addProduct = () => {
                            
                             <fieldset>
                                 <FormControl>
-                                    <AutoSuggest url="companies"
-                                        name="companyName"
-                                        displayColumns="name"
-                                        label="Assign"
-
-                                        onRef={ref => {
-                                            (this.companyASRef = ref)
-                                            if (ref) {
-                                                this.companyASRef.load();
-                                            }
-                                        }}
-                                        placeholder="Search Company by name"
-                                        arrayName="companies"
-                                        helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
-                                        error={errors?.companyName_auto_suggest?.length > 0}
-                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-
-                                        projection="company_auto_suggest"
-                                        value={this.state.formWizard.obj.selectedCompany}
-                                        onSelect={e => this.setAutoSuggest('company', e?.id)}
-                                        queryString="&name" ></AutoSuggest>
-
+                                <AutoSuggest url="users"
+                                name="userName"
+                                displayColumns="name"
+                                label="User"
+                                placeholder="Search User by name"
+                                arrayName="users"
+                                inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                onRef={ref => {(this.userASRef = ref) 
+                                    if (ref) {
+                                    this.userASRef.load();
+                                }}}
+                                projection="user_details_mini"
+                                value={this.state.selectedUser}
+                                onSelect={e => this.setAutoSuggest1('user', e)}
+                                queryString="&name" ></AutoSuggest>
                                 </FormControl>
 
                             </fieldset>
                         </div>
                         <div className="col-md-2 " style={{marginTop:"30px"}}>
                         
-                        <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="contained" color="secondary" size="small" onClick={this.toggleModalAssign}>+ Assign User</Button>
+                        <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="contained" color="secondary" size="small" onClick={e => this.saveUser()}>+ Assign User</Button>
                         </div>
 </div>
                     <div className="row">
@@ -831,7 +822,7 @@ addProduct = () => {
                                     </h4>
                             </div> 
                         </div>*/}   
-                        <div class="col-md-9" style={{marginLeft:"4px"}}>{this.state.objects.map((obj, i) => {
+                        <div class="col-md-12" style={{marginLeft:"4px"}}>{this.state.objects.map((obj, i) => {
                             return (
                                 <Chip
                                     avatar={
