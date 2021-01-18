@@ -12,7 +12,7 @@ import {
 export default [
   {
     type: 'bar',
-    title: 'Sales Enquiry',
+    title: 'Sales ',
     subtitle: '+458,90',
     data: data,
     height: height,
@@ -24,7 +24,7 @@ export default [
   },
   {
     type: 'bar',
-    title: 'Purchase Enquiry',
+    title: 'Purchase ',
     subtitle: '-46,68',
     data: dataMixed,
     height: height,

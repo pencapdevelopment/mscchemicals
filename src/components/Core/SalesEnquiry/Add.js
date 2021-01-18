@@ -662,7 +662,7 @@ addProduct = () => {
                         <div className="col-md-3">
                             
                             <div className="mt-2">
-                            <fieldset>
+                              <fieldset>
                                 <FormControl>
                                     <AutoSuggest url="products"
                                         name="productName"
@@ -685,17 +685,18 @@ addProduct = () => {
                                        
                                 </FormControl>
 
-                            </fieldset>
+                                </fieldset>
                             
-                               {/* <h4>
-                                    Products
-                            <Button className="ml-2" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
-                                        <em className="fas fa-plus mr-1"></em> Add
-                            </Button>
-                                </h4>*/}
-                            </div></div>
+                                    {/* <h4>
+                                            Products
+                                    <Button className="ml-2" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
+                                                <em className="fas fa-plus mr-1"></em> Add
+                                    </Button>
+                                        </h4>*/}
+                            </div>
+                            </div>
                             <div className="col-2 mt-4">
-                           {/*} <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} className="ml-2" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
+                           {/* <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} className="ml-2" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
                                         <em className="fas fa-plus mr-1"></em> Add
                             </Button>*/}
                             <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="contained" color="secondary" size="small" onClick={this.addProduct}>+ Add Product</Button>

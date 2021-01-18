@@ -69,19 +69,19 @@ const colors = [{
   pointBorderColor: '#fff'
 }];
 
-const labels = ['1', '2', '3', '4', '5', '6', '7'];
+const labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10','11','12',];
 
 const datasets = [{
   label: 'My First dataset',
   ...colors[0],
   borderWidth: 0,
-  data: [6, 5, 8, 8, 5, 5, 4]
+  data: [6, 5, 8, 8, 5, 5, 4, 5, 6,7,9, 10]
 },
 {
   label: 'My Second dataset',
   ...colors[1],
   borderWidth: 0,
-  data: [5, 4, 4, 2, 6, 2, 5]
+  data: [5, 4, 4, 2, 6, 2, 5, 6, 2, 5,7,9,]
 }
 ];
 
@@ -96,13 +96,13 @@ const lineData = {
     label: 'My First dataset',
     ...colors[0],
     borderWidth: 1,
-    data: [6, 5, 8, 8, 5, 5, 4]
+    data: [6, 5, 8, 8, 5, 5, 4, 5, 6,7,9, 10]
   },
   {
     label: 'My Second dataset',
     ...colors[1],
     borderWidth: 1,
-    data: [5, 4, 4, 2, 6, 2, 5]
+    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9]
   }
   ]
 };
@@ -115,7 +115,7 @@ const dataStepped = {
     label: 'My First dataset',
     ...colors[0],
     borderWidth: 1,
-    data: [6, 5, 8, 8, 5, 5, 4]
+    data: [6, 5, 8, 8, 5, 5, 4,5, 6,7,9, 10]
   },
   {
     steppedLine: true,
@@ -123,7 +123,7 @@ const dataStepped = {
     label: 'My Second dataset',
     ...colors[1],
     borderWidth: 1,
-    data: [5, 4, 4, 2, 6, 2, 5]
+    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9]
   }
   ]
 };
@@ -138,7 +138,7 @@ const dataPoints = {
     label: 'My First dataset',
     ...colors[0],
     borderWidth: 1,
-    data: [6, 5, 8, 8, 5, 5, 4]
+    data: [6, 5, 8, 8, 5, 5, 4,5, 6, 7,9, 10]
   },
   {
     fill: false,
@@ -148,7 +148,7 @@ const dataPoints = {
     label: 'My Second dataset',
     ...colors[1],
     borderWidth: 1,
-    data: [5, 4, 4, 2, 6, 2, 5]
+    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9,8]
   }
   ]
 };
@@ -158,7 +158,7 @@ const dataMixed = {
   datasets: [{
     label: 'Purchase',
     type: 'line',
-    data: [6, 5, 8, 8, 5, 5, 4],
+    data: [6, 5, 8, 8, 5, 5, 4, 5, 6, 7,9, 10],
     borderWidth: 1,
     fill: false,
     ...colors[0],
@@ -166,7 +166,7 @@ const dataMixed = {
   }, {
     type: 'bar',
     label: 'Visitor',
-    data: [5, 4, 4, 2, 6, 2, 5],
+    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9,],
     borderWidth: 1,
     ...colors[1],
     yAxisID: 'y-axis-1'
@@ -261,7 +261,29 @@ const dataBubble = {
       x: 4,
       y: 2,
       r: 10,
-    }],
+    },
+    {
+      x: 5,
+      y: 14,
+      r: 14,
+    }, {
+      x: 5,
+      y: 6,
+      r: 8,
+    }, {
+      x: 4,
+      y: 2,
+      r: 10,
+    },{
+      x: 8,
+      y: 4,
+      r: 6,
+    }, {
+      x: 8,
+      y: 4,
+      r: 6,
+    },
+  ],
     borderWidth: 0.5
   }]
 };
