@@ -25,7 +25,7 @@ export default [
   {
     type: 'bar',
     title: 'Purchase ',
-    subtitle: '-46,68',
+    subtitle: '+458,90',
     data: dataMixed,
     height: height,
     options: {

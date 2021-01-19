@@ -2,7 +2,7 @@ const sharedOptions = {
   maintainAspectRatio: true,
   responsive: true,
   legend: {
-    display: false
+    display: true,
   }
 };
 
@@ -22,7 +22,9 @@ const gridOptions = {
       position: 'left',
       ticks: {
         beginAtZero: true,
-        suggestedMax: 9
+        suggestedMax: 15,
+                stepSize:5,   
+       
       }
     }]
   }
@@ -46,8 +48,9 @@ const stackedGridOptions = {
       position: 'left',
       ticks: {
         beginAtZero: true,
-        suggestedMax: 9
-      }
+        suggestedMax: 9,
+        stepSize:5,     
+       }
     }]
   }
 }
@@ -72,16 +75,16 @@ const colors = [{
 const labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10','11','12',];
 
 const datasets = [{
-  label: 'My First dataset',
+  label: 'Enquiry',
   ...colors[0],
   borderWidth: 0,
-  data: [6, 5, 8, 8, 5, 5, 4, 5, 6,7,9, 10]
+  data: [6, 5, 8, 8, 5, 5, 4, 5, 6,7,9,3]
 },
 {
-  label: 'My Second dataset',
+  label: 'Order',
   ...colors[1],
   borderWidth: 0,
-  data: [5, 4, 4, 2, 6, 2, 5, 6, 2, 5,7,9,]
+  data: [5, 4, 4, 2, 6, 2, 5, 6, 2, 5,7,3]
 }
 ];
 
@@ -102,7 +105,7 @@ const lineData = {
     label: 'My Second dataset',
     ...colors[1],
     borderWidth: 1,
-    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9]
+    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,4]
   }
   ]
 };
@@ -123,7 +126,7 @@ const dataStepped = {
     label: 'My Second dataset',
     ...colors[1],
     borderWidth: 1,
-    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9]
+    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,2]
   }
   ]
 };
@@ -135,7 +138,7 @@ const dataPoints = {
     pointRadius: 10,
     pointHoverRadius: 15,
     showLine: false,
-    label: 'My First dataset',
+    label: 'Enquiry',
     ...colors[0],
     borderWidth: 1,
     data: [6, 5, 8, 8, 5, 5, 4,5, 6, 7,9, 10]
@@ -145,10 +148,10 @@ const dataPoints = {
     pointRadius: 10,
     pointHoverRadius: 15,
     showLine: false,
-    label: 'My Second dataset',
+    label: 'Order',
     ...colors[1],
     borderWidth: 1,
-    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9,8]
+    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9]
   }
   ]
 };
@@ -156,21 +159,24 @@ const dataPoints = {
 const dataMixed = {
   labels,
   datasets: [{
-    label: 'Purchase',
+    label: ' Enquiry',
     type: 'line',
-    data: [6, 5, 8, 8, 5, 5, 4, 5, 6, 7,9, 10],
+    data: [6, 5, 8, 8, 5, 5, 4, 5, 6, 7,9, 21],
     borderWidth: 1,
     fill: false,
     ...colors[0],
     yAxisID: 'y-axis-2'
   }, {
     type: 'bar',
-    label: 'Visitor',
-    data: [5, 4, 4, 2, 6, 2, 5,6, 2, 5,7,9,],
+    label: 'Order',
+    data: [25, 4, 4, 2, 6, 2, 5,6, 2, 5,7,6],
     borderWidth: 1,
     ...colors[1],
-    yAxisID: 'y-axis-1'
-  }]
+    yAxisID: 'y-axis-1',
+    
+
+  }
+]
 };
 
 const options = {
@@ -191,22 +197,37 @@ const options = {
       },
       labels,
     }],
+    
     yAxes: [{
       type: 'linear',
       display: true,
       position: 'left',
+      ticks: {
+        beginAtZero: true,
+        suggestedMax: 9,
+        stepSize:5,     
+       },
       id: 'y-axis-1',
+    
       gridLines: {
-        display: false
+        display: true,
+       
+
       },
       labels: {
-        show: true
+        show: false
       }
     },
     {
       type: 'linear',
-      display: true,
+      display:false,
       position: 'right',
+      
+      ticks: {
+        beginAtZero: true,
+        suggestedMax: 9,
+        stepSize:5,     
+       },
       id: 'y-axis-2',
       gridLines: {
         display: false
@@ -215,6 +236,7 @@ const options = {
         show: true
       }
     }
+    
     ]
   }
 };
