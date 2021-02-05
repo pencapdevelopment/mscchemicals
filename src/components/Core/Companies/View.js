@@ -14,6 +14,9 @@ import CompanyContacts from '../CompanyContacts/CompanyContacts';
 import Add from './Add';
 import Branches from './Branches';
 import Products from './Products';
+import EditIcon from '@material-ui/icons/Edit';
+import { Table } from '@material-ui/core';
+import Divider from '@material-ui/core/Divider';
 
 
 
@@ -283,26 +286,48 @@ class View extends Component {
                             </AppBar>
                             {this.state.newObj &&
                                 <TabPanel value={this.state.activeTab} index={0}>
-                                    <div className="card b">
-                                        <div className="card-header">
-                                            <div className="float-right mt-2">
-                                                <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                <div>
+                                    <div className="card b" style={{padding: 0}}>
+                                        <div className="card-header" style={{padding: 0}}>
+                                            <div className="row">
+                                                <div className="col-sm-2">
+                                                     <Image  onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}
+                                                                parentObj={this.state.newObj}></Image>
+                                                </div>
+                                                <div className="col-sm-9">
+                                                     <h6 className="mt-3">
+                                                        <span>{this.state.newObj.name}</span> 
+                                                    </h6>
+                                                </div>
+                                                <div className="col-sm-1">
+                                                     <div className="float-right mt-2">                                                              
+                                                        <Button title="Company Details" color="warning" size="xs" onClick={() => this.updateObj()}><EditIcon style={{color:'#000'}} /></Button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <h4 className="my-2">
-                                                <span>{this.state.newObj.name}</span>
-                                            </h4>
+                                           
+                                            
+                                            <div className="" style={{top: -90}}></div>
+                                            {/* {/* <Image  onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}
+                                                                parentObj={this.state.newObj}></Image>
+                                            <h6 className="my-2">
+                                           <span>{this.state.newObj.name}</span> 
+                                            </h6> */}
                                         </div>
-                                        <div className="card-body bb bt">
-                                            <table className="table">
-                                                <tbody>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-sm-8">
+                                            <div className="card-body bb bt">
+                                                <table className="table">
+                                                 <tbody>
                                                     <tr>
-                                                        <td className="va-middle">
+                                                        {/* <td className="va-middle">
                                                             <strong>Logo</strong>
                                                         </td>
                                                         <td>
                                                             <Image onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}
                                                                 parentObj={this.state.newObj}></Image>
-                                                        </td>
+                                                        </td> */}
                                                     </tr>
                                                     <tr>
                                                         <td>
@@ -490,15 +515,42 @@ class View extends Component {
                                                             <td>{this.state.newObj.msmeId}</td>
                                                         </tr>}
                                                     </tbody>}
-                                            </table>
+                                                </table>
+                                             </div>
+                                             </div>
+                                             </div>
+                                            <Divider />
+                                                <div className="row">
+                                                    <div className="col-sm-12">
+                                                       
+                                                                <Products  baseUrl={this.props.baseUrl} onRef={ref => (this.productTemplateRef = ref)}
+                                                                    currentId={this.props.currentId} type="interested" parentObj={this.state.newObj}>
+                                                                </Products>
+                                                             
+                                                               
+                                                            
+                                                    </div>
+                                                </div>
+                                                <Divider />
+                                                <div className="row">
+                                                    <div className="col-sm-12">
+                                                       
+                                                               
+                                                             
+                                                                <Products baseUrl={this.props.baseUrl} onRef={ref => (this.productTemplateRef = ref)}
+                                                                     currentId={this.props.currentId} type="focused" parentObj={this.state.newObj}>
+                                                                 </Products>
+                                                            
+                                                    </div>
+                                                </div>
+                                           
 
-                                            <Products baseUrl={this.props.baseUrl} onRef={ref => (this.productTemplateRef = ref)}
-                                                currentId={this.props.currentId} type="interested" parentObj={this.state.newObj}></Products>
-
-                                            <Products baseUrl={this.props.baseUrl} onRef={ref => (this.productTemplateRef = ref)}
-                                                currentId={this.props.currentId} type="focused" parentObj={this.state.newObj}></Products>
-                                        </div>
-                                    </div>
+                                            
+                                     
+                                   
+                                    
+                                     
+                                </div>
                                 </TabPanel>}
                             <TabPanel value={this.state.activeTab} index={1}>
                                 <Branches baseUrl={this.props.baseUrl} onRef={ref => (this.branchTemplateRef = ref)}

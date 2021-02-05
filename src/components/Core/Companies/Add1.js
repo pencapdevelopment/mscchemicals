@@ -28,6 +28,9 @@ import { context_path, getUniqueCode, server_url, defaultDateFilter } from '../.
 import FormValidator from '../../Forms/FormValidator';
 import ContentWrapper from '../../Layout/ContentWrapper';
 import AutoSuggest from '../../Common/AutoSuggest';
+import Avatar from '@material-ui/core/Avatar';
+import Chip from '@material-ui/core/Chip';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -437,13 +440,13 @@ class Add extends Component {
 
         this.setState({ formWizard });
 
-        // if (!noValidate) {
-        //     const result = FormValidator.validate(input);
-        //     formWizard.errors[input.name] = result;
-        //     this.setState({
-        //         formWizard
-        //     });
-        // }
+        if (!noValidate) {
+            const result = FormValidator.validate(input);
+            formWizard.errors[input.name] = result;
+            this.setState({
+                formWizard
+            });
+        }
     }
     setSelectField3(field, e) {
         this.setField3(field, e, true);
@@ -1057,6 +1060,7 @@ class Add extends Component {
                                             </Select>
                                         </FormControl>
                                     </fieldset>
+                                  
 
                                     <fieldset>
                                         <TextField type="text" name="specification" label="Specification"
@@ -1170,7 +1174,8 @@ class Add extends Component {
                             </Button>{this.state.name}
                         </fieldset>
                         <span>*Please upload .doc,.docx,.pdf,.png,.jpg files only</span>
-                        {this.state.formWizard.obj.enableExpiryDate && <fieldset>
+                        {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
+                        <fieldset>
                             <MuiPickersUtilsProvider utils={MomentUtils}>
                                 <DatePicker
                                     autoOk
@@ -1198,7 +1203,8 @@ class Add extends Component {
                                         />
                                     )} />
                             </MuiPickersUtilsProvider>
-                        </fieldset>}
+                        </fieldset>
+                        {/*  } */}
                         <div className="text-center">
                             <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Save</Button>
                         </div>
@@ -1277,7 +1283,7 @@ class Add extends Component {
                                                     name="name"
                                                     required={true}
                                                     fullWidth={true}
-                                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"30"}]' }}
                                                     helperText={errors?.name?.length > 0 ? errors?.name[0]?.msg : ""}
                                                     error={errors?.name?.length > 0}
                                                     value={this.state.formWizard.obj.name}
@@ -1317,11 +1323,13 @@ class Add extends Component {
                                             <fieldset>
                                                 <TextField
                                                     type="text"
-                                                    name="Phone"
+                                                    name="phone"
                                                     label="Phone"
                                                     required={true}
                                                     fullWidth={true}
-                                                    inputProps={{ maxLength: 13 }}
+                                                    inputProps={{ maxLength: 13,  "data-validate": '[{ "key":"phone"},{ "key":"minlen","param":"10"},{"key":"maxlen","param":"13"}]' }}
+                                                    helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ""}
+                                                    error={errors?.phone?.length > 0}
                                                     value={this.state.formWizard.obj.phone}
                                                     onChange={e => this.setField('phone', e)} />
                                             </fieldset>
@@ -1332,7 +1340,7 @@ class Add extends Component {
                                                     label="Email"
                                                     required={true}
                                                     fullWidth={true}
-                                                    inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"email"}]' }}
+                                                    inputProps={{ minLength: 5, maxLength: 100, "data-validate": '[{ "key":"email"}]' }}
                                                     helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ""}
                                                     error={errors?.email?.length > 0}
                                                     value={this.state.formWizard.obj.email}
@@ -1456,7 +1464,11 @@ class Add extends Component {
                                                             })}
                                                         </Select>
                                                     </FormControl>
-                                                </fieldset>}
+                                                    
+                                                </fieldset>
+
+                                                }
+                                                  
                                             {/* {this.state.formWizard.obj.type === 'B' &&
                                                 <fieldset>
                                                     <FormControl>
@@ -1694,9 +1706,10 @@ class Add extends Component {
                                                                 name="gstin"
                                                                 type="text"
                                                                 label="GSTIN"
-
+                                                                required={true}
+                                                               
                                                                 fullWidth={true}
-                                                                inputProps={{ minLength: 15, maxLength: 15, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"15"}]' }}
+                                                                inputProps={{ minLength: 15, maxLength: 15, "data-validate": '[{ "key":"gstin"},{ "key":"maxlen","param":"15"}]' }}
                                                                 helperText={errors?.gstin?.length > 0 ? errors?.gstin[0]?.msg : ""}
                                                                 error={errors?.gstin?.length > 0}
                                                                 value={this.state.formWizard.obj.gstin}
@@ -1716,10 +1729,11 @@ class Add extends Component {
                                                         {this.state.formWizard.obj.locationType === 'N' ? <div className="row m-0"><TextField
                                                             name="pan"
                                                             type="text"
+                                                            required={true}
                                                             label="PAN NO"
 
                                                             fullWidth={true}
-                                                            inputProps={{ minLength: 10, maxLength: 10, "data-validate": '[{ "key":"minlen","param":"10"},{ "key":"maxlen","param":"10"}]' }}
+                                                            inputProps={{ minLength: 10, maxLength: 10, "data-validate": '[{ "key":"pan"},{ "key":"maxlen","param":"10"}]' }}
                                                             helperText={errors?.pan?.length > 0 ? errors?.pan[0]?.msg : ""}
                                                             error={errors?.pan?.length > 0}
                                                             className="col-md-8"
@@ -1773,6 +1787,27 @@ class Add extends Component {
                                                                 variant="contained"
                                                                 color="primary"
                                                                 onClick={e => this.toggleModal('Drug License')}
+                                                                className={this.state.classes.button + " col-md-4 p-2"}
+                                                            >
+                                                                Upload </Button>
+                                                        </div>
+                                                    </fieldset>
+                                                    <fieldset>
+                                                        <div className="row m-0">
+                                                            <TextField
+                                                                name="drugLicense"
+                                                                type="text"
+                                                                label="customer declaration"
+                                                                // required={true}
+                                                                fullWidth={true}
+                                                              
+                                                                className="col-md-8"
+                                                                value={this.state.formWizard.obj.drugLicense}
+                                                                onChange={e => this.setField('drugLicense', e)} />
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                onClick={e => this.toggleModal('customer declaration')}
                                                                 className={this.state.classes.button + " col-md-4 p-2"}
                                                             >
                                                                 Upload </Button>

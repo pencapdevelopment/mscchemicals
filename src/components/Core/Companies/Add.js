@@ -46,6 +46,7 @@ class Add extends Component {
                 phone: '',
                 email: '',
                 country: '',
+                number: '',
                 province: '',
                 city: '',
                 location: '',
@@ -445,13 +446,15 @@ class Add extends Component {
                             <fieldset>
                                 <TextField
                                     type="text"
-                                    name="Phone"
+                                    name="number"
                                     label="Phone"
                                     required={true}
                                     fullWidth={true}
-                                    inputProps={{ maxLength: 13 }}
-                                    value={this.state.formWizard.obj.phone}
-                                    onChange={e => this.setField('phone', e)} />
+                                    inputProps={{ maxLength: 13,  "data-validate": '[{ "key":"number"},{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                    helperText={errors?.number?.length > 0 ? errors?.number[0]?.msg : ""}
+                                    error={errors?.phone?.length > 0}
+                                    value={this.state.formWizard.obj.number}
+                                    onChange={e => this.setField('number', e)} />
                             </fieldset>
                             <fieldset>
                                 <TextField
