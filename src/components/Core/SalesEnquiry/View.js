@@ -2,6 +2,7 @@ import { AppBar, Button, Tab, Tabs, FormControl, TextField } from '@material-ui/
 import axios from 'axios';
 import React, { Component } from 'react';
 import Moment from 'react-moment';
+import moment from 'moment/moment.js';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -48,6 +49,7 @@ class View extends Component {
         modal: false,
         modalassign: false,
         modalnegatation: false,
+        isQuoteExists:0,
         obj: '',
         subObjs: [],
         newSubObj: {},
@@ -189,6 +191,60 @@ class View extends Component {
                 }
             });
     }
+
+    handleGenerateQuote(){
+        swal({
+            title: "Are you sure?",
+            text: "You are going to generate quotation!",
+            icon: "info",
+            dangerMode: false,
+            button: {
+                text: "Yes, Generate!",
+                closeModal: true,
+            }
+        }).then(generate => {
+            if(generate){
+                this.setState({ loading: true });
+                axios.get(Const.server_url+Const.context_path+'api/companies/'+this.state.obj.company.id).then(compRes => {
+                    console.log("company response",compRes);
+                        var newObj = {
+                        code: Const.getUniqueCode('SQ'),
+                        company: "/companies/"+compRes.data.id,
+                        specification: '',
+                        make: '',
+                        packing: '',
+                        gst: compRes.data.gstin,
+                        amount: '',
+                        transportationCharges: '',
+                        terms: compRes.data.paymentTerms,
+                        deliveryPeriod: '',
+                        validity: '',
+                        enquiry: '/sales/'+this.state.obj.id,
+                        validTill: moment(new Date()).add(5,'days').format(),
+                        selectedProduct: '',
+                        selectedCompany: '',
+                        product: '',
+                        products: null,
+                    };
+                    axios.post(Const.server_url + Const.context_path + "api/sales-quotation", newObj).then(res =>{
+                        this.setState({ loading: false });
+                        this.toggleTab(1);
+                    }).finally(() => {
+                        this.setState({ loading: false });
+                    }).catch(err => {
+                        this.setState({ loading: false });
+                        swal("Generate Quotation Error!", "Unable to Generate Quotation!", "error");
+                    });
+                }).finally(()=>{
+                    this.setState({ loading: false });
+                }).catch(err =>{
+                    this.setState({ loading: false });
+                    swal("Company Not found!", "Unable to find the selected Company", "error");
+                });
+            }
+        }) 
+    }
+
     saveUser() {
         var user = {
             active: true,
@@ -284,6 +340,13 @@ class View extends Component {
         });
     }
 
+    QuotationsCount(enqId) {
+        axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + enqId + '&projection=sales_quotation_exists').then(res => {
+            var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            this.setState({ isQuoteExists: list.length });
+        });
+    }
+
     loadAssignedUsers(id){
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user?projection=" +
             this.props.baseUrl + "-user&reference=" + id).then(res => {
@@ -302,6 +365,7 @@ class View extends Component {
     componentDidMount() {
 
         this.loadObj(this.props.currentId);
+        this.QuotationsCount(this.props.currentId);
         // this.loadSubObjs();
         this.props.onRef(this);
         this.setState({ loading: true });
@@ -575,11 +639,9 @@ class View extends Component {
                                                         </div> */}
                                                       
                                                             
-                                                        {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
-                                                          
-                                                      <Button title="Edit" style={{}} size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
-                                               <i class="fa fa-quora " style={{color:"#000"}}aria-hidden="true"></i>
-                                    <img   title="Quotation icon" style={{width:25, height:30}} src="img/qut.jpg" />
+                                                        {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
+                                                        <Button title="Edit" style={{}} size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
+                                                        {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} style={{width:25, height:30}} src="img/qut.jpg" />:'' }
                                                              {/* <Fab   variant="contained"  aria-label="edit" size='small'>
                                                         {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
                                                        
@@ -731,7 +793,8 @@ class View extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                        {this.props.user.role === 'ROLE_ADMIN' &&
+                                        {
+                                            // this.props.user.role === 'ROLE_ADMIN' &&
                                             <div className="col-md-4" >
                                                 {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
                                                     parentObj={this.state.obj} currentId={this.props.currentId}></Assign> */}
