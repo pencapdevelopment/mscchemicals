@@ -35,6 +35,7 @@ import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
 import AddIcon from '@material-ui/icons/Add';
 import EditLocationRoundedIcon from '@material-ui/icons/EditLocationRounded';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 // const json2csv = require('json2csv').parse;
 
 class View extends Component {
@@ -314,6 +315,12 @@ class View extends Component {
         this.setState({ obj });
     }
 
+    updateStatus = (status) => {
+        var obj = this.state.obj;
+        obj.status = status;
+        this.setState({ obj });
+    }
+
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
@@ -558,11 +565,25 @@ class View extends Component {
                                                         label="On going" 
                                                        color="primary"
                                 
-                                                       
+                 
+
+                                  
                                                         
                                                         /> */}
+                                                        <table>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td style={{backgroundColor:'rgba(0, 0, 0, 0.04);'}}>
+                                                                    <span ><ArrowDropDownIcon/></span>
+                                                                </td>
+                                                                <td><span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span></td>
+                                                            </tr>
+                                                             </tbody>
+                                                        </table>
+                                                   
                                                  {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
                                                             showNotes={true}
+                                                            onUpdate={(id) => this.updateStatus(id)}
                                                             //style={{marginLeft:' -50'}}
                                                             color="primary"
                                                             statusList={this.state.status}  status={this.state.obj.status}
@@ -578,8 +599,8 @@ class View extends Component {
                                                         {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
                                                           
                                                       <Button title="Edit" style={{}} size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
-                                               <i class="fa fa-quora " style={{color:"#000"}}aria-hidden="true"></i>
-                                    <img   title="Quotation icon" style={{width:25, height:30}} src="img/qut.jpg" />
+                                                        <i class="fa fa-quora " style={{color:"#000"}}aria-hidden="true"></i>
+                                                        <img title="Quotation icon" style={{width:25, height:30}} src="img/quotei.png" />
                                                              {/* <Fab   variant="contained"  aria-label="edit" size='small'>
                                                         {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
                                                        

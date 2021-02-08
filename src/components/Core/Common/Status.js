@@ -90,8 +90,8 @@ class Status extends Component {
                                     onChange={e => this.setState({ statusNotes: e.target.value })} 
                                     value={this.state.statusNotes}
                                     defaultValue={this.state.statusNotes}
-                                     
-                                />
+
+/>
                             </FormControl>
                         </fieldset>}
 

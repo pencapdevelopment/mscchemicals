@@ -189,6 +189,7 @@ class Add extends Component {
             { label: 'Sweeteners', value: 'Sweeteners' },
             { label: 'Oil', value: 'Oil' },
         ],
+        Categories:[],
         subCategory: [],
         type: [
             { label: 'Registered', value: 'Registered' },
@@ -312,6 +313,25 @@ class Add extends Component {
         var activeStep = this.state.activeStep - 1;
         this.setState({ activeStep })
     };
+
+    handleAssOrgDelete =  (idx) =>{
+        console.log("delete clicked",idx);
+        var formWizard = this.state.formWizard;
+        formWizard.obj.selectedorganizations.splice(idx,1);
+        this.setState({formWizard});
+    }
+    handleSelectedCatsDelete = (idx) =>{
+        console.log("delete clicked",idx);
+        var formWizard = this.state.formWizard;
+        formWizard.obj.selectedCategories.splice(idx,1);
+        this.setState({formWizard});
+    }
+    handleSelectedInterestsDelete =  (idx) =>{
+        console.log("delete clicked",idx);
+        var formWizard = this.state.formWizard;
+        formWizard.obj.selectedInterests.splice(idx,1);
+        this.setState({formWizard});
+    }
 
     handleReset = () => {
         this.setState({ activeStep: 0 })
@@ -561,12 +581,35 @@ class Add extends Component {
     }
     setAutoSuggest(field, val, multi) {
         var formWizard = this.state.formWizard;
-        if (!multi) {
-            formWizard.obj[field] = val;
+        // if (!multi) {
+        //     formWizard.obj[field] = val;
+        // }
+        if(Object.keys(val).length){
+            formWizard.obj['selected' + field].push(val);
         }
-        formWizard.obj['selected' + field] = val;
         this.setState({ formWizard });
     }
+    setAutoSuggest(field, val, multi) {
+        var formWizard = this.state.formWizard;
+        // if (!multi) {
+        //     formWizard.obj[field] = val;
+        // }
+        if(Object.keys(val).length){
+            formWizard.obj['selected' + field].push(val);
+        }
+        this.setState({ formWizard });
+    }
+    setAutoSuggest(field, val, multi) {
+        var formWizard = this.state.formWizard;
+        // if (!multi) {
+        //     formWizard.obj[field] = val;
+        // }
+        if(Object.keys(val).length){
+            formWizard.obj['selected' + field].push(val);
+        }
+        this.setState({ formWizard });
+    }
+    
 
     checkForError() {
         // const form = this.formWizardRef;
@@ -1449,18 +1492,21 @@ class Add extends Component {
 
                                                             helperText={errors?.category?.length > 0 ? errors?.category[0]?.msg : ""}
                                                             error={errors?.category?.length > 0}
-                                                            renderValue={(selected) => selected.join(', ')}
+                                                            // renderValue={(selected) => selected.join(', ')}
                                                             onChange={e => this.setSelectField('selectedCategories', e)}
                                                             multiple={true}
                                                         >
 
                                                             {this.state.categories.map((e, keyIndex) => {
                                                                 return (
-                                                                    <MenuItem key={keyIndex} value={e.value}>
-                                                                        <Checkbox checked={this.state.formWizard.obj.selectedCategories.indexOf(e.value) > -1} />
-                                                                        <ListItemText primary={e.label} />
-                                                                    </MenuItem>
-                                                                )
+                                                                    <MenuItem key={keyIndex} value={e.value}>{e.label}</MenuItem>
+                                                                );
+                                                                // return (
+                                                                //     <MenuItem key={keyIndex} value={e.value}>
+                                                                //         <Checkbox checked={this.state.formWizard.obj.selectedCategories.indexOf(e.value) > -1} />
+                                                                //         <ListItemText primary={e.label} />
+                                                                //     </MenuItem>
+                                                                // )
                                                             })}
                                                         </Select>
                                                     </FormControl>
@@ -1468,6 +1514,24 @@ class Add extends Component {
                                                 </fieldset>
 
                                                 }
+                                                   <div class="col-md-12" style={{marginLeft:"4px"}}>
+                                                {this.state.formWizard.obj.selectedCategories.map((obj, i) => {
+                                                    return (
+                                                        <Chip
+                                                            // avatar={
+                                                            //     <Avatar>
+                                                            //         <AssignmentIndIcon />
+                                                            //     </Avatar>
+                                                            // }
+                                                            label={obj}
+
+                                                            // onClick={() => this.handleClick(obj)}
+                                                            onDelete={() => this.handleSelectedCatsDelete(i)}
+                                                        // className={classes.chip}
+                                                        />
+                                                    )
+                                                })}
+                                            </div>
                                                   
                                             {/* {this.state.formWizard.obj.type === 'B' &&
                                                 <fieldset>
@@ -1516,7 +1580,7 @@ class Add extends Component {
                                                             );
                                                         })}
                                                     </Select>
-
+                                                   
                                                 </FormControl>
 
                                                 <Button
@@ -1528,6 +1592,25 @@ class Add extends Component {
                                                     + Add Product  </Button>
 
                                             </fieldset>
+                                             <div class="col-md-12" style={{marginLeft:"4px"}}>
+                                                {this.state.formWizard.obj.selectedInterests.map((obj, i) => {
+                                                    return (
+                                                        <Chip
+                                                            // avatar={
+                                                            //     <Avatar>
+                                                            //         <AssignmentIndIcon />
+                                                            //     </Avatar>
+                                                            // }
+                                                            label={obj}
+
+                                                            // onClick={() => this.handleClick(obj)}
+                                                            onDelete={() => this.handleSelectedInterestsDelete(i)}
+                                                        // className={classes.chip}
+                                                        />
+                                                    )
+                                                })}
+                                            </div>
+
                                             {this.state.formWizard.obj.type === 'B' &&
                                                 <fieldset>
                                                     <FormControl>
@@ -1554,7 +1637,10 @@ class Add extends Component {
                                                             })}
                                                         </Select>
                                                     </FormControl>
-                                                </fieldset>}
+                                                </fieldset>
+                                                }
+                                               
+                                                  
 
                                             <fieldset>
                                                 <TextField
@@ -1585,9 +1671,52 @@ class Add extends Component {
                                                     </Select>
                                                 </FormControl>
                                             </fieldset>
+                            
+                                            <fieldset className="row">
+                                                <FormControl className="col-md-12">
+                                                  
+                                                    <AutoSuggest url="companies"
+                                                            name="organizations"
+                                                            onRef={ref => (this.companyASRef = ref)}
+                                                            displayColumns="name"
+                                                            label="Associated Organizations"
+                                                            readOnly={false}
+                                                            multiple={false}
+                                                            placeholder="Search Company by name"
+                                                            className="col-sm-8"
+                                                            arrayName="companies"
+                                                            projection="company_auto_suggest"
+                                                            value={this.state.formWizard.selectedorganizations}
+                                                            onSelect={e => this.setAutoSuggest('organizations', e, true)}
+                                                            queryString="&name" >
+                                                                
+                                                            </AutoSuggest>
 
-                                            <fieldset>
-                                                <FormControl>
+                                                </FormControl>
+
+
+                                            </fieldset>
+                                            <div class="col-md-12" style={{marginLeft:"4px"}}>
+                                                {this.state.formWizard.obj.selectedorganizations.map((obj, i) => {
+                                                    return (
+                                                        <Chip
+                                                            // avatar={
+                                                            //     <Avatar>
+                                                            //         <AssignmentIndIcon />
+                                                            //     </Avatar>
+                                                            // }
+                                                            label={obj.name}
+
+                                                            // onClick={() => this.handleClick(obj)}
+                                                            onDelete={() => this.handleAssOrgDelete(i)}
+                                                        // className={classes.chip}
+                                                        />
+                                                    )
+                                                })}
+                                            </div>
+                                           
+                                            {/* <fieldset>
+                                                <FormControl> */}
                                                     {/* <InputLabel id="demo-mutiple-checkbox-label">Associated Organizations</InputLabel>
                 <Select
                     name="organizations"
@@ -1612,13 +1741,13 @@ class Add extends Component {
                 })}
                 </Select> */}
 
-                                                    <AutoSuggest url="companies"
+                                                    {/* <AutoSuggest url="companies"
                                                         name="organizations"
                                                         onRef={ref => (this.companyASRef = ref)}
                                                         displayColumns="name"
                                                         label="Associated Organizations"
                                                         readOnly={false}
-                                                        multiple={true}
+                                                        multiple={false}
                                                         placeholder="Search Company by name"
                                                         arrayName="companies"
                                                         projection="company_auto_suggest"
@@ -1626,7 +1755,7 @@ class Add extends Component {
                                                         onSelect={e => this.setAutoSuggest('organizations', e, true)}
                                                         queryString="&name" ></AutoSuggest>
                                                 </FormControl>
-                                            </fieldset>
+                                            </fieldset> */}
 
                                             <fieldset>
                                                 <FormControl>

@@ -282,6 +282,8 @@ class View extends Component {
                                     <Tab label="Branches" />
                                     <Tab label="Contacts" />
                                     <Tab label="Documents" />
+                                    <Tab label="Sales" />
+                                    <Tab label="Purchase" />
                                 </Tabs>
                             </AppBar>
                             {this.state.newObj &&
@@ -562,6 +564,12 @@ class View extends Component {
                             <TabPanel value={this.state.activeTab} index={3}>
                                 <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl} currentId={this.props.currentId}
                                     fileTypes={this.state.newObj.locationType === 'I' ? this.state.fileTypes2 : this.state.fileTypes1}></Upload>
+                            </TabPanel>
+                            <TabPanel value={this.state.activeTab} index={4}>
+                              
+                            </TabPanel>
+                            <TabPanel value={this.state.activeTab} index={5}>
+                                
                             </TabPanel>
                         </div>
                     </div>}
