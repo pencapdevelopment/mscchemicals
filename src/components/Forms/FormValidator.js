@@ -34,34 +34,31 @@ const FormValidator = {
                     case 'required':
 
                         if(isCheckbox ? value === false : validator.isEmpty(value)){
-                            result.push({key:m.key,msg:'please enter a name'});
+                            result.push({key:m.key,msg:'this field is required'});
                         }
                         break;
-                        case 'phone':
-                            var isValid3 =  !validator.isNumeric(value);
-                            if(isValid3){
-                                result.push({key:m.key,msg:'please enter valid mobile number'});
-                            }
-                            break;
-                       
+                    case 'phone':
+                        var isValid3 =  !validator.isNumeric(value);
+                        if(isValid3){
+                            result.push({key:m.key,msg:'please enter valid mobile number'});
+                        }
+                        break;
                     case 'email':
-                       
                         if(!validator.isEmail(value)){
                             result.push({key:m.key,msg:'Please enter valid email'});
                         }
                         break;
-                        case 'gstin':
+                    case 'gstin':
+                        if(isCheckbox ? value === false : validator.isEmpty(value)){
+                            result.push({key:m.key,msg:'please enter valid gstin number'});
+                        }
+                        break;
+                    case 'pan':
 
-                            if(isCheckbox ? value === false : validator.isEmpty(value)){
-                                result.push({key:m.key,msg:'please enter valid gstin number'});
-                            }
-                            break;
-                            case 'pan':
-
-                                if(isCheckbox ? value === false : validator.isEmpty(value)){
-                                    result.push({key:m.key,msg:'please enter valid pan number'});
-                                }
-                                break;
+                        if(isCheckbox ? value === false : validator.isEmpty(value)){
+                            result.push({key:m.key,msg:'please enter valid pan number'});
+                        }
+                        break;
                     case 'number':
                         var isValid3 =  !validator.isNumeric(value);
                         if(isValid3){

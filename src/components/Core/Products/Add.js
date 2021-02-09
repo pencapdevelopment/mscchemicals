@@ -49,10 +49,11 @@ class Add extends Component {
                 code: getUniqueCode('PD'),
                 name: '',
                 category: '',
-                type: '',
+                type: 'Food grade',
                 subCategory: '',
                 specification: '',
                 make: '',
+                countryOfOrigin:'',
                 batch: '',
                 mfgDate: null,
                 expDate: null,
@@ -74,11 +75,7 @@ class Add extends Component {
             { label: 'Sweeteners', value: 'Sweeteners' },
             { label: 'Oil', value: 'Oil' },
         ],
-        subCategory: [],
-        type: [
-            { label: 'Registered', value: 'B', name:'Registered' },
-            { label: 'Not Registered', value: 'V',name:'Not Registered' }
-        ],
+        subCategory: [],        
         make: [
 
         ]
@@ -91,13 +88,12 @@ class Add extends Component {
                 console.log(res.data);
                 var newobj = res.data;
 
-                newobj.selectedMakes = newobj['make'].split(",");//
+                newobj.selectedMakes = newobj['make'].split(",");
                 newobj.selectedTypes = newobj['type'].split(",");
 
                 this.setState({ subCategory: allcats.filter(g => g.type === newobj['category']).map(g => { return { label: g.name, value: g.name } }) });
-                this.uomRef.updateVal(newobj.uom);
+                // this.uomRef.updateVal(newobj.uom);
                 formWizard.obj = newobj;
-
                 this.setState({ formWizard });
             });
     }
@@ -130,9 +126,11 @@ class Add extends Component {
 
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
+        console.log("before formwizard",formWizard);
 
         var input = e.target;
         formWizard.obj[field] = e.target.value;
+        console.log("after formwizard",formWizard);
         if (field === 'category') {
             formWizard.obj['subCategory'] = '';
         }
@@ -186,10 +184,7 @@ class Add extends Component {
         if (!hasError) {
             var newObj = this.state.formWizard.obj;
 
-
-            newObj['make'] = newObj.selectedMakes.join(",");//
-            newObj['type'] = newObj.selectedTypes.join(",");
-
+            newObj['make'] = newObj.selectedMakes.join(",");
 
             var promise = undefined;
             if (!this.state.formWizard.editFlag) {
@@ -289,7 +284,7 @@ class Add extends Component {
                                     required={true}
                                     fullWidth={true}
                                     value={this.state.formWizard.obj.name}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
+                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"30"}]' }}
                                     helperText={errors?.name?.length > 0 ? errors?.name[0]?.msg : ""}
                                     error={errors?.name?.length > 0}
 
@@ -382,23 +377,18 @@ class Add extends Component {
                                     </Select>
                                 </FormControl>
                             </fieldset> */}
-                             <FormLabel component="legend">Type
-                             
-                             
-                             </FormLabel> 
-                            <FormControl>
-                                    
-                                    <RadioGroup aria-label="type" name="type" row >
+                             <FormLabel component="legend">Type</FormLabel> 
+                                <FormControl>
+                                    <RadioGroup aria-label="type" name="type" row>
                                         <FormControlLabel 
-                                            value="B" checked={this.state.formWizard.obj.type === 'B'}
+                                            value="Registered" checked={this.state.formWizard.obj.type === 'Registered'}
                                             label="Registered"
                                             onChange={e => this.setField("type", e)}
                                             control={<Radio color="primary" />}
                                             labelPlacement="end"
                                         />
-                                      
                                         <FormControlLabel
-                                            value="V" checked={this.state.formWizard.obj.type === 'V'}
+                                            value="Food grade" checked={this.state.formWizard.obj.type === 'Food grade'}
                                             label=" Not Registered"
                                             onChange={e => this.setField("type", e)}
                                             control={<Radio color="primary" />}
@@ -406,8 +396,7 @@ class Add extends Component {
                                         />
                                     </RadioGroup>
                                 </FormControl>
-                            {this.state.formWizard.obj.type === 'B' &&
-                            
+                            {this.state.formWizard.obj.type === 'Registered' &&
                             <div className="col-md-12 " style={{ marginLeft:"-14px"}}>
                                 <TextField type="text" name="specification" label="Specification"
                                     required={true} fullWidth={true}
@@ -415,10 +404,8 @@ class Add extends Component {
                                     inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
                                     helperText={errors?.specification?.length > 0 ? errors?.specification[0]?.msg : ""}
                                     error={errors?.specification?.length > 0}
-
                                     value={this.state.formWizard.obj.specification} onChange={e => this.setField("specification", e)} />
-                           
-                           <FormControl>
+                                <FormControl>
                                     <InputLabel id="demo-mutiple-checkbox-label">Make</InputLabel>
                                     <Select
                                         name="make"
@@ -432,8 +419,8 @@ class Add extends Component {
                                         value={this.state.formWizard.obj.selectedMakes}
                                         renderValue={(selected) => selected.join(', ')}
                                         onChange={e => this.setSelectField('selectedMakes', e)}
-                                        multiple={true}
-                                    > {this.state.make.map((e, keyIndex) => {
+                                        multiple={true}>
+                                    {this.state.make.map((e, keyIndex) => {
                                         return (
                                             <MenuItem key={keyIndex} value={e.value}>
                                                 <Checkbox checked={this.state.formWizard.obj.selectedMakes.indexOf(e.value) > -1} />
@@ -443,18 +430,18 @@ class Add extends Component {
                                     })}
                                     </Select>
                                 </FormControl>
-                                    </div>
+                            </div>      
                             }
-                            {this.state.formWizard.obj.type === 'V' &&
+                            {this.state.formWizard.obj.type === 'Food grade' &&
                             <div className="col-md-12 " style={{ marginLeft:"-14px"}}>
-                                <TextField type="text" name="specification" label="Country of origin"
+                                <TextField type="text" name="countryOfOrigin" label="Country of origin"
                                     required={true} fullWidth={true}
                                     // value={this.state.formWizard.obj.subCategory}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.specification?.length > 0 ? errors?.specification[0]?.msg : ""}
-                                    error={errors?.specification?.length > 0}
+                                    inputProps={{ maxLength: 50, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"50"}]' }}
+                                    helperText={errors?.countryOfOrigin?.length > 0 ? errors?.countryOfOrigin[0]?.msg : ""}
+                                    error={errors?.countryOfOrigin?.length > 0}
 
-                                    value={this.state.formWizard.obj.specification} onChange={e => this.setField("specification", e)} />
+                                    value={this.state.formWizard.obj.countryOfOrigin} onChange={e => this.setField("countryOfOrigin", e)} />
                                 {/* <fieldset>
                                 <TextField type="text" name="phone" label="Phone" required={true} fullWidth={true}
                                     inputProps={{ maxLength: 13, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"10"},{"key":"maxlen","param":"30"}]' }}
