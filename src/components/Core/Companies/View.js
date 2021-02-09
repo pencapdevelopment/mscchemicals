@@ -11,7 +11,7 @@ import PageLoader from '../../Common/PageLoader';
 import Image from '../Common/Image';
 import Upload from '../Common/Upload';
 import CompanyContacts from '../CompanyContacts/CompanyContacts';
-import Add from './Add';
+import Add from './Add1';
 import Branches from './Branches';
 import Products from './Products';
 import EditIcon from '@material-ui/icons/Edit';

@@ -1813,6 +1813,7 @@ class Add extends Component {
 
 
                                             <fieldset>
+                                                
                                                 <TextField
                                                     name="credit"
                                                     type="Number"
@@ -1829,7 +1830,7 @@ class Add extends Component {
                                             </fieldset>
                                             {(this.state.formWizard.obj.type === 'B' || this.state.formWizard.obj.locationType === 'N') &&
                                                 <div>
-                                                    <fieldset>
+                                                    <fieldset  >
                                                         {this.state.formWizard.obj.locationType === 'N' ? <div className="row m-0">
                                                             <TextField
                                                                 name="gstin"
@@ -1854,7 +1855,7 @@ class Add extends Component {
                                                         </div> :
                                                             null}
                                                     </fieldset>
-                                                    <fieldset>
+                                                    <fieldset >
                                                         {this.state.formWizard.obj.locationType === 'N' ? <div className="row m-0"><TextField
                                                             name="pan"
                                                             type="text"
@@ -1876,7 +1877,7 @@ class Add extends Component {
                                                                 Upload </Button>
                                                         </div> : null}
                                                     </fieldset>
-                                                    <fieldset>
+                                                    <fieldset >
                                                         {this.state.formWizard.obj.locationType === 'N' ? <div className="row m-0">
                                                             <TextField
                                                                 name="fssai"
@@ -1916,32 +1917,56 @@ class Add extends Component {
                                                                 variant="contained"
                                                                 color="primary"
                                                                 onClick={e => this.toggleModal('Drug License')}
-                                                                className={this.state.classes.button + " col-md-4 p-2"}
+                                                                className={this.state.classes.button + " col-md-4 p-0"}
                                                             >
                                                                 Upload </Button>
                                                         </div>
                                                     </fieldset>
                                                     <fieldset>
+                                                    {this.state.formWizard.obj.locationType === 'N' ?
                                                         <div className="row m-0">
                                                             <TextField
-                                                                name="drugLicense"
+                                                                name="customerDeclaration"
                                                                 type="text"
-                                                                label="customer declaration"
+                                                                label="Customer Declaration"
                                                                 // required={true}
                                                                 fullWidth={true}
-                                                              
+                                                                inputProps={{ minLength: 5, maxLength: 20 }}
                                                                 className="col-md-8"
-                                                                value={this.state.formWizard.obj.drugLicense}
-                                                                onChange={e => this.setField('drugLicense', e)} />
+                                                                value={this.state.formWizard.obj.customerDeclaration}
+                                                                onChange={e => this.setField('customerDeclaration', e)} />
                                                             <Button
                                                                 variant="contained"
                                                                 color="primary"
-                                                                onClick={e => this.toggleModal('customer declaration')}
+                                                                onClick={e => this.toggleModal('Customer Declaration')}
                                                                 className={this.state.classes.button + " col-md-4 p-2"}
                                                             >
                                                                 Upload </Button>
-                                                        </div>
+                                                        </div> : null}
                                                     </fieldset>
+                                                    {/* <fieldset>
+                                                        {this.state.formWizard.obj.locationType === 'N' ? <div className="row m-0"><TextField
+                                                            name="customerDeclaration"
+                                                            type="text"
+                                                            required={true}
+                                                            label="Customer Declaration"
+                                                            // disabled = {(this.state.input3)}
+                                                            // onInput = {this.handleinput3.bind(this)}
+                                                            fullWidth={true}
+                                                            inputProps={{ minLength: 10, maxLength: 10, "data-validate": '[{ "key":"customerDeclaration"},{ "key":"maxlen","param":"10"}]' }}
+                                                            helperText={errors?.customerDeclaration?.length > 0 ? errors?.customerDeclaration[0]?.msg : ""}
+                                                            error={errors?.customerDeclaration?.length > 0}
+                                                            className="col-md-8"
+                                                            value={this.state.formWizard.obj.customerDeclaration}
+                                                            onChange={e => this.setField('customerDeclaration', e)} />  <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                onClick={e => this.toggleModal('Customer')}
+                                                                className={this.state.classes.button + " col-md-4 p-2"}
+                                                            >
+                                                                Upload </Button>
+                                                        </div> : null}
+                                                    </fieldset> */}
                                                     <fieldset>
                                                         <TextField
                                                             name="Others"
