@@ -234,31 +234,40 @@ class View extends Component {
                                                     </td>
                                                     <td>{this.state.obj.category}</td>
                                                 </tr>
+                                                {this.state.obj.subCategory &&
                                                 <tr>
                                                     <td>
                                                         <strong>Sub Categories</strong>
                                                     </td>
                                                     <td>{this.state.obj.subCategory}</td>
-                                                </tr>
+                                                </tr>}
+                                                {this.state.obj.type==='Registered' && this.state.obj.specification &&
                                                 <tr>
                                                     <td>
                                                         <strong>Specification</strong>
                                                     </td>
                                                     <td>{this.state.obj.specification}</td>
-                                                </tr>
+                                                </tr>}
+                                                {this.state.obj.type==='Registered' && this.state.obj.make &&
                                                 <tr>
                                                     <td>
                                                         <strong>Makes</strong>
                                                     </td>
                                                     <td>{this.state.obj.make}</td>
-                                                </tr>
+                                                </tr>}
                                                 <tr>
                                                     <td>
                                                         <strong>Types</strong>
                                                     </td>
                                                     <td>{this.state.obj.type}</td>
                                                 </tr>
-                                                 
+                                                {this.state.obj.type==='Food grade' && this.state.obj.countryOfOrigin &&
+                                                <tr>
+                                                    <td>
+                                                        <strong>Country Of Origin</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.countryOfOrigin}</td>
+                                                </tr>}
                                                 {/* <tr>
                                                     <td>
                                                         <strong>HSN Code</strong>
