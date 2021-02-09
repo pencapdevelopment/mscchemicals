@@ -256,10 +256,10 @@ class Quotation extends Component {
                                     </div>
                                 </div>
                             </div>}
-                            {!this.state.obj &&
+                            {/* {!this.state.obj &&
                             <div className="text-center">
                                 {this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Generate Quotation</Button>}
-                            </div>}
+                            </div>} */}
                         </div>
                     </div>}
                 {this.state.editFlag &&

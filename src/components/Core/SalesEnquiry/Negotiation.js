@@ -193,14 +193,14 @@ class Negotiation extends Component {
                                 </div>
                             </div>}
                             {this.state.obj &&
-                            <div className="card b" style={{marginTop: 70}}>
+                            <div className="card b" style={{marginTop: 0}}>
                                 
                                 <div className="card-body bb bt">
                           
                                    
                                     <div className=" row text-left mt-4">
                                         <div className="col-sm-12" >
-                                        <h4 style={{fontSize: 18,flexDirection: 'row'}}>Products</h4>
+                                        <h4 style={{fontSize: 18,flexDirection: 'row'}}>Product Negoitation Tracking </h4>
                                    
                                         </div>
                                         
@@ -213,9 +213,9 @@ class Negotiation extends Component {
                                                 <th>Quantity</th>
                                                 <th>PriceQuoted</th>
                                                 <th>Negotiation</th>
-                                                <th> nego1</th>
-                                                <th>nego1</th>
-                                            </tr>
+                                                <th>Nego 1</th>
+                                                <th>Nego 2</th>
+                                            </tr>                                         
                                         </thead>
                                        
                                         {this.state.obj.products &&

@@ -618,7 +618,7 @@ class View extends Component {
                                 </Tabs>
                             </AppBar>
                             {this.state.obj &&
-                                <TabPanel value={this.state.activeTab} index={0}>
+                                <TabPanel value={this.state.activeTab} index={0}>                          
                                     <div className="row">
                                        
                                         <div className="col-md-8">
@@ -636,11 +636,11 @@ class View extends Component {
                                                         /> */}
                                                         <table>
                                                             <tbody>
-                                                            <tr>
-                                                                <td style={{backgroundColor:'rgba(0, 0, 0, 0.04);'}}>
+                                                            <tr style={{marginTop: 70, marginLeft: 10}}>
+                                                                {/* <td style={{backgroundColor:'rgba(0, 0, 0, 0.04);'}}>
                                                                     <span ><ArrowDropDownIcon/></span>
-                                                                </td>
-                                                                <td><span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span></td>
+                                                                </td> */}
+                                                                <td ><span  style={{ marginLeft: 20}} className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span></td>
                                                             </tr>
                                                              </tbody>
                                                         </table>
@@ -661,7 +661,7 @@ class View extends Component {
                                                       
                                                             
                                                         {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
-                                                        <Button title="Edit" style={{}} size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
+                                                        <Button title="Edit"  size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
                                                         {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} style={{width:25, height:30}} src="img/quotei.png" />:'' }
                                                              {/* <Fab   variant="contained"  aria-label="edit" size='small'>
                                                         {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 

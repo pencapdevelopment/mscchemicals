@@ -103,7 +103,7 @@ class Status extends Component {
                     </form>
                 </ModalBody>
             </Modal>
-            <Button title="Status" variant="contained" color="white" size="small" onClick={this.toggleModal}><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Status <ArrowDropDownIcon /></span></Button>
+<p style={{  textTransform: 'none', fontWeight: 'normal', marginLeft: 0, marginTop: -42, }}></p><span title="Status"  style={{  textTransform: 'none', fontWeight: 'normal', marginLeft: 0, marginTop: -50, }}  onClick={this.toggleModal}><ArrowDropDownIcon /></span>
                                                            
             {/* <button variant="contained" color="warning"  size="small"onClick={this.toggleModal}>
            <Chip 

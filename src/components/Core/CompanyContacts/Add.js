@@ -376,7 +376,7 @@ class Add extends Component {
                                     label="Email"
                                     required={true}
                                     fullWidth={true}
-                                    inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required"}, { "key":"email"}]' }}
+                                    inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"email"}]' }}
                                     helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ''}
                                     error={errors?.email?.length > 0}
                                     value={this.state.formWizard.obj.email}
@@ -389,7 +389,7 @@ class Add extends Component {
                                     label="Phone"
                                     required={true}
                                     fullWidth={true}
-                                    inputProps={{ maxLength: 13, "data-validate": '[ { "key":"required"}]' }}
+                                    inputProps={{ maxLength: 13, "data-validate": '[ { "key":"phone"}]' }}
                                     helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ''}
                                     error={errors?.phone?.length > 0}
                                     value={this.state.formWizard.obj.phone}
@@ -499,7 +499,7 @@ class Add extends Component {
                             </fieldset> */}
                             <fieldset>
                                 <TextField type="text" label="Where met first" name="firstMet" fullWidth={true}
-                                    inputProps={{ maxLength: 45, "data-validate": '[ { "key":"required"}]' }}
+                                    inputProps={{ maxLength: 45,}}
                                     helperText={errors?.firstMet?.length > 0 ? errors?.firstMet[0]?.msg : ''}
                                     error={errors?.firstMet?.length > 0}
 
@@ -522,7 +522,7 @@ class Add extends Component {
                                     // inputProps={{ maxLength: 45 }}
                                     helperText={errors?.whatsapp?.length > 0 ? errors?.whatsapp[0]?.msg : ''}
                                     error={errors?.whatsapp?.length > 0}
-                                    inputProps={{ minLength: 10, "data-validate": '[ { "key":"required"}]' }}
+                                    inputProps={{ minLength: 10, "data-validate": '[ { "key":"phone"}]' }}
                                     value={this.state.formWizard.obj.whatsapp} onChange={e => this.setField("whatsapp", e)}
                                 />
                             </fieldset>

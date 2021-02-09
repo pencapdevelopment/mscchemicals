@@ -434,33 +434,7 @@ class Add extends Component {
 
         return (
             <ContentWrapper>
-                <Modal isOpen={this.state.modalassign} toggle={this.toggleModalAssign} size={'md'}>
-                    <ModalHeader toggle={this.toggleModalAssign}>
-                        Assign User
-                        </ModalHeader>
-                    <ModalBody>
-                        <fieldset>
-                            <AutoSuggest url="users"
-                                name="userName"
-                                displayColumns="name"
-                                label="User"
-                                placeholder="Search User by name"
-                                arrayName="users"
-                                inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                onRef={ref => {(this.userASRef = ref) 
-                                    if (ref) {
-                                    this.userASRef.load();
-                                }}}
-                                projection="user_details_mini"
-                                value={this.state.selectedUser}
-                                onSelect={e => this.setAutoSuggest1('user', e)}
-                                queryString="&name" ></AutoSuggest>
-                        </fieldset>
-                        <div className="text-center">
-                            <Button variant="contained" color="primary" onClick={e => this.saveUser()}>Save</Button>
-                        </div>
-                    </ModalBody>
-                </Modal>
+               
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="salesEnquiryForm">
                     <div className="row  " style={{fontSize:"15px"}}>
                         <div className="col-md-6">
@@ -548,7 +522,9 @@ class Add extends Component {
                                         projection="company_auto_suggest"
                                         value={this.state.formWizard.obj.selectedCompany}
                                         onSelect={e => this.setAutoSuggest('company', e?.id)}
-                                        queryString="&name" ></AutoSuggest>
+                                        queryString="&name" >
+                                            
+                                        </AutoSuggest>
 
                                 </FormControl>
 
@@ -591,6 +567,7 @@ class Add extends Component {
                                 </FormControl> */}
                             </fieldset>
                         </div></div>
+                      
                     <div className="row">
                         <div className="col-md-4">
                             <fieldset>
@@ -726,7 +703,6 @@ class Add extends Component {
                                         value={this.state.formWizard.obj.selectedCompany}
                                         onSelect={e => this.setAutoSuggestAssignProduct('product', e)}
                                         queryString="&name" ></AutoSuggest>
-                                       
                                 </FormControl>
 
                             </fieldset>

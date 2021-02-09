@@ -363,7 +363,8 @@ class Upload extends Component {
                                                 </td>
                                                 
                                                 <td>
-                                                    {this.state.formWizard.obj.enableExpiryDate ? this.getExpiryDate(obj.label) : '-NA-'}
+                                                {/* this.state.formWizard.obj.enableExpiryDate ? : '-NA-' */}
+                                                    { this.getExpiryDate(obj.label) }
                                                 </td>
                                                 <td>
                                                     {this.getCreationDate(obj.label)}
