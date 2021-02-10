@@ -39,9 +39,11 @@ class Negotiation extends Component {
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            console.log("negotiation.js", list)
 
             if(list.length) {
                 this.setState({ obj: list[0], currentId: list[0].id });
+                console.log("if negotiation.js", list)
             }
         });
     }
@@ -52,7 +54,7 @@ class Negotiation extends Component {
 
     componentDidMount() {
         // console.log('quotation component did mount');
-        console.log(this.props.currentId);
+        console.log("componentDidMount Negotiation", this.props.currentId);
 
        
         this.loadObj(this.props.currentId);
@@ -100,11 +102,17 @@ class Negotiation extends Component {
                 <div className="row">
                     <div className="col-sm-12">
                     <div className="card b">
-                      
+                    <div className="row ml-1 mt-4">
+                                        <div className="col-sm-12" >
+                                        <h4 style={{fontSize: 18,flexDirection: 'row'}}>Generated Quotation</h4>
+                                   
+                                        </div>
+                                        
+                                    </div>
                         <Table className="card-header" hover responsive>
                         <thead>
                                             <tr>
-                                                <th>Quotation</th>
+                                                <th>Quotation Code</th>
                                                 <th>Sent Date</th>
                                                 <th>Create On</th>
                                                 
@@ -114,9 +122,9 @@ class Negotiation extends Component {
                                 
                     <tbody className="card-body bb bt" hover responsive>
                                 <tr>
-                                <td>1234556</td>
-                                <td>12-03-2021</td>
-                                <td>02-02-2021</td>
+                                <td>{this.state.obj.code}</td>
+                                <td> hgjhjh</td>
+                                <td>{this.state.obj.creationDate}</td>
                                 </tr>      
                                        
                     </tbody>           
@@ -211,10 +219,10 @@ class Negotiation extends Component {
                                                 <th>#</th>
                                                 <th>Product</th>
                                                 <th>Quantity</th>
-                                                <th>PriceQuoted</th>
+                                                <th>Price Quoted</th>
                                                 <th>Negotiation</th>
-                                                <th>Nego 1</th>
-                                                <th>Nego 2</th>
+                                                <th>Negotiation Stage 1</th>
+                                                <th>Negotiation Stage 2</th>
                                             </tr>                                         
                                         </thead>
                                        

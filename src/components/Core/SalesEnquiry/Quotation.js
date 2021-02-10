@@ -37,11 +37,16 @@ class Quotation extends Component {
 
 
     loadObj(id) {
+        console.log("QUotation.js loadObj function")
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
+            console.log("Quotation.js", list)
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
+
+            console.log("Quotation.js", list)
 
             if(list.length) {
                 this.setState({ obj: list[0], currentId: list[0].id });
+                console.log("setState")
             }
         });
     }
@@ -52,7 +57,7 @@ class Quotation extends Component {
 
     componentDidMount() {
         // console.log('quotation component did mount');
-        console.log(this.props.currentId);
+        console.log("componentDidMount", this.props.currentId);
 
        
         this.loadObj(this.props.currentId);
@@ -60,6 +65,8 @@ class Quotation extends Component {
     }
 
     updateObj() {
+
+        console.log("updateObj in Quotation.js")
         if(this.state.obj) {
             this.setState({ editFlag: true }, () => {
                 this.addTemplateRef.updateObj(this.state.currentId);
