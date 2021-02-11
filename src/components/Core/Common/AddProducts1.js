@@ -6,7 +6,7 @@ export function saveProducts(baseUrl, objId, products, callBack) {
     var productsUrl = server_url + context_path + "api/" + baseUrl + '-products/';
    
     products.forEach((prod, idx) => {
-        console.log(prod);
+        console.log("prod is"+idx,prod);
         if(prod.delete) {
             axios.delete(productsUrl + prod.id)
                 .then(res => {
@@ -15,7 +15,6 @@ export function saveProducts(baseUrl, objId, products, callBack) {
                     swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
                 })
         } else if(!prod.id || prod.updated) {
-            console.log('Testsss 123456');
             prod.reference = '/' + baseUrl + '/' + objId;
             prod.product = '/products/' + prod.product.id;
              

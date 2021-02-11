@@ -115,7 +115,7 @@ class AutoSuggest extends Component {
         renderInput={(params) => (
           <TextField
             {...params}
-            name={"`this.props.name`_auto_suggest"}
+            name={this.props.name+"_auto_suggest"}
             placeholder={this.props.placeholder}
             label={this.props.label}
             onChange={e => this.search(e)}
