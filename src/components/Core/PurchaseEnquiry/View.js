@@ -12,6 +12,8 @@ import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
 import AddInventory from './AddInventory';
+import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
 
 // import PageLoader from '../../Common/PageLoader';
 // import {
@@ -567,44 +569,85 @@ class View extends Component {
                                     value={this.state.activeTab}
                                     onChange={(e, i) => this.toggleTab(i)} >
                                     <Tab label="Details" />
-                                    <Tab label="Followups" />
                                     <Tab label="Quotation" />
+                                    <Tab label="Followups" />
+                                  
                                     <Tab label="Approvals" />
+                                    <Tab label="Order" />
                                    {/* <Tab label="Pharma Documents" />
                                     <Tab label="Food Documents" />*/}
                                 </Tabs>
                             </AppBar>
                             {this.state.obj &&
-                            <TabPanel value={this.state.activeTab} index={0}>
-                                <div className="row">
-                                    <div className="col-md-8">
-                                        <div className="card b">
-                                            <div className="card-header">
-                                                <div className="float-right mt-2">
-                                                    {this.state.obj.status !=='Converted' && <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>}
-                                                    
-                                                    {this.state.obj.status !=='Converted' && <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
-                                                        onUpdate={(id) => this.updateStatus(id)} showNotes={true} statusNotes={this.state.obj.statusNotes}  statusList={this.state.status} status={this.state.obj.status}
-                                                        statusType="Enquiry"></Status>}
-                                                    
-                                                    { !this.state.obj.order &&
-                                                        <Button variant="contained" color="warning" size="xs" onClick={this.convertToOrder}>Convert To Order</Button>}
-                                                    {this.state.obj.order &&
-                                                    <Link to={`/orders/${this.state.obj.order}`}>
-                                                        <Button variant="contained" color="warning" size="xs">Open Order</Button>
-                                                    </Link>}
+                                <TabPanel value={this.state.activeTab} index={0}>                          
+                                    <div className="row">
+                                       
+                                        <div className="col-md-8">
+                                            <div className="card b">
+                                                <div className="card-header">
+                                                  {/* <Chip   size="small" 
+                                                        stylee={{fontSize: 80}} 
+                                                        label="On going" 
+                                                       color="primary"
+                                
+                 
+
+                                  
+                                                        
+                                                        /> */}
+                                                        <table>
+                                                            <tbody>
+                                                            <tr style={{marginTop: 70, marginLeft: 10}}>
+                                                                {/* <td style={{backgroundColor:'rgba(0, 0, 0, 0.04);'}}>
+                                                                    <span ><ArrowDropDownIcon/></span>
+                                                                </td> */}
+                                                                <td ><span  style={{ marginLeft: 20}} className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span></td>
+                                                            </tr>
+                                                             </tbody>
+                                                        </table>
+                                                   
+                                                 {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
+                                                            showNotes={true}
+                                                            onUpdate={(id) => this.updateStatus(id)}
+                                                            //style={{marginLeft:' -50'}}
+                                                            color="primary"
+                                                            statusList={this.state.status}  status={this.state.obj.status}
+                                                            statusType="Enquiry"></Status>} 
+                                                    <div className="float-right ">
+                                                
+
+                                                        {/* <div>
+                                                            <span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span>
+                                                        </div> */}
+                                                      
+                                                            
+                                                        {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
+                                                        <Button title="Edit"  size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
+                                                        {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} style={{width:25, height:30}} src="img/quotei.png" />:'' }
+                                                             {/* <Fab   variant="contained"  aria-label="edit" size='small'>
+                                                        {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
+                                                       
+                                                            <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
+                                                            </Fab> */}
+                                                        
+                                                        {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+                                                            <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
+                                                        {this.state.obj.order &&
+                                                            <Link to={`/orders/${this.state.obj.order}`}>
+                                                                <Button title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Convert Order</span></Button>
+                                                            </Link>} */}
+                                                    </div>
+                                                    <h4 className="my-2">
+                                                        <span>{this.state.obj.name}</span>
+                                                    </h4>
                                                 </div>
-                                                <h4 className="my-2">
-                                                    <span>{this.state.obj.name}</span>
-                                                </h4>
-                                            </div>
-                                            <div className="card-body bb bt">
-                                                <table className="table">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Assigned Users</strong>
-                                                            </td>
+                                                <div className="card-body bb bt">
+                                                    <table className="table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Assigned To</strong>
+                                                                </td>
                                                                 <td>
                                                                     {this.state.objects.map((obj, i) => {
                                                                         return (
@@ -622,109 +665,97 @@ class View extends Component {
                                                                             />
                                                                         )
                                                                     })}
-
-                                                                    <Button variant="contained" color="warning" size="xs" onClick={this.toggleModalAssign}>+ Assign User</Button>
+                                                                </td>
+                                                             
+                                                                <td style={{marginRight: -170}}>
+                                                            
+                                                                    { this.props.user.role === 'ROLE_ADMIN' &&
+                                                                   
+                                                                        <Button  title="Assigned To" color="primary"  size="small" onClick={this.toggleModalAssign}>   < AddIcon  style={{color: '#000'}} fontSize="small" /></Button>}
+                                                           
                                                                 </td>
                                                             </tr>
-
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Code</strong>
-                                                            </td>
-                                                            <td>{this.state.obj.code}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Enquiry Date</strong>
-                                                            </td>
-                                                            <td><Moment format="DD MMM YY">{this.state.obj.enquiryDate}</Moment></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Company</strong>
-                                                            </td>
-                                                            <td>
-                                                                <Link to={`/companies/${this.state.obj.company.id}`}>
-                                                                    {this.state.obj.company.name}
-                                                                </Link>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Contact Name</strong>
-                                                            </td>
-                                                            <td>{this.state.obj.contactName}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Email</strong>
-                                                            </td>
-                                                            <td>{this.state.obj.email}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Phone</strong>
-                                                            </td>
-                                                            <td>{this.state.obj.phone}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Source</strong>
-                                                            </td>
-                                                            <td>{this.state.obj.source}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Enquiry Status</strong>
-                                                            </td>
-                                                            <td><span className={getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Status Notes</strong>
-                                                            </td>
-                                                            <td>{this.state.obj.statusNotes}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <strong>Description</strong>
-                                                            </td>
-                                                            <td>{this.state.obj.description}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                                <div className=" mt-4 row">
-                                                        <h4 className="col-md-9">Products</h4>
-                                                        <Button className="col-md-3" variant="contained" color="warning" size="xs" onClick={this.toggleModalNegotation}>Negotation</Button>
-                                                    </div>
-                                                <Table hover responsive>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>#</th>
-                                                            <th>Name</th>
-                                                            <th>Quantity</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    {/* <tbody>
-                                                    {this.state.obj.products.map((product, i) => {
-                                                        return (
-                                                            <tr key={i}>
-                                                                <td className="va-middle">{i + 1}</td>
+                                                            <tr>
                                                                 <td>
-                                                                    <Link to={`/products/${product.product.id}`}>
-                                                                        {product.product.name}
+                                                                    <strong>Code</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.code}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Enquiry Date</strong>
+                                                                </td>
+                                                                <td><Moment format="DD MMM YY">{this.state.obj.enquiryDate}</Moment></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Company</strong>
+                                                                </td>
+                                                                <td>
+                                                                    <Link to={`/companies/${this.state.obj.company.id}`}>
+                                                                        {this.state.obj.company.name}
                                                                     </Link>
                                                                 </td>
-                                                                <td>{product.quantity} {product.uom}</td>
-                                                                <td>{product.amount}</td>
+                                                            </tr>
+                                                            <tr>
                                                                 <td>
-                                                                    <Button variant="contained" color="inverse" size="xs" onClick={() => this.sendEmail(i)}>Send Email</Button>
+                                                                    <strong>Contact Name</strong>
                                                                 </td>
-                                                            </tr>)
-                                                        })}
-                                                    </tbody> */}
-                                                    <tbody>
+                                                                <td>{this.state.obj.contactName}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Email</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.email}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Phone</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.phone}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Source</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.source}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Enquiry Status</strong>
+                                                                </td>
+                                                                <td><span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Status Notes</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.statusNotes}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Description</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.description}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <div className=" mt-4 row">
+                                                        <h4 className="col-md-9" style={{fontSize:18}}>Products</h4>
+                                                        {/* <Button className="col-md-3" variant="contained" color="warning" size="xs" onClick={this.toggleModalNegotation}>Negotation</Button>
+                                                     */}</div>
+                                                    <Table hover responsive>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Name</th>
+                                                                <th>Quantity</th>
+                                                                <th>Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
                                                             {this.state.obj.products.map((product, i) => {
                                                                 return (
                                                                     <tr key={i}>
@@ -740,17 +771,13 @@ class View extends Component {
                                                                     </tr>)
                                                             })}
                                                         </tbody>
-                                                </Table>
+                                                    </Table>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    {/* {this.props.user.role === 'ROLE_ADMIN' &&
-                                    <div className="col-md-4">
-                                        <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
-                                                        parentObj={this.state.obj} currentId={this.props.currentId}></Assign>
-                                    </div>} */}
-                                    {this.props.user.role === 'ROLE_ADMIN' &&
-                                            <div className="col-md-4">
+                                        {
+                                            // this.props.user.role === 'ROLE_ADMIN' &&
+                                            <div className="col-md-4" >
                                                 {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
                                                     parentObj={this.state.obj} currentId={this.props.currentId}></Assign> */}
                                                 {/* <Timeline
@@ -758,26 +785,28 @@ class View extends Component {
                                                     timeline={mockTimeline}
                                                 /> */}
                                                 <ActivityStream
-                                                    title="Sales Enqiry Starts"
+                                                    title="Time Line"
                                                     stream={mockActivity}
+                                                    
                                                 />
                                             </div>}
-
-                                </div>
-                            </TabPanel>}
-                           
-                            <TabPanel value={this.state.activeTab} index={1}>
+                                    </div>
+                                </TabPanel>
+                            }  
+                               <TabPanel value={this.state.activeTab} index={1}>
+                                <Quotation baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}
+                                    currentId={this.props.currentId} parentObj={this.state.obj}></Quotation>
+                            </TabPanel>
+                            <TabPanel value={this.state.activeTab} index={2}>
                                 <Followups repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Followups> 
                             </TabPanel>
 
-                            <TabPanel value={this.state.activeTab} index={2}>
-                                <Quotation baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
-                                currentId={this.props.currentId} parentObj={this.state.obj}></Quotation>
-                            </TabPanel>
-
+                          
                             <TabPanel value={this.state.activeTab} index={3}>
                                 <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Approval> 
                             </TabPanel>
+                            <TabPanel  index={4}>
+                          </TabPanel>
                             {/*<TabPanel value={this.state.activeTab} index={3}>
                                 <Upload onRef={ref => (this.pharmauploadRef = ref)} fileFrom={this.props.baseUrl + '_Pharma'} currentId={this.props.currentId} fileTypes={this.state.pharmaFileTypes}></Upload>
                             </TabPanel>

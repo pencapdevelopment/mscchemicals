@@ -29,14 +29,23 @@ import TabPanel from '../../Common/TabPanel';
 import PageLoader from '../../Common/PageLoader';
 import AddInventory from './AddInventory';
 import Add from './Add';
+import EditIcon from '@material-ui/icons/Edit';
 import Upload from '../Common/Upload';
 import Status from '../Common/Status';
 import Followups from '../Followups/Followups';
 import ShipmentDetails from './ShipmentDetails';
- 
+import { mockActivity } from '../../Timeline';
+import { ActivityStream } from '../../Timeline';
 import Accounts from './Accounts';
 // import PurchaseDocs from './PurchaseDocs';
 import Approval from '../Approvals/Approval';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+
+import Typography from '@material-ui/core/Typography';
 // const json2csv = require('json2csv').parse;
 
 class View extends Component {
@@ -352,25 +361,48 @@ class View extends Component {
                                    
                                 </Tabs>
                             </AppBar>
+                            </div>
+                    </div>}
                             {this.state.obj &&
                             <TabPanel value={this.state.activeTab} index={0}>
-                                
-                                <div className="card b">
-                                    <div className="card-header">
-                                        <div className="float-right mt-2">
-                                        {this.state.obj.type === 'Sales' && <Button variant="contained" color="warning" size="xs" onClick={() => this.downloadInvoice()}>Download Invoice</Button> }
-                                             
-                                       {this.state.obj.status !=='Completed' &&  <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
-                                                onUpdate={(id) => this.updateStatus(id)} statusList={this.state.status} status={this.state.obj.status}
-                                                statusType="Order"></Status>}
+                             
+                                  
+                                        <div className="card b">
+                                        <div className="card-header">
+                                     
+                                        <div className=" mt-2">
+                                        <div className="row" >
+                                       
+                                        <div className="col-sm-2"><button title="status" size="small" variant="contained">Status</button></div>
+                                            <div className="col-sm-7"></div>
+                                            <div className="col-sm-1" >    <EditIcon style={{color: "#000"}} /> </div>
+                                         
+                                            <div className="col-sm-1"> <img title="downlaod invoice" src="img/download.png"/></div>
+                                            <div className="col-sm-1"><img  title="cancel order" src="img/cancel.png"/></div>
 
-                                        {this.state.obj.status !=='Completed' &&   <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button> }
+                                        {/* {this.state.obj.type === 'Sales' && <Button variant="contained" color="warning" size="xs" onClick={() => this.downloadInvoice()}>Download Invoice</Button> }
+                                              */}
+                                       {/* {this.state.obj.status !=='Completed' &&  <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
+                                                onUpdate={(id) => this.updateStatus(id)} statusList={this.state.status} status={this.state.obj.status}
+                                                statusType="Order"></Status>} */}
+
+                                        {/* {this.state.obj.status !=='Completed' &&   <Button  style={{}} variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button> }
+                                       */}
                                         </div>
                                         <h4 className="my-2">
                                             <span>{this.state.obj.name}</span>
                                         </h4>
-                                    </div>
-                                    <div className="card-body bb bt">
+                              
+                                  
+                                        </div>
+                                     </div>
+                                </div>
+                                <div className="row">
+                            <div className="col-sm-8">
+                                <div className="card b">
+                                   
+                                
+                                        <div className="card-body bb bt">
                                         <table className="table">
                                             <tbody>
                                                 <tr>
@@ -397,6 +429,22 @@ class View extends Component {
                                                         <Link to={`/companies/${this.state.obj.company.id}`}>
                                                             {this.state.obj.company.name}
                                                         </Link>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>PO Number</strong>
+                                                    </td>
+                                                    <td>
+                                                        
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>PO Date</strong>
+                                                    </td>
+                                                    <td>
+                                                      
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -431,6 +479,12 @@ class View extends Component {
                                                 </tr>
                                                 <tr>
                                                     <td>
+                                                        <strong>Instructon Name</strong>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
                                                         <strong>Terms</strong>
                                                     </td>
                                                     <td>{this.state.obj.terms}</td>
@@ -441,10 +495,38 @@ class View extends Component {
                                                     </td>
                                                     <td>{this.state.obj.billingAddress}</td>
                                                 </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Credit Limit</strong>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Bills Overdue</strong>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Total O/S</strong>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                
+
                                             </tbody>
                                         </table>
-                                        <div className="text-center mt-4">
-                                            <h4>Products</h4>
+                                        <div className="row">
+                                   
+                                   <div className="col-sm-3"><Button variant="contained" color="warning" size="xs" >Approve</Button></div>
+                                   <div className="col-sm-3"></div>
+                                   <div className="col-sm-3"></div>
+                                   <div className="col-sm-3"><Button variant="contained" color="warning" size="xs" >Hold</Button></div>
+                          
+                           </div>
+                                        <div className=" mt-4">
+                                            <h4 style={{fontSize: 18}}>Products</h4>
                                         </div>
                                         <Table hover responsive>
                                             <thead>
@@ -478,6 +560,57 @@ class View extends Component {
                                         </Table>
                                     </div>
                                 </div>
+                              
+                                        </div>
+
+                                        {
+                                            // this.props.user.role === 'ROLE_ADMIN' &&
+                                            <div className="col-md-4" >
+                                                <div className="row">
+                                                    <div className="col-sm-12">
+                                                    <Card >
+                                                    <CardActionArea>
+                                                        {/* <CardMedia
+                                                        component="img"
+                                                        alt="Contemplative Reptile"
+                                                        height="140"
+                                                        image="/static/images/cards/contemplative-reptile.jpg"
+                                                        title="Contemplative Reptile"
+                                                        /> */}
+                                                        <CardContent>
+                                                        <Typography gutterBottom variant="h5" component="h2">
+                                                        Assign User
+                                                        </Typography>
+                                                        <Typography variant="body2" color="textSecondary" component="p">
+                                                            {/* Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
+                                                            across all continents except Antarctica */}
+                                                        </Typography>
+                                                        </CardContent>
+                                                    </CardActionArea>
+                                                    <CardActions>
+                                                        {/* <Button size="small" color="primary">
+                                                            Share
+                                                        </Button>
+                                                        <Button size="small" color="primary">
+                                                           Read More
+                                                        </Button> */}
+                                                    </CardActions>
+                                                </Card>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-sm-12">
+                                                    <ActivityStream
+                                                    title="Activity"
+                                                    stream={mockActivity}
+                                                    
+                                                />
+                                                    </div>
+                                                </div>
+                                               
+                                            </div>}
+                                    </div>
+                                    
                             </TabPanel>}
                             <TabPanel value={this.state.activeTab} index={1}>
                                 <ShipmentDetails baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
@@ -511,8 +644,7 @@ class View extends Component {
                                 currentId={this.props.currentId} parentObj={this.state.obj} fileTypes={this.state.bankingFileTypes}></PurchaseDocs>
                             </TabPanel>*/}
                             
-                        </div>
-                    </div>}
+                  
                 {this.state.editFlag &&
                     <div className="card b">
                         <div className="card-body bb bt">

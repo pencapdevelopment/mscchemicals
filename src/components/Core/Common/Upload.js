@@ -290,7 +290,8 @@ class Upload extends Component {
                     <div className="col-md-12">
                         <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModal} size={'md'}>
                             <ModalHeader toggle={this.toggleModal}>
-                                Upload - {this.state.formWizard.obj.label}
+                            <img  style={{width: 20,height: 40, }} src="img/upload.jpg" />
+  - {this.state.formWizard.obj.label}
                             </ModalHeader>
                             <ModalBody>
                                 <fieldset>
@@ -356,7 +357,8 @@ class Upload extends Component {
                                             <tr key={obj.label} className={obj.noshow ? 'd-none' : ''}>
                                                 <td>{obj.label}</td>
                                                 <td>
-                                                    <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)}>Upload</Button>
+                                                    {/* <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)}>  </Button> */}
+                                                    <img onClick={() => this.editSubObj(i)}  style={{width: 20,height: 40, }} src="img/upload.jpg" />
                                                 </td>
                                                 <td>
                                                     {this.getFileName(obj.label)}

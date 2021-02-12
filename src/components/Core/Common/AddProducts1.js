@@ -15,9 +15,8 @@ export function saveProducts(baseUrl, objId, products, callBack) {
                     swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
                 })
         } else if(!prod.id || prod.updated) {
-            console.log('Testsss 123456');
             prod.reference = '/' + baseUrl + '/' + objId;
-            prod.product = '/products/' + prod.product.id;
+            prod.product = '/products/' + prod.product;
              
             var promise = undefined;
             if (!prod.id) {

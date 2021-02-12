@@ -526,7 +526,7 @@ class AddQuotation extends Component {
                                         })}
                                     </tbody>
                                 </Table>
-                            </div>
+                            </div> 
                         </div>}
 
                     <div className="text-center mt-4">

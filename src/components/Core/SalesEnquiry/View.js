@@ -27,6 +27,8 @@ import Add from './Add';
 import AddInventory from './AddInventory';
 import Quotation from './Quotation';
 import Negotiation from './Negotiation';
+import Order from './Order';
+
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
@@ -607,10 +609,10 @@ class View extends Component {
                                     onChange={(e, i) => this.toggleTab(i)} >
                                     <Tab label="Details" />
                                     <Tab label="Quotation" />
-                                    <Tab label="Negotiation" />
-                                   
+                                    <Tab label="Negotiation" />                                  
                                     <Tab label="Followups" />
                                     <Tab label="Approvals" />
+                                    <Tab label="Order" />
                                   
                                     {/* <Tab label="Inventory & Docs" />
                                    <Tab label="Pharma Documents" />
@@ -620,9 +622,8 @@ class View extends Component {
                             {this.state.obj &&
                                 <TabPanel value={this.state.activeTab} index={0}>                          
                                     <div className="row">
-                                       
-                                        <div className="col-md-8">
-                                            <div className="card b">
+                                        <div className="col-sm-12">
+                                            <div className="card">
                                                 <div className="card-header">
                                                   {/* <Chip   size="small" 
                                                         stylee={{fontSize: 80}} 
@@ -662,7 +663,7 @@ class View extends Component {
                                                             
                                                         {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
                                                         <Button title="Edit"  size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
-                                                        {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} style={{width:25, height:30}} src="img/quotei.png" />:'' }
+                                                        {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" />:'' }
                                                              {/* <Fab   variant="contained"  aria-label="edit" size='small'>
                                                         {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
                                                        
@@ -680,6 +681,14 @@ class View extends Component {
                                                         <span>{this.state.obj.name}</span>
                                                     </h4>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                       
+                                        <div className="col-md-8">
+                                            <div className="card b">
+                                                
                                                 <div className="card-body bb bt">
                                                     <table className="table">
                                                         <tbody>
@@ -710,7 +719,7 @@ class View extends Component {
                                                             
                                                                     { this.props.user.role === 'ROLE_ADMIN' &&
                                                                    
-                                                                        <Button  title="Assigned To" color="primary"  size="small" onClick={this.toggleModalAssign}>   < AddIcon  style={{color: '#000'}} fontSize="small" /></Button>}
+                                                                        <Button  title="Assigned To" color="primary"  size="small" onClick={this.toggleModalAssign}>   < AddIcon  style={{color: '#000'}} fontSize="large" /></Button>}
                                                            
                                                                 </td>
                                                             </tr>
@@ -824,7 +833,7 @@ class View extends Component {
                                                     timeline={mockTimeline}
                                                 /> */}
                                                 <ActivityStream
-                                                    title="Time Line"
+                                                    title="Activity"
                                                     stream={mockActivity}
                                                     
                                                 />
@@ -855,6 +864,10 @@ class View extends Component {
                             </TabPanel>*/}
                             <TabPanel value={this.state.activeTab} index={4}>
                                 <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)}></Approval>
+                            </TabPanel>
+                            <TabPanel value={this.state.activeTab} index={5}>
+                                <Order baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}
+                                    currentId={this.props.currentId} parentObj={this.state.obj}></Order>
                             </TabPanel>
                         </div>
                     </div>}
