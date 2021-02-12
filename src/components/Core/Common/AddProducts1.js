@@ -6,7 +6,6 @@ export function saveProducts(baseUrl, objId, products, callBack) {
     var productsUrl = server_url + context_path + "api/" + baseUrl + '-products/';
 
     products.forEach((prod, idx) => {
-        console.log("prod is"+idx,prod);
         var p = {...prod};
         if(p.delete) {
             axios.delete(productsUrl + p.id)

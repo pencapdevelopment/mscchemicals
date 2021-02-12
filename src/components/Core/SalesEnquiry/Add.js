@@ -41,6 +41,7 @@ import { Form } from 'reactstrap';
 // import FormLabel from '@material-ui/core/FormLabel';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import UOM from '../Common/UOM';
+import PageLoader from '../../Common/PageLoader';
 // const json2csv = require('json2csv').parse;
 
 class Add extends Component {
@@ -69,6 +70,7 @@ class Add extends Component {
             },
             selectedProducts: [],
         },
+        loading: false,
         objects: [],
         selectedCompanies: [],
         selectedUser: '',
@@ -131,12 +133,26 @@ class Add extends Component {
                 formWizard.obj.selectedCompany = res.data.company;
                 formWizard.obj.company = res.data.company.id;
                 this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
-
                 formWizard.obj.products.forEach((p, idx) => {
                     formWizard.selectedProducts[idx] = p;
                     this.productASRef.push(''); //this.productASRef[idx].setInitialField(p);
                 });
-                this.setState({ formWizard });
+
+                var selectedCompanies = this.state.selectedCompanies;
+                console.log("response data is",res);
+                console.log("company name is:"+res.data.selectedCompany.name+"company id is:"+res.data.selectedCompany.id);
+                selectedCompanies.push({
+                    companyId:formWizard.obj.selectedCompany.id,
+                    name:formWizard.obj.selectedCompany.name,
+                    type:'B',
+                    email:formWizard.obj.email,
+                    phone:formWizard.obj.phone,
+                    contactName:formWizard.obj.contactName,
+                    source:formWizard.obj.source,
+                    description:formWizard.obj.description
+                });
+
+                this.setState({ formWizard , selectedCompanies });
             });
     }
 
@@ -298,6 +314,9 @@ class Add extends Component {
             var assignUser=this.state.assignUser;
             assignUser='';
             this.setState({ objects,assignUser});
+            console.log("state objects",this.state.objects);
+            console.log("assign users",this.state.assignUser);
+
             // this.setState({
         //     modalassign: !this.state.modalassign
         // });
@@ -413,11 +432,10 @@ class Add extends Component {
             if (!this.state.formWizard.obj.products.length) {
                 swal("Unable to Save!", "Please add atleast one product", "error");
                 return;
-            }
-            var selectedCompanies = this.state.selectedCompanies;
-            console.log("selected companies",selectedCompanies);
+            }            
+            var selectedCompanies = this.state.selectedCompanies;         
             selectedCompanies.forEach((comps,idx) => {
-                if(idx === 0){this.setState({ loading: true });}
+                this.setState({ loading: true });
                 var newObj = {...this.state.formWizard.obj};
 
                 newObj.company = '/companies/' + comps.companyId;
@@ -433,8 +451,13 @@ class Add extends Component {
 
                 
                 var users = this.state.objects;
+                console.log("users form state objects",this.state.objects);
+
                 newObj.products = [];
-                // newObj.users = this.state.objects;
+                // newObj.users = ;
+                if (this.state.formWizard.editFlag) {
+                    newObj.users = [];
+                }
 
                 var promise = undefined;
 
@@ -445,18 +468,17 @@ class Add extends Component {
                 }
                 var that = this;
                 promise.then(res => {
+                    console.log("no error while updating",res);
                     var products = [...that.state.formWizard.obj.products];
                     if (that.state.formWizard.editFlag) {
-                        products.forEach(g => { g.updated = true; g.product = g.product.id; })
+                        products.forEach(g => { g.updated = true; })
                     }
-                    console.log("products idx"+idx,products);
                     saveProducts(this.props.baseUrl, res.data.id, products, () => {
                         if(idx === selectedCompanies.length -1){this.setState({ loading: false });}
                         this.props.onSave(res.data.id);
                     });
                     saveUsers(this.props.baseUrl, res.data.id, users, () => {
-                        if(idx === selectedCompanies.length -1){this.setState({ loading: false });}
-                        this.props.onSave(res.data.id);
+                        if(idx === selectedCompanies.length -1){this.setState({ loading: false });this.props.onSave(res.data.id);}
                     });
                 }).finally(() => {
                     if(idx === selectedCompanies.length -1){this.setState({ loading: false });}
@@ -465,7 +487,7 @@ class Add extends Component {
                     //this.setState({ addError: err.response.data.globalErrors[0] });
                     var formWizard = this.state.formWizard;
                     formWizard.globalErrors = [];
-                    if (err.response.data.globalErrors) {
+                    if (err.response.data.globalErrors) {   
                         err.response.data.fieldError.forEach(e => {
                             formWizard.globalErrors.push(e);
                         });
@@ -516,7 +538,7 @@ class Add extends Component {
 
         return (
             <ContentWrapper>
-               
+                {this.state.loading && <PageLoader />}
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="salesEnquiryForm">
                     <div className="row" style={{fontSize:"15px"}}>
                         <div className="col-md-6">
@@ -715,7 +737,7 @@ class Add extends Component {
                         <div className="col-md-4">
                             <fieldset>
                                 <TextField type="text" name="source" label="Source" required={true} fullWidth={true}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
                                     helperText={errors?.source?.length > 0 ? errors?.source[0]?.msg : ""}
                                     error={errors?.source?.length > 0}
                                     value={this.state.formWizard.obj.source} onChange={e => this.setField("source", e)} />
@@ -905,13 +927,14 @@ class Add extends Component {
                                         }}
                                         placeholder="Search User by name"
                                         arrayName="users"
-                                        helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
-                                        error={errors?.companyName_auto_suggest?.length > 0}
+                                        helperText={errors?.usersName_auto_suggest?.length > 0 ? errors?.usersName_auto_suggest[0]?.msg : ""}
+                                        error={errors?.usersName_auto_suggest?.length > 0}
                                         inputProps={{ "data-validate": '[{ "key":"required"}]' }}
                                         projection="user_details_mini"
                                         value={this.state.assignUser}
                                         onSelect={e => this.setAutoSuggestAssignUser('user', e)}
-                                        queryString="&name" ></AutoSuggest>
+                                        queryString="&name" >
+                                    </AutoSuggest>
                                 </FormControl>
                             </fieldset>
                         </div>

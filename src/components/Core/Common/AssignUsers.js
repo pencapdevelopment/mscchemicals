@@ -6,7 +6,6 @@ export function saveUsers(baseUrl, objId, users, callBack) {
     var usersUrl = server_url + context_path + "api/" + baseUrl + '-user/';
    
     users.forEach((user, idx) => {
-        console.log(user);
         if(user.delete) {
             axios.delete(usersUrl + user.id)
                 .then(res => {
@@ -15,7 +14,6 @@ export function saveUsers(baseUrl, objId, users, callBack) {
                     swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
                 })
         } else if(user.id || user.updated) {
-            console.log('Testsss 123456');
             user.reference = '/' + baseUrl + '/' + objId;
             user.user = '/users/' + user.id;
              
