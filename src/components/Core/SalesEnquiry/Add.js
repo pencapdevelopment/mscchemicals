@@ -71,7 +71,7 @@ class Add extends Component {
             selectedProducts: [],
         },
         loading: false,
-        objects: [],
+        users: [],
         selectedCompanies: [],
         selectedUser: '',
         assignUser: '',
@@ -151,8 +151,9 @@ class Add extends Component {
                     source:formWizard.obj.source,
                     description:formWizard.obj.description
                 });
+                var users = formWizard.obj.users;
 
-                this.setState({ formWizard , selectedCompanies });
+                this.setState({ formWizard , selectedCompanies,users});
             });
     }
 
@@ -238,8 +239,9 @@ class Add extends Component {
             if(this.state.formWizard.editFlag){
                 selectedCompanies = [];
             }
+            console.log("selected company",formWizard.selectedcompany);
             var exists = selectedCompanies.length>0?selectedCompanies.findIndex(c => c.companyId === formWizard.selectedcompany):-1;
-            if(formWizard.selectedcompany !== '' && formWizard.obj.contactName !== '' && formWizard.obj.source !== ''){
+            if(formWizard.selectedcompany && formWizard.obj.contactName !== '' && formWizard.obj.source !== ''){
                 if(exists === -1){
                     selectedCompanies.push({
                         companyId:formWizard.selectedcompany,
@@ -307,24 +309,18 @@ class Add extends Component {
             });
         }
         toggleModalAssign = () => {
-            var objects = this.state.objects;
-            if(this.state.assignUser !== "" && objects.indexOf(this.state.assignUser) === -1){
-                objects.push(this.state.assignUser)
+            var users = this.state.users;
+            if(Object.keys(this.state.assignUser).length !== 0 && users.findIndex(u => u.user.id === this.state.assignUser.id) === -1){
+                users.push({user:this.state.assignUser})
             };
             var assignUser=this.state.assignUser;
             assignUser='';
-            this.setState({ objects,assignUser});
-            console.log("state objects",this.state.objects);
-            console.log("assign users",this.state.assignUser);
-
-            // this.setState({
-        //     modalassign: !this.state.modalassign
-        // });
+            this.setState({ users,assignUser});
     }
     saveUser() {
-        var objects = this.state.objects;
-        objects.push(this.state.user);
-        this.setState({ objects, modalassign: !this.state.modalassign });
+        var users = this.state.users;
+        users.push({user:this.state.user});
+        this.setState({ users, modalassign: !this.state.modalassign });
     }
     handleDelete = (i) => {
         swal({
@@ -339,9 +335,9 @@ class Add extends Component {
         }).
         then(willDelete => {
             if (willDelete) {
-                var objects = this.state.objects;
-                objects.splice(i, 1);
-                this.setState({ objects });
+                var users = this.state.users;
+                users.splice(i, 1);
+                this.setState({ users });
             }
         });
     }
@@ -405,8 +401,7 @@ class Add extends Component {
         var products = formWizard.obj.products;
 
         if (products[i].id) {
-            
-            [i].delete = true;
+            products[i].delete = true;
         } else {
             products.splice(i, 1);
             formWizard.selectedProducts.splice(i, 1);
@@ -449,12 +444,7 @@ class Add extends Component {
                 newObj.phone = comps.phone;
                 newObj.source = comps.source;
 
-                
-                var users = this.state.objects;
-                console.log("users form state objects",this.state.objects);
-
                 newObj.products = [];
-                // newObj.users = ;
                 if (this.state.formWizard.editFlag) {
                     newObj.users = [];
                 }
@@ -468,10 +458,11 @@ class Add extends Component {
                 }
                 var that = this;
                 promise.then(res => {
-                    console.log("no error while updating",res);
                     var products = [...that.state.formWizard.obj.products];
+                    var users = [...this.state.users];
                     if (that.state.formWizard.editFlag) {
-                        products.forEach(g => { g.updated = true; })
+                        products.forEach(p => { p.updated = true; });
+                        users.forEach(u => { u.updated = true; })
                     }
                     saveProducts(this.props.baseUrl, res.data.id, products, () => {
                         if(idx === selectedCompanies.length -1){this.setState({ loading: false });}
@@ -951,7 +942,7 @@ class Add extends Component {
                             </div> 
                         </div>*/}   
                         <div class="col-md-9" style={{marginLeft:"4px"}}>
-                            {this.state.objects.map((obj, i) => {
+                            {this.state.users.map((u, i) => {
                                 return (
                                     <Chip
                                         avatar={
@@ -959,7 +950,7 @@ class Add extends Component {
                                                 <AssignmentIndIcon />
                                             </Avatar>
                                         }
-                                        label={obj.name}
+                                        label={u.user.name}
 
                                         // onClick={() => this.handleClick(obj)}
                                         onDelete={() => this.handleDelete(i)}

@@ -26,7 +26,7 @@ export function saveProducts(baseUrl, objId, products, callBack) {
             }
 
             promise.then(res => {
-                prod.id = res.data.id;
+                p.id = res.data.id;
             }).catch(err => {
                 swal("Unable to Save!", "Please resolve the errors", "error");
             })

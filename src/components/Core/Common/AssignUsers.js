@@ -5,27 +5,28 @@ import { context_path, server_url } from '../../Common/constants';
 export function saveUsers(baseUrl, objId, users, callBack) {
     var usersUrl = server_url + context_path + "api/" + baseUrl + '-user/';
    
-    users.forEach((user, idx) => {
-        if(user.delete) {
-            axios.delete(usersUrl + user.id)
+    users.forEach((userObj, idx) => {
+        var u = {...userObj};
+        if(u.delete) {
+            axios.delete(usersUrl + u.id)
                 .then(res => {
 
                 }).catch(err => {
                     swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
                 })
-        } else if(user.id || user.updated) {
-            user.reference = '/' + baseUrl + '/' + objId;
-            user.user = '/users/' + user.id;
+        } else if(!u.id || u.updated) {
+            u.reference = '/' + baseUrl + '/' + objId;
+            u.user = '/users/' + u.user.id;
              
             var promise = undefined;
-            if (user.id) {
-                promise = axios.post(usersUrl, user);
+            if (!u.id) {
+                promise = axios.post(usersUrl, u);
             } else {
-                promise = axios.patch(usersUrl + user.id, user);
+                promise = axios.patch(usersUrl + u.id, u);
             }
 
             promise.then(res => {
-                user.id = res.data.id;
+                u.id = res.data.id;
             }).catch(err => {
                 swal("Unable to Save!", "Please resolve the errors", "error");
             })
