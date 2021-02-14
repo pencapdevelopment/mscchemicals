@@ -58,7 +58,7 @@ class AutoSuggest extends Component {
 
   componentWillUnmount() {
     if (this.props.onRef) {
-      this.props.onRef(undefined);
+      // this.props.onRef(undefined);
     }
   }
 

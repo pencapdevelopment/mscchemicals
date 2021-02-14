@@ -428,9 +428,9 @@ class Add extends Component {
                 swal("Unable to Save!", "Please add atleast one product", "error");
                 return;
             }            
-            var selectedCompanies = this.state.selectedCompanies;         
+            var selectedCompanies = this.state.selectedCompanies; 
+            this.setState({ loading: true });        
             selectedCompanies.forEach((comps,idx) => {
-                this.setState({ loading: true });
                 var newObj = {...this.state.formWizard.obj};
 
                 newObj.company = '/companies/' + comps.companyId;
@@ -464,10 +464,7 @@ class Add extends Component {
                         products.forEach(p => { p.updated = true; });
                         users.forEach(u => { u.updated = true; })
                     }
-                    saveProducts(this.props.baseUrl, res.data.id, products, () => {
-                        if(idx === selectedCompanies.length -1){this.setState({ loading: false });}
-                        this.props.onSave(res.data.id);
-                    });
+                    saveProducts(this.props.baseUrl, res.data.id, products, () => {});
                     saveUsers(this.props.baseUrl, res.data.id, users, () => {
                         if(idx === selectedCompanies.length -1){this.setState({ loading: false });this.props.onSave(res.data.id);}
                     });
