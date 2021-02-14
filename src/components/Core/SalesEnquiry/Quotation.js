@@ -1,14 +1,21 @@
-import { Button } from '@material-ui/core';
+import { Button, FormControl, InputLabel, MenuItem, Select, TextField  } from '@material-ui/core';
 import axios from 'axios';
+import queryString from 'query-string';
+import { context_path, defaultDateFilter, server_url } from '../../Common/constants';
+import { makeStyles } from '@material-ui/core/styles';
+
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import Status from '../Common/Status';
 import { Table } from 'reactstrap';
 import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
-import Upload from '../Common/Upload';
+
 import AddQuotation from './AddQuotation';
 import Fab from '@material-ui/core/Fab';
 import EditIcon from '@material-ui/icons/Edit';
@@ -16,7 +23,11 @@ import EmailIcon from '@material-ui/icons/Email';
 import Divider from '@material-ui/core/Divider';
 import EditLocationRoundedIcon from '@material-ui/icons/EditLocationRounded';
 import AssignmentSharpIcon from '@material-ui/icons/AssignmentSharp';
-
+import {
+    Form, Modal,
+    ModalBody, ModalHeader,
+} from 'reactstrap';
+import AutoSuggest from '../../Common/AutoSuggest';
 
 
 
@@ -26,16 +37,106 @@ import AssignmentSharpIcon from '@material-ui/icons/AssignmentSharp';
 // const json2csv = require('json2csv').parse;
 
 class Quotation extends Component {
+    
     state = {
         activeTab: 0,
         editFlag: false,
         modal: false,
+        modalproduct: false,
         obj: '',
+        newObj: '',
         baseUrl: 'sales-quotation',
         currentId: '',
+        selectedStatus: '',
+        error: {},
+        selectedStatus: '',
+        statusNotes:'',
+        status: [
+            { label: 'Accepted', value: 'On going', badge: 'info' },
+            { label: 'Rejected', value: 'Rejected', badge: 'danger' },
+           
+        ]
+        
+    }
+    loadObj() {
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
+            if (res.data.paymentTerms) {
+                res.data.paymentTerms = this.state.terms.find(g => g.value === res.data.paymentTerms).label;
+            }
+
+            this.setState({ newObj: res.data,
+            loading:false
+            });
+
+            if (res.data.locationType !== 'I') {
+                if (!res.data.fssai || !res.data.drugLicense || !res.data.others) {
+                    var fileTypes1 = this.state.fileTypes1;
+
+                    if (!res.data.fssai) {
+                        fileTypes1[2].noshow = true;
+                    }
+                    if (!res.data.drugLicense) {
+                        fileTypes1[3].noshow = true;
+                    }
+
+                    if (!res.data.fssai && !res.data.drugLicense) {
+                        fileTypes1[4].noshow = false;
+                    }
+
+                    if (!res.data.others) {
+                        fileTypes1[5].noshow = true;
+                    }
+
+                    this.setState({ fileTypes1 });
+                }
+            }
+
+            // this.loadSubObjs();
+
+            if (this.props.location.search) {
+                let params = queryString.parse(this.props.location.search);
+
+                if (params.branch) {
+                    this.toggleTab(1);
+                }
+            }
+        });
     }
 
+    
+    closetoggleModal = () => {
+        this.setState({
+            modal: !this.state.modal
+        });
+    };
+    closetoggleModalProduct = () => {
+        this.setState({
+            modalproduct: !this.state.modalproduct
+        });
+    };
+    toggleModal = (label) => {
+        this.setState({
+            modal: !this.state.modal,
+            label: label
+        });
+    };
+    updateStatus = (status) => {
+        var obj = this.state.obj;
+        obj.status = status;
+        this.setState({ obj });
+    }
 
+    updateStatus = (status) => {
+        var obj = this.state.obj;
+        obj.status = status;
+        this.setState({ obj });
+    }
+
+    updateObj() {
+        this.setState({ editFlag: true }, () => {
+            this.addTemplateRef.updateObj(this.props.currentId);
+        })
+    }
     loadObj(id) {
         console.log("QUotation.js loadObj function")
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
@@ -56,6 +157,12 @@ class Quotation extends Component {
     }
 
     componentDidMount() {
+        this.props.onRef(this);
+
+        this.setState({
+            selectedStatus: this.props.status,
+            statusNotes: this.props.statusNotes
+        })
         // console.log('quotation component did mount');
         console.log("componentDidMount", this.props.currentId);
 
@@ -104,6 +211,55 @@ class Quotation extends Component {
     render() {
         return (
             <div>
+                
+               <Modal isOpen={this.state.modalproduct} backdrop="static" toggle={this.closetoggleModalProduct} size={'md'}>
+                    <ModalHeader toggle={this.closetoggleModalProduct}>
+                        Convert To Order
+                    </ModalHeader>
+                    <ModalBody>
+
+                        <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
+
+                            <div className="row">
+                                <div className="col-md-12 ">
+                                    <div className="row" >
+                                        <div className="col-md-5">
+                                        Company Name
+                                        </div>
+                                        <div className="col-md-6">
+                                        <span>{this.state.newObj.name}</span> 
+                                        </div>
+                                    </div>
+                                    <div className="row" >
+                                        <div className="col-md-5"  style={{marginTop: 20}}  >
+                                        Status
+                                        </div>
+                                        <div className="col-md-6">
+                                        <FormControl    >
+                                            <InputLabel> Status</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >Open</MenuItem>
+                                               <MenuItem value={10}>Pending</MenuItem>
+                                               <MenuItem value={20}>Accepted</MenuItem>
+                                               <MenuItem value={30}>Rejected</MenuItem>
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Form>
+                        <div className="text-center">
+                        {/* onClick={e => this.addProduct()} */}
+                            <Button variant="contained" color="primary" >Submit</Button>
+                        </div>
+                    </ModalBody>
+                </Modal>
                 {!this.state.editFlag &&
                     <div className="row">
                         <div className="col-md-12">
@@ -116,7 +272,7 @@ class Quotation extends Component {
                                 <div className="card-header">
                                 <Button title="Status" variant="contained" style={{textTransform: "none"}} color="" onClick={() => this.updateObj()}> Status</Button>
                                           <div className="float-right ">
-                                      <Button title="Edit" style={{right: -50}} color="primary" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="small" /></Button>
+                                      <Button title="Edit" style={{right: -50}} color="primary" onClick={() => this.updateOb()}> < EditIcon style={{color: "#000"}} size="small" /></Button>
                                     
                                
                                     {/* {this.props.parentObj.products.map((product, i) => {
@@ -131,7 +287,7 @@ class Quotation extends Component {
                                    
                                  
                                     <Button  title=" SendEmail "style={{right: -30}} color="primary" onClick={() => this.sendEmail()}> <EmailIcon style={{ color: '#000' }} color="primary" size="large" /></Button>
-                                    <Button title="Convert order" style={{right: -1}} color="#3f51b5" > <AssignmentSharpIcon /></Button>
+                                    <Button title="Convert order" style={{right: -1}} color="#3f51b5"  onClick={e => this.closetoggleModalProduct()} > <AssignmentSharpIcon /></Button>
                          
                                 
                                           </div>

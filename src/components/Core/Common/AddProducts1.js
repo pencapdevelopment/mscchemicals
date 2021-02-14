@@ -4,30 +4,29 @@ import { context_path, server_url } from '../../Common/constants';
 
 export function saveProducts(baseUrl, objId, products, callBack) {
     var productsUrl = server_url + context_path + "api/" + baseUrl + '-products/';
-   
+
     products.forEach((prod, idx) => {
-        console.log(prod);
-        if(prod.delete) {
-            axios.delete(productsUrl + prod.id)
+        var p = {...prod};
+        if(p.delete) {
+            axios.delete(productsUrl + p.id)
                 .then(res => {
 
                 }).catch(err => {
                     swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
                 })
-        } else if(!prod.id || prod.updated) {
-            console.log('Testsss 123456');
-            prod.reference = '/' + baseUrl + '/' + objId;
-            prod.product = '/products/' + prod.product.id;
+        } else if(!p.id || p.updated) {
+            p.reference = '/' + baseUrl + '/' + objId;
+            p.product = '/products/' + p.product.id;
              
             var promise = undefined;
-            if (!prod.id) {
-                promise = axios.post(productsUrl, prod);
+            if (!p.id) {
+                promise = axios.post(productsUrl, p);
             } else {
-                promise = axios.patch(productsUrl + prod.id, prod);
+                promise = axios.patch(productsUrl + p.id, p);
             }
 
             promise.then(res => {
-                prod.id = res.data.id;
+                p.id = res.data.id;
             }).catch(err => {
                 swal("Unable to Save!", "Please resolve the errors", "error");
             })
