@@ -33,11 +33,11 @@ export const APP_MEDIAQUERY = {
 
 
 //Local Server (Change localhost to system IP to connect with other computer which has server)
-// export const server_url = 'http://Localhost:8080/';
+// export const server_url = 'http://localhost:8080/';
+
 
 //Remote Server 
-//  export const server_url = 'http://139.59.10.206:8080/';
-export const server_url = '/';
+ export const server_url = 'http://139.59.10.206:8080/';
 
  //Server Context path
  export const context_path = 'msc-api/';
