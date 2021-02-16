@@ -33,7 +33,7 @@ export const APP_MEDIAQUERY = {
 
 
 //Local Server (Change localhost to system IP to connect with other computer which has server)
-// export const server_url = 'http://localhost:8080/';
+//export const server_url = 'http://localhost:8080/';
 
 
 //Remote Server 

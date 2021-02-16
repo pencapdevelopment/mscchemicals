@@ -25,7 +25,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import Divider from '@material-ui/core/Divider';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
-
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 
 
@@ -40,13 +40,18 @@ class Negotiation extends Component {
         editFlag: false,
         modal: false,
         obj: '',
+        obj1:'',
         obj2:'',
         obj3:'',
         obj4:'',
+        remark:'',
         baseUrl: 'sales-quotation',
         currentId: '',
         modalnegatation: false,
         modalRemark : false,
+        obj4:{
+            remark:'',
+        }
       
     }
 
@@ -63,15 +68,64 @@ class Negotiation extends Component {
         });
     }
 
+    loadObj1(id) {
+        axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
+            console.log("loadObj1 Products", res.data)
+            this.setState({ obj1: res.data });
+        });
+
+       
+    }
+
+    saveNegotiation= (productsid) => {
+        console.log(" save negotiation", productsid);
+        var obj2=this.state.obj3;
+        console.log(" before assign save negotiation obj2==>", obj2);
+        obj2.product = "/products/"+obj2.product.id;
+        obj2.reference = "/sales/"+this.state.obj1.id;
+        obj2.sales_product = "/sales-product/"+obj2.id;
+       
+        console.log("with remark product values===>", obj2);    
+        
+       // console.log("without remark product values===>",obj6);
+        //axios.patch(server_url + context_path + "api/sales-products/"+productsid, obj5)
+       
+        
+        axios.patch(server_url + context_path + "api/sales-products/"+productsid,obj2).then(res => {
+                       
+                        console.log("patch data of sales-products data==>", res.data)
+                    });
+                   if(obj2)
+                   {
+
+                    obj2.remark=this.state.obj4.remark;  
+
+             axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2).then(res => {
+                        console.log("axios.get  Negotations toggleModal Negotations==>", res.data)
+                        console.log("sales-negotiation-tracking data==>", res.data)
+                        
+                            this.setState({obj2: res.data, modalnegatation:false, loading: false });
+                        });           
+                    }
+                }
+
     toggleModalNegotation = (productId) => {
         console.log("toggleModalNegotation calling ",productId )
         console.log("toggleModalNegotation calling ",productId )
 
        
 
-        axios.get( server_url + context_path + "api/sales-products/"+ productId ).then(res => {
+        // axios.get( server_url + context_path + "api/sales-products/"+ productId ).then(res => {
+        //     console.log("toggleModal Negotations==>", res.data)
+        //     console.log("toggleModal Negotations==>", res.data.amount)
+          
+        //         this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
+        //     });
+        axios.get( server_url + context_path + "api/sales-products/"+ productId+"?projection=sales-product" ).then(res => {
             console.log("toggleModal Negotations==>", res.data)
             console.log("toggleModal Negotations==>", res.data.amount)
+            var product = this.props.parentObj.products.find(p => p.id === res.data.id);
+            console.log("product from parent", product)
           
                 this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
             });
@@ -96,6 +150,12 @@ class Negotiation extends Component {
          });
     }
 
+    componentDidUpdate(){
+        console.log("componentDidUpdate", this.state.obj2);
+        console.log("Negotiation.js.. modalnegatation:- ", this.state.modalnegatation)
+    }
+
+
     toggleRemark = () => {
         this.setState({
            modalRemark: false
@@ -111,9 +171,19 @@ class Negotiation extends Component {
         // console.log('quotation component did mount');
         console.log("componentDidMount Negotiation", this.props.currentId);
 
-       
+        this.loadObj1(this.props.currentId);
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
+        
+        axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user?projection=" +
+            this.props.baseUrl + "-user&reference=" + this.props.currentId).then(res => {
+                this.setState({
+                    objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                    page: res.data.page,
+                    loading:false
+                });
+            });
+
     }
 
     updateObj() {
@@ -133,6 +203,59 @@ class Negotiation extends Component {
 
     cancelSave = () => {
         this.setState({ editFlag: false });
+    }
+
+    saveProduct(e) {
+        console.log("saveProduct");
+        var obj3 = this.state.obj2;
+        console.log("saveProduct", obj3);
+        var input=e.target;
+        obj3.amount=input.value;
+        //obj3.uom=input.value;
+        // var newData1=this.state.obj2.amount;
+        // if(newData1){
+           
+        // }
+        this.setState({obj3});
+
+    }
+
+    saveUom(e) {
+        console.log("saveUom");
+        var obj3 = this.state.obj2;
+        var input=e.target;
+        //obj3.amount=input.value;
+        obj3.uom=input.value;
+        // var newData1=this.state.obj2.amount;
+        // if(newData1){
+           
+        // }
+        this.setState({obj3});
+
+    }
+
+    saveQuantity(e) {
+        console.log("saveUom");
+        var obj3 = this.state.obj2;
+        var input=e.target;
+        //obj3.amount=input.value;
+        obj3.quantity=input.value;
+        // var newData1=this.state.obj2.amount;
+        // if(newData1){
+           
+        // }
+        this.setState({obj3});
+
+    }
+
+    saveRemark(e){
+        console.log("saveRemark");
+        var obj4= this.state.obj4;
+        var input=e.target;
+        obj4.remark=input.value;
+        this.setState({obj4})
+        console.log("save Remark value===>", obj4);
+
     }
 
     sendEmail = (i) => {
@@ -206,7 +329,9 @@ class Negotiation extends Component {
                                                                     inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
                                                                     // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
                                                                     // error={errors?.quantity?.length > 0}
-                                                                    value={this.state.obj2.quantity} //onChange={e => this.setProductField(i, "quantity", e)}
+                                                                    value={this.state.obj2.quantity} 
+                                                                    onChange={(e)=>this.saveQuantity(e)}
+                                                                    //onChange={e => this.setProductField(i, "quantity", e)}
                                                                      />
                                                             </fieldset>
                                                         </td>
@@ -214,7 +339,8 @@ class Negotiation extends Component {
                                                             <fieldset>
 
                                                                 <UOM required={true}
-                                                                    value={this.state.obj2.uom} //onChange={e => this.setProductField(i, "uom", e, true)}
+                                                                    value={this.state.obj2.uom} onChange={(e)=>this.saveUom(e)}
+                                                                    //onChange={e => this.setProductField(i, "uom", e, true)}
                                                                      />
                                                             </fieldset>
                                                         </td>
@@ -241,6 +367,18 @@ class Negotiation extends Component {
                                     </Table>
                                 </div>
                             </div>
+                            <div className="col-md-5  offset-md-3 " style={{marginTop:"-30px",marginBottom:"-3px"}}>
+                            <fieldset>
+                                <TextareaAutosize placeholder="Remark" fullWidth={true} rowsMin={3} name="remark"
+                                   style={{padding: 10}}
+                                //    inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
+                                //     helperText={errors?.description?.length > 0 ? errors?.description[0]?.msg : ""}
+                                //     error={errors?.description?.length > 0}
+                                    value={this.state.obj4.remark} onChange={(e) => this.saveRemark(e)}
+                                    />
+                            </fieldset>
+                            </div>
+
                         <div className="text-center">
                             <Button variant="contained" color="primary" onClick={()=>this.saveNegotiation(this.state.obj2.id)} >Save</Button>
                         </div>
