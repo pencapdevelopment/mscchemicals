@@ -183,23 +183,23 @@ class View extends Component {
                 closeModal: true,
             }
         })
-            .then(willDelete => {
-                if (willDelete) {
-                    axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
-                        .then(res => {
-                            var objects = this.state.objects;
+        .then(willDelete => {
+            if (willDelete) {
+                axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
+                    .then(res => {
+                        var objects = this.state.objects;
 
-                            objects.splice(i, 1);
+                        objects.splice(i, 1);
 
-                            this.setState({ objects });
-                        }).finally(() => {
-                            this.setState({ loading: false });
-                        }).catch(err => {
-                            this.setState({ deleteError: err.response.data.globalErrors[0] });
-                            swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
-                        })
-                }
-            });
+                        this.setState({ objects });
+                    }).finally(() => {
+                        this.setState({ loading: false });
+                    }).catch(err => {
+                        this.setState({ deleteError: err.response.data.globalErrors[0] });
+                        swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
+                    })
+            }
+        });
     }
     saveUser() {
         var user = {
