@@ -2,6 +2,15 @@ import { Button } from '@material-ui/core';
 import axios from 'axios';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
+import {
+    Modal,
+
+    ModalBody, ModalHeader,
+} from 'reactstrap';
+import { context_path, getUniqueCode, server_url, defaultDateFilter } from '../../Common/constants';
+import AutoSuggest from '../../Common/AutoSuggest';
+import UOM from '../Common/UOM';
+import { AppBar, Tab, Tabs, FormControl, TextField } from '@material-ui/core';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -31,8 +40,14 @@ class Negotiation extends Component {
         editFlag: false,
         modal: false,
         obj: '',
+        obj2:'',
+        obj3:'',
+        obj4:'',
         baseUrl: 'sales-quotation',
         currentId: '',
+        modalnegatation: false,
+        modalRemark : false,
+      
     }
 
 
@@ -47,6 +62,46 @@ class Negotiation extends Component {
             }
         });
     }
+
+    toggleModalNegotation = (productId) => {
+        console.log("toggleModalNegotation calling ",productId )
+        console.log("toggleModalNegotation calling ",productId )
+
+       
+
+        axios.get( server_url + context_path + "api/sales-products/"+ productId ).then(res => {
+            console.log("toggleModal Negotations==>", res.data)
+            console.log("toggleModal Negotations==>", res.data.amount)
+          
+                this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
+            });
+
+            }
+ 
+    
+    toggleRemarkNegotiation = (productId) => {
+        axios.get( server_url + context_path + "api/sales-products/"+ productId ).then(res => {
+            console.log("toggleRemarkNegotiation==>", res.data)
+            console.log("toggleRemarkNegotiation==>", res.data)
+          
+                this.setState({ obj4: res.data, modalRemark:!this.state.modalRemark });
+            });
+
+        
+    }
+
+    toggleModalNegotation1= () => {
+        this.setState({
+            modalnegatation: false
+         });
+    }
+
+    toggleRemark = () => {
+        this.setState({
+           modalRemark: false
+        });
+    };
+
 
     componentWillUnmount() {
         this.props.onRef(undefined);
@@ -99,6 +154,186 @@ class Negotiation extends Component {
     render() {
         return (
             <div>
+                <Modal isOpen={this.state.modalnegatation} backdrop="static" toggle={this.toggleModalNegotation1} size={'lg'}>
+                     <ModalHeader toggle={this.toggleModalNegotation1}>
+                        Negotation Products : {this.state.obj2.id}
+                    </ModalHeader> 
+                    <ModalBody>
+                   
+                            <div className="row">
+                                <div className="col-md-12">
+                                    <Table hover responsive>
+                                        <tbody>
+                                        {this.props.parentObj.products.map((product, i) => {
+                                            return(<div>
+                                            {product.id===this.state.obj2.id &&
+                                       
+                                               
+                                                    <tr key={i}>
+                                                        <td className="va-middle">{i + 1}</td>
+                                                        <td className="va-middle">
+                                                            <fieldset>
+                                                                <FormControl>
+                                                                   
+                                                                        <Link to={`/products/${product.product.id}`}>
+                                                                            {product.product.name}
+                                                                        </Link>
+                                                                    
+                                                                    {!this.state.obj2.id &&
+                                                                        <AutoSuggest url="products"
+                                                                            name="productName"
+                                                                            fullWidth={true}
+                                                                            displayColumns="name"
+                                                                            label="Product"
+                                                                            placeholder="Search product by name"
+                                                                            arrayName="products"
+                                                                            // helperText={errors?.productName_auto_suggest?.length > 0 ? errors?.productName_auto_suggest[i]?.msg : ""}
+                                                                            // error={errors?.productName_auto_suggest?.length > 0}
+                                                                            inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                                           // onRef={ref => (this.productASRef[i] = ref)}
+
+                                                                            projection="product_auto_suggest"
+                                                                            //value={this.state.formWizard.selectedProducts[i]}
+                                                                            //onSelect={e => this.setProductAutoSuggest(i, e?.id)}
+                                                                            queryString="&name" ></AutoSuggest>}
+                                                                </FormControl>
+                                                            </fieldset>
+                                                        </td>
+                                                        <td>
+                                                            <fieldset>
+
+                                                                <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
+                                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                                    // error={errors?.quantity?.length > 0}
+                                                                    value={this.state.obj2.quantity} //onChange={e => this.setProductField(i, "quantity", e)}
+                                                                     />
+                                                            </fieldset>
+                                                        </td>
+                                                        <td>
+                                                            <fieldset>
+
+                                                                <UOM required={true}
+                                                                    value={this.state.obj2.uom} //onChange={e => this.setProductField(i, "uom", e, true)}
+                                                                     />
+                                                            </fieldset>
+                                                        </td>
+                                                        <td>
+                                                            <fieldset>
+
+                                                                <TextField type="number" name="amount" label="Amount" required={true}
+                                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
+                                                                    // error={errors?.amount?.length > 0}
+                                                                    value={this.state.obj2.amount} onChange={(e)=>this.saveProduct(e)} />
+                                                            </fieldset>
+                                                        </td>
+                                                        <td className="va-middle">
+                                                            {/* <Button variant="outlined" color="secondary" size="sm" onClick={e => this.deleteProduct(i)} title="Delete Product">
+                                                                <em className="fas fa-trash"></em>
+                                                            </Button> */}
+                                                        </td>
+                                                    </tr>
+                                            }</div>);
+                                        })}
+                                     
+                                        </tbody>
+                                    </Table>
+                                </div>
+                            </div>
+                        <div className="text-center">
+                            <Button variant="contained" color="primary" onClick={()=>this.saveNegotiation(this.state.obj2.id)} >Save</Button>
+                        </div>
+                    </ModalBody>
+                </Modal>
+  <Modal isOpen={this.state.modalRemark} backdrop="static" toggle={this.toggleRemark} size={'md'}>
+  
+                    
+                    <ModalHeader toggle={this.toggleRemark}>
+                    <span ><b>Remarks </b>
+                       </span>
+                       <hr style={{ width: "400px", border: "0.5px solid rgba(0, 0, 0, 0.42)" }}></hr>
+                    
+                   
+                   
+                    {this.props.parentObj.products.map((product, i) => {
+                                            return(<div>
+                    
+                                            {product.id===this.state.obj4.id && 
+                                             <td>
+                                                Product Name :  
+                                             <Link to= {`/products/${product.product.id}`}>
+                                                 {product.product.name}
+                                                 
+                                             </Link>
+                                         </td> }</div>)})}  
+                                         Product Id :    {this.state.obj4.id}
+                    </ModalHeader>
+                    <ModalBody>
+                        <Table style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
+                            <tbody>
+                                <tr style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }} >
+                                    <td style={{ width: '35px' ,border: '1px solid rgba(0, 0, 0, 0.42)'}}>Negotiation</td>
+                                    {this.props.parentObj.products.map((product, i) => {
+                                        return (
+                                            <div >
+                                                {product.id === this.state.obj4.id &&
+                                                    <td  >
+
+                                                        {!product.status && '-No Remarks-'}
+                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
+
+                                                    </td>
+                                                }
+                                            </div>
+                                        )
+                                    })}
+                                </tr>
+                                <tr style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
+                                    <td style={{ width: '35px', border: '1px solid rgba(0, 0, 0, 0.42)' }}>Negotiation
+                                    Stage 1
+                                 </td>
+                                    {this.props.parentObj.products.map((product, i) => {
+                                        return (
+                                            <div >
+                                                {product.id === this.state.obj4.id &&
+                                                    <td  >
+
+                                                        {!product.status && '-No Remarks-'}
+                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
+
+                                                    </td>
+                                                }
+                                            </div>
+                                        )
+                                    })}
+                                </tr>
+
+                                <tr style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }} >
+                                    <td style={{ width: '35px', border: '1px solid rgba(0, 0, 0, 0.42)' }}>Negotiation
+                                    Stage 2
+                             </td>
+                                    {this.props.parentObj.products.map((product, i) => {
+                                        return (
+                                            <div>
+                                                {product.id === this.state.obj4.id &&
+                                                    <td>
+
+                                                        {!product.status && '-No Remarks-'}
+                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
+
+                                                    </td>
+                                                }
+                                            </div>
+                                        )
+                                    })}
+
+                                </tr>
+
+                            </tbody>
+                        </Table>
+                    </ModalBody>
+                </Modal>
                 <div className="row">
                     <div className="col-sm-12">
                     <div className="card b">
@@ -134,6 +369,7 @@ class Negotiation extends Component {
                 </div>
                 {!this.state.editFlag &&
                     <div className="row">
+                        
                         <div className="col-md-12">
                             {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
                             currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
@@ -169,22 +405,24 @@ class Negotiation extends Component {
                                         <tbody>
                                         {this.props.parentObj.products.map((product, i) => {
                                             return (
+                                                
                                                 <tr key={i}>
                                                     <td className="va-middle">{i + 1}</td>
                                                     <td>
                                                         <Link to={`/products/${product.product.id}`}>
                                                             {product.product.name}
+                                                            
                                                         </Link>
                                                     </td>
                                                     <td>{product.quantity}</td>
                                                     <td>{product.amount}</td>
                                                    
                                                     <td style={{marginLeft: 10}}>
-                                                    <button className="btn btn-primary" >< VisibilityRoundedIcon  size="medium" style={{marginLeft: 20}} color="primary" aria-label=" VisibilityRoundedIcon" /></button>
+                                                    <button className="btn btn-primary"  onClick={()=>this.toggleRemarkNegotiation(product.id)}  >< VisibilityRoundedIcon  size="medium" style={{marginLeft: 20}} color="primary" aria-label=" VisibilityRoundedIcon" /></button>
                                                     </td>
                                                     <td>
                                                         
-                                                    <Button color='primary' size='small' variant="contained">Negotiation</Button>
+                                                    <Button color='primary' size='small'  onClick={()=>this.toggleModalNegotation(product.id)} variant="contained">Negotiation</Button>
                                                     </td>
                                                     <td>
                                                         {!product.status && '-NA-'}
@@ -193,7 +431,8 @@ class Negotiation extends Component {
                                                     {/* <td>
                                                         <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                     </td> */}
-                                                </tr>)
+                                                </tr>
+                                            )
                                             })}
                                         </tbody>}
                                     </Table>
