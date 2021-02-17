@@ -120,7 +120,6 @@ class PurchaseEnquiry extends Component {
                                 <View baseUrl={this.state.baseUrl} onRef={ref => (this.viewTemplateRef = ref)} 
                                 onUpdateRequest={id => this.updateObj(id)} currentId={this.state.currentId} location={this.props.location}></View>
                             </TabPanel>
-
                         </div>
                     </div>
                 </div>}

@@ -127,7 +127,7 @@ class View extends Component {
             { label: 'ISOUSFDA', expiryDate: false },
             { label: 'Other Country certificate', expiryDate: false },
         ],
-        objects: [],
+        users: [],
         page: {
             number: 0,
             size: 20,
@@ -164,8 +164,7 @@ class View extends Component {
     handleDelete = (i) => 
     {
         console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
-        var user = this.state.objects[i];
-
+        var user = this.state.users[i];
         swal({
             title: "Are you sure?",
             text: "You will not be able to recover this user assignment!",
@@ -176,23 +175,21 @@ class View extends Component {
                 closeModal: true,
             }
         })
-            .then(willDelete => {
-                if (willDelete) {
-                    axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
-                        .then(res => {
-                            var objects = this.state.objects;
-
-                            objects.splice(i, 1);
-
-                            this.setState({ objects });
-                        }).finally(() => {
-                            this.setState({ loading: false });
-                        }).catch(err => {
-                            this.setState({ deleteError: err.response.data.globalErrors[0] });
-                            swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
-                        })
-                }
-            });
+        .then(willDelete => {
+            if (willDelete) {
+                axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
+                    .then(res => {
+                        var users = this.state.users;
+                        users.splice(i, 1);
+                        this.setState({ users });
+                    }).finally(() => {
+                        this.setState({ loading: false });
+                    }).catch(err => {
+                        this.setState({ deleteError: err.response.data.globalErrors[0] });
+                        swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
+                    })
+            }
+        });
     }
 
     handleGenerateQuote(){
@@ -216,7 +213,7 @@ class View extends Component {
                         specification: '',
                         make: '',
                         packing: '',
-                        gst: compRes.data.gstin,
+                        gst: '',
                         amount: '',
                         transportationCharges: '',
                         terms: compRes.data.paymentTerms,
@@ -278,20 +275,17 @@ class View extends Component {
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
 
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if (e) {
             filters[field + 'Date'] = e.format();
         } else {
             filters[field + 'Date'] = null;
         }
-
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
 
@@ -335,11 +329,9 @@ class View extends Component {
             })
     }
 
-
-
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
-            this.setState({ obj: res.data });
+            this.setState({ obj: res.data, users:res.data.users, loading: false});
         });
     }
 
@@ -354,7 +346,7 @@ class View extends Component {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user?projection=" +
             this.props.baseUrl + "-user&reference=" + id).then(res => {
             this.setState({
-                objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                users: res.data._embedded[Object.keys(res.data._embedded)[0]],
                 page: res.data.page,
                 loading: false
             });
@@ -366,13 +358,11 @@ class View extends Component {
     }
 
     componentDidMount() {
-
         this.loadObj(this.props.currentId);
         this.QuotationsCount(this.props.currentId);
         // this.loadSubObjs();
         this.props.onRef(this);
         this.setState({ loading: true });
-        this.loadAssignedUsers(this.props.currentId);
     }
 
     updateStatus = (status) => {
@@ -697,7 +687,7 @@ class View extends Component {
                                                                     <strong>Assigned To</strong>
                                                                 </td>
                                                                 <td>
-                                                                    {this.state.objects.map((obj, i) => {
+                                                                    {this.state.users.map((obj, i) => {
                                                                         return (
                                                                             <Chip
                                                                                 avatar={
