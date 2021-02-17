@@ -168,12 +168,12 @@ const Menu = [
         path: '/profile',
         icon: 'fa fa-user'
     },
-    // {
-    //     name: 'Reports',
-    //     path: '/reports',
-    //     icon: 'fa fa-signal',
-    //     role: 'ROLE_ADMIN'
-    // },
+    {
+        name: 'Reports',
+        path: '/reports',
+        icon: 'fa fa-signal',
+        role: 'ROLE_ADMIN'
+    },
 
 
     // {
@@ -188,18 +188,18 @@ const Menu = [
     //     icon: 'icon-layers',
     //     role: 'ROLE_ADMIN'
     // },
-    // {
-    //     name: 'Feedbacks',
-    //     path: '/feedbacks',
-    //     icon: 'fa fa-copy',
-    //     role: 'ROLE_ADMIN'
-    // },
-    // {
-    //     name: 'Subscribers',
-    //     path: '/subscribers',
-    //     icon: 'icon-envelope',
-    //     role: 'ROLE_ADMIN'
-    // },
+    {
+        name: 'Feedbacks',
+        path: '/feedbacks',
+        icon: 'fa fa-copy',
+        role: 'ROLE_ADMIN'
+    },
+    {
+        name: 'Subscribers',
+        path: '/subscribers',
+        icon: 'icon-envelope',
+        role: 'ROLE_ADMIN'
+    },
 ];
 
 export default Menu;

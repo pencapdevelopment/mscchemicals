@@ -1211,12 +1211,12 @@ class Add extends Component {
                                 variant="contained"
                                 component="label"> Select File
                                     <input type="file" id="fileUpload"
-                                    name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
+                                    name="fileUpload" accept='.doc,.docx,.pdf,.jpg,.png'
                                     onChange={e => this.fileSelected('fileUpload', e)}
                                     style={{ display: "none" }} />
                             </Button>{this.state.name}
                         </fieldset>
-                        <span>*Please upload .doc,.docx,.pdf,.png,.jpg files only</span>
+                        <span>*Please upload .doc,.docx,.pdf,.jpg,.png files only</span>
                         {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
                         <fieldset>
                             <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -1851,7 +1851,7 @@ class Add extends Component {
                                                                 onClick={e => this.toggleModal('GST')}
                                                                 className={this.state.classes.button + " col-md-2 p-2"}
                                                             > */}
-                                                            <img onClick={e => this.toggleModal('GST')} className="col-sm-1 p-2" style={{width: 20,height: 40, marginTop: 15}} src="img/upload.jpg" />
+                                                            <img onClick={e => this.toggleModal('GST')} className="col-sm-1 p-2"  src="img/upload.png" />
                                                                 {/*  </Button> */}
                                                         </div> :
                                                             null}
@@ -1877,7 +1877,7 @@ class Add extends Component {
                                                                 className={this.state.classes.button + " col-md-4 p-2"}
                                                             >
                                                                 Upload </Button> */}
-                                                                  <img onClick={e => this.toggleModal('PAN')} className="col-sm-1 p-2" style={{width: 20,height: 40, marginTop: 15}} src="img/upload.jpg" />
+                                                                  <img onClick={e => this.toggleModal('PAN')} className="col-sm-1 p-2"  src="img/upload.png" />
                                                         </div> : null}
                                                     </fieldset>
                                                     <fieldset >
@@ -1901,7 +1901,7 @@ class Add extends Component {
                                                                     className={this.state.classes.button + " col-md-4 p-2"}
                                                                 >
                                                                 Upload </Button> */}
-                                                                  <img onClick={e => this.toggleModal('Fssai')} className="col-sm-1 p-2" style={{width: 20,height: 40, marginTop: 15}} src="img/upload.jpg" />
+                                                                  <img onClick={e => this.toggleModal('Fssai')} className="col-sm-1 p-2" src="img/upload.png" />
                                                         </div> :
                                                             null}
 
@@ -1925,7 +1925,7 @@ class Add extends Component {
                                                                 className={this.state.classes.button + " col-md-4 p-0"}
                                                             >
                                                                 Upload </Button> */}
-                                                                  <img onClick={e => this.toggleModal('Drug License')} className="col-sm-1 p-2" style={{width: 20,height: 40, marginTop: 15}} src="img/upload.jpg" />
+                                                                  <img onClick={e => this.toggleModal('Drug License')} className="col-sm-1 p-2"  src="img/upload.png" />
                                                         </div>
                                                     </fieldset>
                                                     <fieldset>
@@ -1948,7 +1948,7 @@ class Add extends Component {
                                                                 className={this.state.classes.button + " col-md-4 p-2"}
                                                             >
                                                                 Upload </Button> */}
-                                                                  <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2" style={{width: 20,height: 40, marginTop: 15}} src="img/upload.jpg" />
+                                                                  <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" />
                                                         </div> : null}
                                                     </fieldset>
                                                     {/* <fieldset>
@@ -2017,7 +2017,7 @@ class Add extends Component {
                                                                 inputProps={{ minLength: 0, maxLength: 35 }}
                                                                 value={this.state.formWizard.obj.msmeId}
                                                                 onChange={e => this.setField('msmeId', e)} />
-                                                          <img onClick={e => this.toggleModal('Msme ')} className="col-sm-1 p-2" style={{width: 20,height: 40, marginTop: 15}} src="img/upload.jpg" />
+                                                          <img onClick={e => this.toggleModal('Msme ')} className="col-sm-1 p-2"   src="img/upload.png" />
                                                         </div>
                                                     </fieldset>}
 

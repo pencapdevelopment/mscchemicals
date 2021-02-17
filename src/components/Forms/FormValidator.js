@@ -22,6 +22,7 @@ const FormValidator = {
         if (!name) throw new Error('Input name must not be empty.');
 
         // use getAttribute to support IE10+
+        console.log("element is:",element);
          const validations = JSON.parse(element.getAttribute('data-validate'));
         
         let result = []
@@ -36,6 +37,11 @@ const FormValidator = {
                         if(isCheckbox ? value === false : validator.isEmpty(value)){
                             result.push({key:m.key,msg:'this field is required'});
                         }
+                        case 'city':
+
+                            if(isCheckbox ? value === false : validator.isEmpty(value)){
+                                result.push({key:m.key,msg:'please enter a valid City'});
+                            }
                         break;
                     case 'phone':
                         var isValid3 =  !validator.isNumeric(value);

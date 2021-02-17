@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     '&::before': {
       content: '""',
       position: 'absolute',
-      top: '4px',
+      top: '44px',
       bottom: 0,
       [theme.breakpoints.down('sm')]: {
         left: '44px'
@@ -43,9 +43,9 @@ const useStyles = makeStyles(theme => ({
 const ActivityStream = ({ title, stream }) => {
   const classes = useStyles();
   return (
-    <div className={classes.stream}>
+    <div className={classes.stream} style={{marginTop: -16}}>
       <div className={classes.card}>
-      <Button  className="mt-2" title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}> {title}</span></Button>
+      <Button  className="mt-2" title="Convert to order"  style={{marginLeft: 38,  backgroundColor:"yellow"}}  size="small"><span style={{  textTransform: 'none', fontWeight: 'normal', }}> {title}</span></Button>
                                                           
         {/* <Button  style={{textTransform: 'none',fontWeight: 'normal'}} variant="contained" color="">
           {title}

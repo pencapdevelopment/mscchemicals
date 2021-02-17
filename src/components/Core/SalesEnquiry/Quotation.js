@@ -27,9 +27,25 @@ import {
     Form, Modal,
     ModalBody, ModalHeader,
 } from 'reactstrap';
-import AutoSuggest from '../../Common/AutoSuggest';
+import { green, pink } from '@material-ui/core/colors';
+import Avatar from '@material-ui/core/Avatar';
 
-
+const useStyles = makeStyles((theme) => ({
+    root: {
+      display: 'flex',
+      '& > *': {
+        margin: theme.spacing(1),
+      },
+    },
+    pink: {
+      color: theme.palette.getContrastText(pink[500]),
+      backgroundColor: pink[500],
+    },
+    green: {
+      color: '#fff',
+      backgroundColor: green[500],
+    },
+  }));
 
 
 
@@ -209,6 +225,7 @@ class Quotation extends Component {
     }
 
     render() {
+        
         return (
             <div>
                 
@@ -270,11 +287,32 @@ class Quotation extends Component {
                             {this.state.obj &&
                             <div className="card b">
                                 <div className="card-header">
-                                <Button title="Status" variant="contained" style={{textTransform: "none"}} color="" onClick={() => this.updateObj()}> Status</Button>
-                                          <div className="float-right ">
-                                      <Button title="Edit" style={{right: -50}} color="primary" onClick={() => this.updateOb()}> < EditIcon style={{color: "#000"}} size="small" /></Button>
+                                    <div className="">
+                                              <div className="row">
+                                                  <div className="col-sm-9">
+                                                     <Button title="Status" variant="contained" style={{textTransform: "none"}} color=""  size="small" onClick={() => this.updateObj()}> Status</Button>
                                     
-                               
+                                                  </div>
+                                                  <div className="col-sm-1">
+                                                        <span title="Edit"  onClick={() => this.updateObj()}>
+                                                                <Avatar style={{left: 100}}
+                                                                    size='extrasmall'
+                                                                    fontSize="small"
+                                                                >
+                                                                <EditIcon style={{color: "#000",  }} size="extrasmall"  fontSize="small" />
+                                                                </Avatar>    
+                                                        </span>
+                                                    </div>
+                                                      <div className="col-sm-1" style={{left: 60}}>                   
+                                                        <span  title=" SendEmail " onClick={() => this.sendEmail()}> 
+                                                        <Avatar fontSize="small">  <EmailIcon style={{ color: '#000' }} color="primary" size="small" fontSize="small" /> </Avatar>
+                                                        </span>
+                                                      </div>
+                                                      <div className="col-sm-1">
+                                                        <span title="Convert order"  color="#3f51b5"  > <Avatar  style={{left: 20}} fontSize="small"> <AssignmentSharpIcon style={{ color: '#000', }} size="small"  fontSize="small" /> </Avatar></span>                        
+                                                      </div>
+                                              </div>
+                                     
                                     {/* {this.props.parentObj.products.map((product, i) => {
                                             return (
                                                 
@@ -286,10 +324,8 @@ class Quotation extends Component {
                                             })} */}
                                    
                                  
-                                    <Button  title=" SendEmail "style={{right: -30}} color="primary" onClick={() => this.sendEmail()}> <EmailIcon style={{ color: '#000' }} color="primary" size="large" /></Button>
-                                    <Button title="Convert order" style={{right: -1}} color="#3f51b5"  onClick={e => this.closetoggleModalProduct()} > <AssignmentSharpIcon /></Button>
-                         
-                                
+                              
+                                    {/* onClick={e => this.closetoggleModalProduct()} */}
                                           </div>
                                           <div className=" mt-2" style={{right: 1}}>
                                           

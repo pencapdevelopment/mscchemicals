@@ -611,13 +611,7 @@ class Add extends Component {
                                         />
                                     </RadioGroup>
                                 </FormControl>
-                                {/* <FormControl>
-                                    <TextField id="contactName" name="contactName" label="Contact Name" type="text"
-                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
-                                        helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
-                                        error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
-                                        defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
-                                </FormControl> */}
+                               
                             </fieldset>
                         </div>
                     </div>

@@ -327,8 +327,10 @@ class ProspectiveBuyerAdd extends Component {
                                     name="city"
                                     required={true}
                                     fullWidth={true}
-                                    readOnly={true}
-                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    readOnly={false}
+                                    inputProps={{maxLength: 30, "data-validate":'[{ "key":"city"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]'  }}
+                                    helperText={errors?.city?.length > 0 ? errors?.city[0]?.msg : ""}
+                                    error={errors?.city?.length > 0}
                                     value={this.state.formWizard.obj.city}
                                     onChange={e => this.setField('city', e)} />
                             </fieldset>
@@ -336,11 +338,13 @@ class ProspectiveBuyerAdd extends Component {
                             <fieldset>
                                 <TextField
                                     type="text"
-                                    name="Phone"
-                                    label="Phone"
+                                    name="phone"
+                                    label="phone"
                                     required={true}
                                     fullWidth={true}
-                                    inputProps={{ maxLength: 13 }}
+                                    inputProps={{ maxLength: 13, "data-validate": '[{ "key":"phone"}]'  }}
+                                    helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ""}
+                                    error={errors?.phone?.length > 0}
                                     value={this.state.formWizard.obj.phone}
                                     onChange={e => this.setField('phone', e)} />
                             </fieldset>

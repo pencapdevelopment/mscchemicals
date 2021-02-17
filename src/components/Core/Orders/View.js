@@ -44,8 +44,9 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-
+import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider'
 // const json2csv = require('json2csv').parse;
 
 class View extends Component {
@@ -373,12 +374,12 @@ class View extends Component {
                                         <div className=" mt-2">
                                         <div className="row" >
                                        
-                                        <div className="col-sm-2"><button title="status" size="small" variant="contained">Status</button></div>
+                                        <div className="col-sm-2"><Button title="status" size="small" variant="contained">Status</Button></div>
                                             <div className="col-sm-7"></div>
-                                            <div className="col-sm-1" >    <EditIcon style={{color: "#000"}} /> </div>
+                                            <div className="col-sm-1" style={{left: 110}} > <Avatar  style={{backgroundColor:"#93ed94"}} >   <EditIcon style={{color: "#000"}} fontSize="small" /></Avatar> </div>
                                          
-                                            <div className="col-sm-1"> <img title="downlaod invoice" src="img/download.png"/></div>
-                                            <div className="col-sm-1"><img  title="cancel order" src="img/cancel.png"/></div>
+                                            <div className="col-sm-1" style={{left: 70}}><Avatar  style={{backgroundColor:"#93ed94"}}> <img style={{width: 25, height: 27, float: 'center', }} title="downlaod invoice" src="img/download.png"/></Avatar></div>
+                                            <div className="col-sm-1" style={{left: 30}}><Avatar  style={{backgroundColor:"#93ed94"}}><img  title="cancel order" src="img/cancel.png"/></Avatar></div>
 
                                         {/* {this.state.obj.type === 'Sales' && <Button variant="contained" color="warning" size="xs" onClick={() => this.downloadInvoice()}>Download Invoice</Button> }
                                               */}
@@ -479,7 +480,7 @@ class View extends Component {
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <strong>Instructon Name</strong>
+                                                        <strong>Instructons</strong>
                                                     </td>
                                                     <td></td>
                                                 </tr>
@@ -494,6 +495,12 @@ class View extends Component {
                                                         <strong>Billing Address</strong>
                                                     </td>
                                                     <td>{this.state.obj.billingAddress}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Assigned User</strong>
+                                                    </td>
+                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
@@ -517,7 +524,7 @@ class View extends Component {
 
                                             </tbody>
                                         </table>
-                                        <div className="row">
+                                        <div className="row" style={{marginTop: 10, marginLeft: 2}}>
                                    
                                    <div className="col-sm-3"><Button variant="contained" color="warning" size="xs" >Approve</Button></div>
                                    <div className="col-sm-3"></div>
@@ -525,8 +532,11 @@ class View extends Component {
                                    <div className="col-sm-3"><Button variant="contained" color="warning" size="xs" >Hold</Button></div>
                           
                            </div>
+                           <Divider 
+                           style={{marginTop: 5}}
+                           />
                                         <div className=" mt-4">
-                                            <h4 style={{fontSize: 18}}>Products</h4>
+                                            <h4 style={{fontSize: 14}}>Products</h4>
                                         </div>
                                         <Table hover responsive>
                                             <thead>

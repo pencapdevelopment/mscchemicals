@@ -18,6 +18,7 @@ import Products from './Products';
 import EditIcon from '@material-ui/icons/Edit';
 import { Table } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
+import Avatar from '@material-ui/core/Avatar';
 
 
 
@@ -304,7 +305,7 @@ class View extends Component {
                                                 </div>
                                                 <div className="col-sm-1">
                                                      <div className="float-right mt-2">                                                              
-                                                        <Button title="Company Details" color="warning" size="xs" onClick={() => this.updateObj()}><EditIcon style={{color:'#000'}} /></Button>
+                                                        <Button title="Company Details" color="warning" size="xs" onClick={() => this.updateObj()}><Avatar ><EditIcon style={{color:'#000'}}  fontSize="small" /> </Avatar></Button>
                                                     </div>
                                                 </div>
                                             </div>

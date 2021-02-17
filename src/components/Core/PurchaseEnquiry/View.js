@@ -43,6 +43,7 @@ import Status from '../Common/Status';
 //import Assign from '../Common/Assign';
 import Followups from '../Followups/Followups';
 import Quotation from './Quotation';
+import Order from './Order';
 import { createOrder } from '../Orders/Create';
 // const json2csv = require('json2csv').parse;
 class View extends Component {
@@ -559,7 +560,7 @@ class View extends Component {
                                                             <span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span>
                                                         </div> */}
                                                         {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
-                                                        <Button title="Edit"  size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
+                                                        <Button title="Edit" fontSize="small"  variant="contained" size="small" onClick={() => this.updateObj()}>Edit</Button>}
                                                         {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} style={{width:25, height:30}} src="img/quotei.png" />:'' }
                                                              {/* <Fab   variant="contained"  aria-label="edit" size='small'>
                                                         {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
@@ -607,9 +608,13 @@ class View extends Component {
                                                                         )
                                                                     })}
                                                                 </td>
-                                                                <td style={{marginRight: -170}}>
+                                                             
+                                                                <td>
+                                                            
                                                                     { this.props.user.role === 'ROLE_ADMIN' &&
-                                                                        <Button  title="Assigned To" color="primary"  size="small" onClick={this.toggleModalAssign}>   < AddIcon  style={{color: '#000'}} fontSize="small" /></Button>}
+                                                                   
+                                                                        <Button   style={{marginRight: -50}} title="Assigned To" color=""  variant="contained" fontSize="small"  size="small" onClick={this.toggleModalAssign}> + Add </Button>}
+                                                           
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -722,7 +727,7 @@ class View extends Component {
                                                     timeline={mockTimeline}
                                                 /> */}
                                                 <ActivityStream
-                                                    title="Time Line"
+                                                    title="Activity"
                                                     stream={mockActivity}
                                                     
                                                 />
@@ -740,8 +745,12 @@ class View extends Component {
                             <TabPanel value={this.state.activeTab} index={3}>
                                 <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Approval> 
                             </TabPanel>
-                            <TabPanel  index={4}>
-                          </TabPanel>
+                            {/* <TabPanel  index={4}>
+                          </TabPanel> */}
+                          <TabPanel value={this.state.activeTab} index={4}>
+                                <Order baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}
+                                    currentId={this.props.currentId} parentObj={this.state.obj}></Order>
+                            </TabPanel>
                             {/*<TabPanel value={this.state.activeTab} index={3}>
                                 <Upload onRef={ref => (this.pharmauploadRef = ref)} fileFrom={this.props.baseUrl + '_Pharma'} currentId={this.props.currentId} fileTypes={this.state.pharmaFileTypes}></Upload>
                             </TabPanel>

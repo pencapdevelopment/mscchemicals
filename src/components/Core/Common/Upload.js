@@ -358,7 +358,7 @@ class Upload extends Component {
                                                 <td>{obj.label}</td>
                                                 <td>
                                                     {/* <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)}>  </Button> */}
-                                                    <img onClick={() => this.editSubObj(i)}  style={{width: 20,height: 40, }} src="img/upload.jpg" />
+                                                    <img onClick={() => this.editSubObj(i)}  src="img/upload.png" /> 
                                                 </td>
                                                 <td>
                                                     {this.getFileName(obj.label)}

@@ -20,9 +20,7 @@ import 'react-datetime/css/react-datetime.css';
 import Status from '../Common/Status';
 import Followups from '../Followups/Followups';
 import { createOrder } from '../Orders/Create';
-import EditIcon from '@material-ui/icons/Edit';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Fab from '@material-ui/core/Fab';
+
 import Add from './Add';
 import AddInventory from './AddInventory';
 import Quotation from './Quotation';
@@ -36,9 +34,7 @@ import AutoSuggest from '../../Common/AutoSuggest';
 import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
-import AddIcon from '@material-ui/icons/Add';
-import EditLocationRoundedIcon from '@material-ui/icons/EditLocationRounded';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+
 // const json2csv = require('json2csv').parse;
 
 class View extends Component {
@@ -555,7 +551,7 @@ class View extends Component {
                         </div>
                     </ModalBody>
                 </Modal>
-                <Modal isOpen={this.state.modalassign} toggle={this.toggleModalAssign} size={'md'}>
+                <Modal isOpen={this.state.modalassign} toggle={this.toggleModalAssign} size={'md'} >
                     <ModalHeader toggle={this.toggleModalAssign}>
                         Assign User
                     </ModalHeader>
@@ -652,7 +648,7 @@ class View extends Component {
                                                       
                                                             
                                                         {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
-                                                        <Button title="Edit"  size="small" onClick={() => this.updateObj()}> < EditIcon style={{color: "#000"}} size="xs" /></Button>}
+                                                        <Button title="Edit"  size="small" variant="contained" onClick={() => this.updateObj()}> Edit</Button>}
                                                         {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" />:'' }
                                                              {/* <Fab   variant="contained"  aria-label="edit" size='small'>
                                                         {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
@@ -709,7 +705,7 @@ class View extends Component {
                                                             
                                                                     { this.props.user.role === 'ROLE_ADMIN' &&
                                                                    
-                                                                        <Button  title="Assigned To" color="primary"  size="small" onClick={this.toggleModalAssign}>   < AddIcon  style={{color: '#000'}} fontSize="large" /></Button>}
+                                                                        <Button  title="Assigned To" variant="contained"   size="small" onClick={this.toggleModalAssign}> + Add </Button>}
                                                            
                                                                 </td>
                                                             </tr>
@@ -823,9 +819,11 @@ class View extends Component {
                                                     timeline={mockTimeline}
                                                 /> */}
                                                 <ActivityStream
+                                                    style={{marginLeft: 400,}}
                                                     title="Activity"
                                                     stream={mockActivity}
-                                                    
+                                             
+                                                   
                                                 />
                                             </div>}
                                     </div>
