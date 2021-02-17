@@ -74,23 +74,7 @@ class Negotiation extends Component {
                 console.log("if negotiation.js", list)
             }
         });
-        // axios.get( server_url + context_path + "api/sales-negotiation-tracking?projection=sales-negotiation-tracking").then(res => {
-        //     var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
-        //     console.log("first ngList loadObj... negotiation.js", ngList)
-
-        //     if(ngList.length>0){
-        //       this.setState({
-        //         ngTracking:ngList
-        //     });
-        //     }else{
-        //         console.log("ngList")
-        //         this.setState({
-        //            page:  <Span2>No Records Found</Span2>
-        //             //
-        //         }); 
-        //     }
-            
-        // });   
+           
     }
 
     negotiationTraking(){
@@ -107,7 +91,7 @@ class Negotiation extends Component {
                 console.log("ngList")
                 this.setState({
                    page:  <Span2>No Records Found</Span2>
-                    //
+                    
                 }); 
             }
             
