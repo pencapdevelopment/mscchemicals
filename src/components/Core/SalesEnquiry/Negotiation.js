@@ -56,6 +56,7 @@ class Negotiation extends Component {
         currentId: '',
         modalnegatation: false,
         modalRemark : false,
+        ngList:'',
         obj4:{
             remark:'',
         }
@@ -73,13 +74,34 @@ class Negotiation extends Component {
                 console.log("if negotiation.js", list)
             }
         });
+        // axios.get( server_url + context_path + "api/sales-negotiation-tracking?projection=sales-negotiation-tracking").then(res => {
+        //     var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
+        //     console.log("first ngList loadObj... negotiation.js", ngList)
+
+        //     if(ngList.length>0){
+        //       this.setState({
+        //         ngTracking:ngList
+        //     });
+        //     }else{
+        //         console.log("ngList")
+        //         this.setState({
+        //            page:  <Span2>No Records Found</Span2>
+        //             //
+        //         }); 
+        //     }
+            
+        // });   
+    }
+
+    negotiationTraking(){
         axios.get( server_url + context_path + "api/sales-negotiation-tracking?projection=sales-negotiation-tracking").then(res => {
             var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
             console.log("first ngList loadObj... negotiation.js", ngList)
 
             if(ngList.length>0){
+                console.log("negotiationTraking() ngList")
               this.setState({
-                ngTracking:ngList
+                ngTracking:ngList, page:''
             });
             }else{
                 console.log("ngList")
@@ -143,6 +165,7 @@ class Negotiation extends Component {
                             
                             
                             this.loadObj1(this.props.currentId);
+                            this.negotiationTraking();
                             console.log("after componentDidMount")
                         });           
                     }
@@ -215,6 +238,8 @@ class Negotiation extends Component {
         console.log("componentDidMount Negotiation", this.props.currentId);
         this.loadObj(this.props.currentId);
         this.loadObj1(this.props.currentId);
+        this.negotiationTraking();
+        
         //this.loadObj2(this.props.currentId);
         this.props.onRef(this);
         
