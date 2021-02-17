@@ -27,6 +27,8 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import PageLoader from '../../Common/PageLoader';
+// import CustomPagination from '../../Common/CustomPagination';
+import styled from "styled-components";
 
 
 
@@ -46,6 +48,8 @@ class Negotiation extends Component {
         obj2:'',
         obj3:'',
         obj4:'',
+        page:'',
+        ngTracking : [],
         remark:'',
         loadData:false,
         baseUrl: 'sales-quotation',
@@ -69,6 +73,23 @@ class Negotiation extends Component {
                 console.log("if negotiation.js", list)
             }
         });
+        axios.get( server_url + context_path + "api/sales-negotiation-tracking?projection=sales-negotiation-tracking").then(res => {
+            var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            console.log("first ngList loadObj... negotiation.js", ngList)
+
+            if(ngList.length>0){
+              this.setState({
+                ngTracking:ngList
+            });
+            }else{
+                console.log("ngList")
+                this.setState({
+                   page:  <Span2>No Records Found</Span2>
+                    //
+                }); 
+            }
+            
+        });   
     }
 
     loadObj1(id) {
@@ -201,7 +222,6 @@ class Negotiation extends Component {
             this.props.baseUrl + "-user&reference=" + this.props.currentId).then(res => {
                 this.setState({
                     objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                    page: res.data.page,
                     loading:false
                 });
             });
@@ -625,19 +645,32 @@ class Negotiation extends Component {
                                             </tr>                                         
                                         </thead>
                                        
-                                        {this.state.obj.products &&
                                         <tbody>
-                                        {this.props.parentObj.products.map((product, i) => {
-                                            return (
-                                                <tr key={i}>
+                                            
+                                            
+                                            {this.state.ngTracking.map((product, i) => {
+                                                return (
                                                     
-                                                    {/* <td>
-                                                        <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
-                                                    </td> */}
-                                                </tr>)
-                                            })}
-                                        </tbody>}
+                                                    <tr key={i}>
+                                                        <td className="va-middle">{i + 1}</td>
+                                                        <td>
+                                                        <Link to={`/products/${product.product.id}`}>
+                                                        {product.product.name}
+                                                                
+                                                            </Link>
+                                                            </td>
+                                                        <td>{product.quantity}</td>
+                                                        <td>{product.amount}</td>
+                                                        <td>{product.negotiation}</td>
+                                                        <td>{product.negotiation_stage1}</td>
+                                                        <td>{product.negotiation_stage2}</td>
+                                                    </tr>
+                                                )
+                                                })}
+                                            </tbody>
                                     </Table>
+                                    <div className ="row text-center">{this.state.page}</div>
+                              
                                     
                                 </div>
                             </div>}
@@ -666,3 +699,17 @@ const mapStateToProps = state => ({
 export default connect(
     mapStateToProps
 )(Negotiation);
+
+const Span1 = styled.span`
+    padding-top: 1em;
+    white-space: nowrap;
+    float: left;
+  `;
+
+const Span2 = styled.span`
+    padding-top: 1em;
+    white-space: nowrap;
+    font-size: 16px;
+    margin-left : auto;
+    margin-right:auto;
+  `;
