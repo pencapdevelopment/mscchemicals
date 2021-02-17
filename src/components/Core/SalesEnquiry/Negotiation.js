@@ -26,6 +26,7 @@ import Divider from '@material-ui/core/Divider';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import PageLoader from '../../Common/PageLoader';
 
 
 
@@ -39,12 +40,14 @@ class Negotiation extends Component {
         activeTab: 0,
         editFlag: false,
         modal: false,
+        loading:false,
         obj: '',
         obj1:'',
         obj2:'',
         obj3:'',
         obj4:'',
         remark:'',
+        loadData:false,
         baseUrl: 'sales-quotation',
         currentId: '',
         modalnegatation: false,
@@ -59,7 +62,7 @@ class Negotiation extends Component {
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
-            console.log("negotiation.js", list)
+            console.log("loadObj negotiation.js", list)
 
             if(list.length) {
                 this.setState({ obj: list[0], currentId: list[0].id });
@@ -76,6 +79,17 @@ class Negotiation extends Component {
 
        
     }
+
+    // loadObj2(id) {
+    //     axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
+    //         var newData=res.data;
+    //         this.setState({ obj: newData });
+    //     });
+    // }
+
+
+
+
 
     saveNegotiation= (productsid) => {
         console.log(" save negotiation", productsid);
@@ -104,9 +118,16 @@ class Negotiation extends Component {
                         console.log("axios.get  Negotations toggleModal Negotations==>", res.data)
                         console.log("sales-negotiation-tracking data==>", res.data)
                         
-                            this.setState({obj2: res.data, modalnegatation:false, loading: false });
+                            this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true });
+                            
+                            
+                            this.loadObj1(this.props.currentId);
+                            console.log("after componentDidMount")
                         });           
                     }
+                    // this.componentDidMount();
+                    
+                   
                 }
 
     toggleModalNegotation = (productId) => {
@@ -129,6 +150,7 @@ class Negotiation extends Component {
           
                 this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
             });
+           
 
             }
  
@@ -170,9 +192,9 @@ class Negotiation extends Component {
     componentDidMount() {
         // console.log('quotation component did mount');
         console.log("componentDidMount Negotiation", this.props.currentId);
-
-        this.loadObj1(this.props.currentId);
         this.loadObj(this.props.currentId);
+        this.loadObj1(this.props.currentId);
+        //this.loadObj2(this.props.currentId);
         this.props.onRef(this);
         
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user?projection=" +
@@ -277,6 +299,7 @@ class Negotiation extends Component {
     render() {
         return (
             <div>
+                {this.state.loading && <PageLoader />}
                 <Modal isOpen={this.state.modalnegatation} backdrop="static" toggle={this.toggleModalNegotation1} size={'lg'}>
                      <ModalHeader toggle={this.toggleModalNegotation1}>
                         Negotation Products : {this.state.obj2.id}
@@ -532,16 +555,15 @@ class Negotiation extends Component {
                                                 <th>Name</th>
                                                 <th>Quantity</th>
                                                 <th>Amount</th>
-                                              
                                                 <th> View Remark</th>
                                                 <th>Actions</th>
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
                                        
-                                        {this.state.obj.products &&
+                                        {this.state.obj1.products &&
                                         <tbody>
-                                        {this.props.parentObj.products.map((product, i) => {
+                                        {this.state.obj1.products.map((product, i) => {
                                             return (
                                                 
                                                 <tr key={i}>
