@@ -56,9 +56,16 @@ class Negotiation extends Component {
         currentId: '',
         modalnegatation: false,
         modalRemark : false,
-        ngList:'',
-        obj4:{
+        ngList1:{
+                negotiation_stage1:'',
+                negotiation_stage2:'',
+                negotiation_stage3:'',
+                remark:''
+        },
+       
+        remarkObj:{
             remark:'',
+           
         }
       
     }
@@ -80,7 +87,7 @@ class Negotiation extends Component {
     negotiationTraking(){
         axios.get( server_url + context_path + "api/sales-negotiation-tracking?projection=sales-negotiation-tracking").then(res => {
             var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
-            console.log("first ngList loadObj... negotiation.js", ngList)
+            console.log("negotiationTraking Data==>", ngList)
 
             if(ngList.length>0){
                 console.log("negotiationTraking() ngList")
@@ -120,11 +127,16 @@ class Negotiation extends Component {
 
     saveNegotiation= (productsid) => {
         console.log(" save negotiation", productsid);
-        var obj2=this.state.obj3;
+        var obj2=this.state.obj2;
         console.log(" before assign save negotiation obj2==>", obj2);
         obj2.product = "/products/"+obj2.product.id;
         obj2.reference = "/sales/"+this.state.obj1.id;
-        obj2.sales_product = "/sales-product/"+obj2.id;
+        obj2.salesProduct = "/sales-product/"+obj2.id;
+        obj2.remark=this.state.ngList1.remark;  
+        obj2.negotiation_stage1=this.state.ngList1.negotiation_stage1;
+        obj2.negotiation_stage2=this.state.ngList1.negotiation_stage2;
+        obj2.negotiation_stage3=this.state.ngList1.negotiation_stage3;
+        
        
         console.log("with remark product values===>", obj2);    
         
@@ -132,14 +144,14 @@ class Negotiation extends Component {
         //axios.patch(server_url + context_path + "api/sales-products/"+productsid, obj5)
        
         
-        axios.patch(server_url + context_path + "api/sales-products/"+productsid,obj2).then(res => {
+        // axios.patch(server_url + context_path + "api/sales-products/"+productsid,obj2).then(res => {
                        
-                        console.log("patch data of sales-products data==>", res.data)
-                    });
-                   if(obj2)
-                   {
+        //                 console.log("patch data of sales-products data==>", res.data)
+        //             });
+                //    if(obj2)
+                //    {
 
-                    obj2.remark=this.state.obj4.remark;  
+                    
 
              axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2).then(res => {
                         console.log("axios.get  Negotations toggleModal Negotations==>", res.data)
@@ -152,15 +164,16 @@ class Negotiation extends Component {
                             this.negotiationTraking();
                             console.log("after componentDidMount")
                         });           
-                    }
+                    //}
                     // this.componentDidMount();
                     
                    
                 }
 
     toggleModalNegotation = (productId) => {
-        console.log("toggleModalNegotation calling ",productId )
-        console.log("toggleModalNegotation calling ",productId )
+        console.log("toggleModalNegotation calling productId=> ",productId )
+        //console.log("toggleModalNegotation calling p==> ",p )
+        
 
        
 
@@ -178,7 +191,24 @@ class Negotiation extends Component {
           
                 this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
             });
-           
+            
+            axios.get( server_url + context_path + "api/sales-negotiation-tracking?salesProduct="+productId+"&page=0&size=1&sort=id,desc&projection=sales-negotiation-tracking").then(res => {
+                
+                //var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
+                var ngList=res.data._embedded[Object.keys(res.data._embedded)[0]];
+                console.log("negotiationTraking Data ngList==>", ngList)
+                if(ngList.length){
+                    this.setState({ ngList1:ngList[0]},()=>{console.log("After Setting State==>", this.state.ngList1)});
+                }else{
+                    this.setState({
+                        ngList1:{negotiation_stage1:'',
+                        negotiation_stage2:'',
+                        negotiation_stage3:'',
+                        remark:''
+                    }
+                    })
+                }
+            });            
 
             }
  
@@ -256,58 +286,93 @@ class Negotiation extends Component {
         this.setState({ editFlag: false });
     }
 
-    saveProduct(e) {
-        console.log("saveProduct");
-        var obj3 = this.state.obj2;
-        console.log("saveProduct", obj3);
-        var input=e.target;
-        obj3.amount=input.value;
-        //obj3.uom=input.value;
-        // var newData1=this.state.obj2.amount;
-        // if(newData1){
+    // saveProduct(e) {
+    //     console.log("saveProduct");
+    //     var obj3 = this.state.obj2;
+    //     console.log("saveProduct", obj3);
+    //     var input=e.target;
+    //     obj3.amount=input.value;
+    //     //obj3.uom=input.value;
+    //     // var newData1=this.state.obj2.amount;
+    //     // if(newData1){
            
-        // }
-        this.setState({obj3});
+    //     // }
+    //     this.setState({obj3});
 
-    }
+    // }
 
-    saveUom(e) {
-        console.log("saveUom");
-        var obj3 = this.state.obj2;
-        var input=e.target;
-        //obj3.amount=input.value;
-        obj3.uom=input.value;
-        // var newData1=this.state.obj2.amount;
-        // if(newData1){
+    // saveUom(e) {
+    //     console.log("saveUom");
+    //     var obj3 = this.state.obj2;
+    //     var input=e.target;
+    //     //obj3.amount=input.value;
+    //     obj3.uom=input.value;
+    //     // var newData1=this.state.obj2.amount;
+    //     // if(newData1){
            
-        // }
-        this.setState({obj3});
+    //     // }
+    //     this.setState({obj3});
 
-    }
+    // }
 
-    saveQuantity(e) {
-        console.log("saveUom");
-        var obj3 = this.state.obj2;
-        var input=e.target;
-        //obj3.amount=input.value;
-        obj3.quantity=input.value;
-        // var newData1=this.state.obj2.amount;
-        // if(newData1){
+    // saveQuantity(e) {
+    //     console.log("saveUom");
+    //     var obj3 = this.state.obj2;
+    //     var input=e.target;
+    //     //obj3.amount=input.value;
+    //     obj3.quantity=input.value;
+    //     // var newData1=this.state.obj2.amount;
+    //     // if(newData1){
            
-        // }
-        this.setState({obj3});
+    //     // }
+    //     this.setState({obj3});
 
-    }
+    // }
 
     saveRemark(e){
         console.log("saveRemark");
-        var obj4= this.state.obj4;
+        var ngList1= this.state.ngList1;
         var input=e.target;
-        obj4.remark=input.value;
-        this.setState({obj4})
-        console.log("save Remark value===>", obj4);
+        ngList1.remark=input.value;
+        this.setState({ngList1})
+        console.log("save Remark value===>", ngList1);
 
     }
+
+    negotiation_stage1(e){
+        console.log("savenegotiation_stage1");
+        var ngList1=this.state.ngList1;
+        var input=e.target;
+        ngList1.negotiation_stage1=input.value;
+        this.setState({
+            ngList1
+        });
+        console.log("saveNgAmount==>", ngList1);
+    }
+    
+
+    negotiation_stage2(e){
+        console.log("negotiation_stage2");
+        var ngList1=this.state.ngList1;
+        var input=e.target;
+        ngList1.negotiation_stage2=input.value;
+        this.setState({
+            ngList1
+        });
+        console.log("saveNgAmount==>", ngList1);
+    }
+
+    negotiation_stage3(e){
+        console.log("negotiation_stage2");
+        var ngList1=this.state.ngList1;
+        var input=e.target;
+        ngList1.negotiation_stage3=input.value;
+        this.setState({
+            ngList1
+        });
+        console.log("saveNgAmount==>", ngList1);
+    }
+
 
     sendEmail = (i) => {
         var obj = this.state.obj;
@@ -378,7 +443,8 @@ class Negotiation extends Component {
                                                             <fieldset>
 
                                                                 <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
-                                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    inputProps={{ readOnly: true }}
                                                                     // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
                                                                     // error={errors?.quantity?.length > 0}
                                                                     value={this.state.obj2.quantity} 
@@ -400,25 +466,78 @@ class Negotiation extends Component {
                                                             <fieldset>
 
                                                                 <TextField type="number" name="amount" label="Amount" required={true}
-                                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    inputProps={{ readOnly: true }}
+                                                                    //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
                                                                     // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
                                                                     // error={errors?.amount?.length > 0}
                                                                     value={this.state.obj2.amount} onChange={(e)=>this.saveProduct(e)} />
                                                             </fieldset>
                                                         </td>
-                                                        <td className="va-middle">
+                                                     <td className="va-middle">
                                                             {/* <Button variant="outlined" color="secondary" size="sm" onClick={e => this.deleteProduct(i)} title="Delete Product">
                                                                 <em className="fas fa-trash"></em>
                                                             </Button> */}
                                                         </td>
                                                     </tr>
+                                                       
+                                                    
                                             }</div>);
                                         })}
-                                     
+                                         
+                                      
                                         </tbody>
                                     </Table>
                                 </div>
                             </div>
+
+                     <div>
+
+                                                
+                           <div>     
+                            <div className="row">
+                            
+                                <div className="col-md-4">
+                                    <strong>Negotiation Stage1 :</strong>
+                                </div>
+                              <div className="col-md-5">  
+                              {this.state.ngList1.negotiation_stage1===''?
+                                      <TextField type="number" name="negotiation_stage1" label="Amount" required={true} 
+                                      value={this.state.ngList1.negotiation_stage1} onChange={(e) => this.negotiation_stage1(e)}/>:
+
+                                     <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  inputProps={{ readOnly: true }}
+                                      value={this.state.ngList1.negotiation_stage1} onChange={(e) => this.negotiation_stage1(e)}/>}
+                             </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-md-4">
+                                    <strong>Negotiation Stage2 :</strong>
+                                </div>
+                              <div className="col-md-5">    
+                                      <TextField type="number" name="negotiation_stage2" label="Amount" required={true} 
+                                      value={this.state.ngList1.negotiation_stage2} onChange={(e) => this.negotiation_stage2(e)}/>
+                             </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-md-4">
+                                    <strong>Negotiation Stage3 :</strong>
+                                </div>
+                              <div className="col-md-5">    
+                                      <TextField type="number" name="negotiation_stage3" label="Amount" required={true} 
+                                      value={this.state.ngList1.negotiation_stage3} onChange={(e) => this.negotiation_stage3(e)}/>
+                             </div>
+                                        
+                            </div>
+                            </div>
+                            
+
+                    </div>
+
+
+
+                            <br/><br/><br/>
+                              
                             <div className="col-md-5  offset-md-3 " style={{marginTop:"-30px",marginBottom:"-3px"}}>
                             <fieldset>
                                 <TextareaAutosize placeholder="Remark" fullWidth={true} rowsMin={3} name="remark"
@@ -426,17 +545,19 @@ class Negotiation extends Component {
                                 //    inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
                                 //     helperText={errors?.description?.length > 0 ? errors?.description[0]?.msg : ""}
                                 //     error={errors?.description?.length > 0}
-                                    value={this.state.obj4.remark} onChange={(e) => this.saveRemark(e)}
+                                    value={this.state.ngList1.remark} onChange={(e) => this.saveRemark(e)}
                                     />
                             </fieldset>
                             </div>
+
+                           
 
                         <div className="text-center">
                             <Button variant="contained" color="primary" onClick={()=>this.saveNegotiation(this.state.obj2.id)} >Save</Button>
                         </div>
                     </ModalBody>
                 </Modal>
-  <Modal isOpen={this.state.modalRemark} backdrop="static" toggle={this.toggleRemark} size={'md'}>
+             <Modal isOpen={this.state.modalRemark} backdrop="static" toggle={this.toggleRemark} size={'md'}>
   
                     
                     <ModalHeader toggle={this.toggleRemark}>
@@ -584,7 +705,7 @@ class Negotiation extends Component {
                                                 <th>Name</th>
                                                 <th>Quantity</th>
                                                 <th>Amount</th>
-                                                <th> View Remark</th>
+                                                <th>View Remark</th>
                                                 <th>Actions</th>
                                                 <th>Status</th>
                                             </tr>
@@ -648,9 +769,9 @@ class Negotiation extends Component {
                                                 <th>Product</th>
                                                 <th>Quantity</th>
                                                 <th>Price Quoted</th>
-                                                <th>Negotiation</th>
                                                 <th>Negotiation Stage 1</th>
                                                 <th>Negotiation Stage 2</th>
+                                                <th>Negotiation Stage 3</th>
                                             </tr>                                         
                                         </thead>
                                        
@@ -670,9 +791,9 @@ class Negotiation extends Component {
                                                             </td>
                                                         <td>{product.quantity}</td>
                                                         <td>{product.amount}</td>
-                                                        <td>{product.negotiation}</td>
                                                         <td>{product.negotiation_stage1}</td>
                                                         <td>{product.negotiation_stage2}</td>
+                                                        <td>{product.negotiation_stage3}</td>
                                                     </tr>
                                                 )
                                                 })}
