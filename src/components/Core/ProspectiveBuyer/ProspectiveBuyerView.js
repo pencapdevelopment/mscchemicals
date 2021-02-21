@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 // import swal from 'sweetalert';
 import axios from 'axios';
+import swal from 'sweetalert';
+import Moment from 'react-moment';
+import moment from 'moment/moment.js';
 // import Moment from 'react-moment';
 // import { Link } from 'react-router-dom';
 // import { Table } from 'reactstrap';
@@ -13,12 +16,18 @@ import axios from 'axios';
 // import Sorter from '../../Common/Sorter';
 import Followups from '../Followups/Followups';
 import Quotation from './Quotation'
+import Negotiation from './Negotiation'
 import Approval from '../Approvals/Approval';
 // import CustomPagination from '../../Common/CustomPagination';
+import EditIcon from '@material-ui/icons/Edit';
+import * as Const from '../../Common/constants';
+import Avatar from '@material-ui/core/Avatar';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
 import { Button,  Tab, Tabs, AppBar,FormControl,TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
+import { mockActivity } from '../../Timeline';
+import { ActivityStream } from '../../Timeline';
 import { Modal, ModalBody, ModalHeader} from 'reactstrap';
 import UOM from '../Common/UOM';
 import AutoSuggest from '../../Common/AutoSuggest';
@@ -72,7 +81,12 @@ class ProspectiveBuyerView extends Component {
             });
         }
     }
+    editInventory = (i) => {
+        var prod = this.state.obj.products[i];
 
+
+        this.setState({ editSubFlag: true, currentProdId: prod.id, currentProd: prod }, this.toggleModal);
+    }
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
@@ -102,6 +116,58 @@ class ProspectiveBuyerView extends Component {
         }
     }
 
+    handleGenerateQuote(){
+        swal({
+            title: "Are you sure?",
+            text: "You are going to generate quotation!",
+            icon: "info",
+            dangerMode: false,
+            button: {
+                text: "Yes, Generate!",
+                closeModal: true,
+            }
+        }).then(generate => {
+            if(generate){
+                this.setState({ loading: true });
+                axios.get(Const.server_url+Const.context_path+'api/companies/'+this.state.obj.company.id).then(compRes => {
+                    console.log("company response",compRes);
+                        var newObj = {
+                        code: Const.getUniqueCode('SQ'),
+                        company: "/companies/"+compRes.data.id,
+                        specification: '',
+                        make: '',
+                        packing: '',
+                        gst: '',
+                        amount: '',
+                        transportationCharges: '',
+                        terms: compRes.data.paymentTerms,
+                        deliveryPeriod: '',
+                        validity: '',
+                        enquiry: '/sales/'+this.state.obj.id,
+                        validTill: moment(new Date()).add(5,'days').format(),
+                        selectedProduct: '',
+                        selectedCompany: '',
+                        product: '',
+                        products: null,
+                    };
+                    axios.post(Const.server_url + Const.context_path + "api/sales-quotation", newObj).then(res =>{
+                        this.setState({ loading: false });
+                        this.toggleTab(1);
+                    }).finally(() => {
+                        this.setState({ loading: false });
+                    }).catch(err => {
+                        this.setState({ loading: false });
+                        swal("Generate Quotation Error!", "Unable to Generate Quotation!", "error");
+                    });
+                }).finally(()=>{
+                    this.setState({ loading: false });
+                }).catch(err =>{
+                    this.setState({ loading: false });
+                    swal("Company Not found!", "Unable to find the selected Company", "error");
+                });
+            }
+        }) 
+    }
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
 
@@ -256,7 +322,6 @@ class ProspectiveBuyerView extends Component {
                                                         </td>
                                                         <td>
                                                             <fieldset>
-
                                                                 <TextField type="number" name="amount" label="Amount" required={true}
                                                                     inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
                                                                     // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
@@ -273,8 +338,10 @@ class ProspectiveBuyerView extends Component {
                                             })}
                                         </tbody>
                                     </Table>
+                               
                                 </div>
-                            </div>}
+                            </div>
+                        }
                         <div className="text-center">
                             <Button variant="contained" color="primary" >Save</Button>
                         </div>
@@ -295,75 +362,199 @@ class ProspectiveBuyerView extends Component {
                                     value={this.state.activeTab}
                                     onChange={(e, i) => this.toggleTab(i)} >
                                     <Tab label="Details" />
+                                    <Tab label="Quotation" />
+                                    <Tab label="Negotiation" />
                                     <Tab label="Followups" />
-                                    
-                                    {/* <Tab label="Approvals" /> */}
+                                    <Tab label="Approvals" />
                                     {/* <Tab label="Inventory & Docs" />
                                    <Tab label="Pharma Documents" />
                                     <Tab label="Food Documents" />*/}
                                 </Tabs>
                             </AppBar>
-                            {this.state.obj &&
+                            {
+                            // this.state.obj &&
                             <TabPanel value={this.state.activeTab} index={0}>
-                                <div className="card b">
-                                    <div className="card-header">
-                                        <div className="float-right mt-2">
-                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                   <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card">
+                                                <div className="card-header">
+                                                      <div className="row">
+                                                          <div className="col-sm-10">
+                                                          <Button title="" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Status</span></Button>
+                                                          </div>
+                                                          <div className="col-sm-1" style={{left: 70}}>
+                                                          {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
+                                                        <span title="Edit" fontSize="small" variant="contained" onClick={() => this.updateObj()}><Avatar   fontSize="small"> <EditIcon fontSize="small" style={{color:"#000" }} /></Avatar></span>}
+                                                      
+                                                              </div>
+                                                              <div className="col-sm-1" style={{left: 30}}>
+                                                                {/* {this.state.isQuoteExists < 1 ? */}
+                                                        <Avatar> <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" /></Avatar>
+                                                         {/* :'' } */}
+                                                              </div>
+                                                      </div>
+                                                            
+                                                       
+                                                        
+                                           
+                                                    <h4 className="my-2">
+                                                        <span>{this.state.obj.name}</span>
+                                                    </h4>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <h4 className="my-2">
-                                            <span>{this.state.obj.name}</span>
-                                        </h4>
                                     </div>
+                                 <div className="row">
+                                     <div className="col-sm-8">
+                                     <div className="card b">
+                                      
 
-                                    <div className="card-body bb bt">
-                                        <table className="table">
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Code</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.name}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Contact name</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.contactName}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Email</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.email}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Phone</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.phone}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Other</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.other}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                      <div className="card-body bb bt">
+                                          <table className="table">
+                                              <tbody>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Code</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.name}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Name</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.name}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Company Name</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.companyname}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Types of Company</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.typesofcompany}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Department </strong>
+                                                      </td>
+                                                      <td>{this.state.obj.department }</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Designation</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.designation}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Contact name</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.contactName}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>State</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.state}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>City</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.city}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Contact name</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.contactName}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Email</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.email}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Phone</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.phone}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Other</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.other}</td>
+                                                  </tr>
+                                              </tbody>
+                                          </table>
+                                          <div className="mt-4">
+                                        <h4 style={{fontSize: 16}}>Products</h4>
                                     </div>
-                                </div>
-                            </TabPanel>}
-                            
+                                          <Table hover responsive>
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Quantity</th>
+                                                <th>Amount</th>
+                                             
+                                            </tr>
+                                        </thead>
+                                      <tbody>
+                                      {
+                                                                
+                                                                    <tr>
+                                                                        <td className="va-middle"></td>
+                                                                        <td>
+                                                                           
+                                                                        </td>
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                        <td><Button variant="contained" color="warning" size="xs" onClick={() => this.editInventory()}>Inventory & Docs</Button> </td>
+                                                                    </tr>
+                                                            }
+                                      </tbody>
+                                    </Table>
+                               
+                                      </div>
+                                  </div>
+                                     </div>
+                                     {
+                                            // this.props.user.role === 'ROLE_ADMIN' &&
+                                            <div className="col-md-4" >
+                                                {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
+                                                    parentObj={this.state.obj} currentId={this.props.currentId}></Assign> */}
+                                                {/* <Timeline
+                                                    title='Period ending 2017'
+                                                    timeline={mockTimeline}
+                                                /> */}
+                                                <ActivityStream
+                                                    style={{marginLeft: 400,}}
+                                                    title="Activity"
+                                                    stream={mockActivity}
+                                             
+                                                   
+                                                />
+                                            </div>}
+                                 </div>
+                                 </TabPanel>}
                             <TabPanel value={this.state.activeTab} index={1}>
-                                <Followups repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Followups> 
-                            </TabPanel>
-
-                            <TabPanel value={this.state.activeTab} index={2}>
                                 <Quotation baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
                                 currentId={this.props.currentId} parentObj={this.state.obj}></Quotation>
                             </TabPanel>
-
+                            <TabPanel value={this.state.activeTab} index={2}>
+                                <Negotiation baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
+                                currentId={this.props.currentId} parentObj={this.state.obj}></Negotiation>
+                            </TabPanel>
                             <TabPanel value={this.state.activeTab} index={3}>
+                                <Followups repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Followups> 
+                            </TabPanel>
+                            <TabPanel value={this.state.activeTab} index={4}>
                                 <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Approval> 
                             </TabPanel>
                         </div>

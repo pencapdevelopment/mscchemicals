@@ -43,6 +43,7 @@ import Status from '../Common/Status';
 //import Assign from '../Common/Assign';
 import Followups from '../Followups/Followups';
 import Quotation from './Quotation';
+import Negotiation from './Negotiation';
 import Order from './Order';
 import { createOrder } from '../Orders/Create';
 // const json2csv = require('json2csv').parse;
@@ -519,6 +520,7 @@ class View extends Component {
                                     onChange={(e, i) => this.toggleTab(i)} >
                                     <Tab label="Details" />
                                     <Tab label="Quotation" />
+                                    <Tab label="Negotiation" />
                                     <Tab label="Followups" />                                  
                                     <Tab label="Approvals" />
                                     <Tab label="Order" />
@@ -528,11 +530,10 @@ class View extends Component {
                             </AppBar>
                             {this.state.obj &&
                                 <TabPanel value={this.state.activeTab} index={0}>                          
-                                    <div className="row">
-                                       
-                                        <div className="col-md-8">
-                                            <div className="card b">
-                                                <div className="card-header">
+                                  <div className="row">
+                                      <div className="col-sm-12">
+                                            <div clasName="card">
+                                            <div className="card-header">
                                                   {/* <Chip   size="small" 
                                                         stylee={{fontSize: 80}} 
                                                         label="On going" 
@@ -579,14 +580,21 @@ class View extends Component {
                                                         <span>{this.state.obj.name}</span>
                                                     </h4>
                                                 </div>
-                                                <div className="card-body bb bt">
+                                         
+                                            </div>
+                                      </div>
+                                  </div>
+                                  <div className="row">
+                                        <div className="col-md-8">
+                                            <div className="card b">
+                                                    <div className="card-body bb bt">
                                                     <table className="table">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Assigned To</strong>
                                                                 </td>
-                                                                <td>
+                                                                <td>{this.state && console.log('current state is',this.state)}
                                                                     {this.state.users.map((obj, i) => {
                                                                         if(i === 0){
                                                                             console.log("users count",this.state.users.length);
@@ -740,14 +748,18 @@ class View extends Component {
                                     currentId={this.props.currentId} parentObj={this.state.obj}></Quotation>
                             </TabPanel>
                             <TabPanel value={this.state.activeTab} index={2}>
-                                <Followups repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Followups> 
+                                <Negotiation baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}
+                                    currentId={this.props.currentId} parentObj={this.state.obj}></Negotiation>
                             </TabPanel>
                             <TabPanel value={this.state.activeTab} index={3}>
+                                <Followups repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Followups> 
+                            </TabPanel>
+                            <TabPanel value={this.state.activeTab} index={4}>
                                 <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Approval> 
                             </TabPanel>
                             {/* <TabPanel  index={4}>
                           </TabPanel> */}
-                          <TabPanel value={this.state.activeTab} index={4}>
+                          <TabPanel value={this.state.activeTab} index={5}>
                                 <Order baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}
                                     currentId={this.props.currentId} parentObj={this.state.obj}></Order>
                             </TabPanel>

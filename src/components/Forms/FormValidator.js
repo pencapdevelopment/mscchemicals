@@ -37,11 +37,6 @@ const FormValidator = {
                         if(isCheckbox ? value === false : validator.isEmpty(value)){
                             result.push({key:m.key,msg:'this field is required'});
                         }
-                        case 'city':
-
-                            if(isCheckbox ? value === false : validator.isEmpty(value)){
-                                result.push({key:m.key,msg:'please enter a valid City'});
-                            }
                         break;
                     case 'phone':
                         var isValid3 =  !validator.isNumeric(value);

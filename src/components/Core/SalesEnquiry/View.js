@@ -1,8 +1,6 @@
 import { AppBar, Button, Tab, Tabs, FormControl, TextField } from '@material-ui/core';
 import axios from 'axios';
 import React, { Component } from 'react';
-import Moment from 'react-moment';
-import moment from 'moment/moment.js';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -10,14 +8,13 @@ import {
 
     ModalBody, ModalHeader, Table
 } from 'reactstrap';
-import swal from 'sweetalert';
-import * as Const from '../../Common/constants';
+import Moment from 'react-moment';
+import moment from 'moment/moment.js';
 import TabPanel from '../../Common/TabPanel';
 import Approval from '../Approvals/Approval';
 import PageLoader from '../../Common/PageLoader';
 import 'react-datetime/css/react-datetime.css';
 // import Assign from '../Common/Assign';
-import Status from '../Common/Status';
 import Followups from '../Followups/Followups';
 import { createOrder } from '../Orders/Create';
 
@@ -26,15 +23,16 @@ import AddInventory from './AddInventory';
 import Quotation from './Quotation';
 import Negotiation from './Negotiation';
 import Order from './Order';
-
+import Status from '../Common/Status';
+import * as Const from '../../Common/constants';
+import swal from 'sweetalert';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import AutoSuggest from '../../Common/AutoSuggest';
 import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
-
+import AutoSuggest from '../../Common/AutoSuggest';
 // const json2csv = require('json2csv').parse;
 
 class View extends Component {
@@ -655,13 +653,13 @@ class View extends Component {
                                                        
                                                             <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
                                                             </Fab> */}
-                                                        
-                                                        {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+                                                      
+                                                         {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
                                                             <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
                                                                 <Button title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Convert Order</span></Button>
-                                                            </Link>} */}
+                                                            </Link>} 
                                                     </div>
                                                     <h4 className="my-2">
                                                         <span>{this.state.obj.name}</span>
@@ -670,6 +668,7 @@ class View extends Component {
                                             </div>
                                         </div>
                                     </div>
+                                 
                                     <div className="row">
                                        
                                         <div className="col-md-8">
@@ -827,6 +826,7 @@ class View extends Component {
                                                 />
                                             </div>}
                                     </div>
+                                
                                 </TabPanel>}
                                 <TabPanel value={this.state.activeTab} index={1}>
                                 <Quotation baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}

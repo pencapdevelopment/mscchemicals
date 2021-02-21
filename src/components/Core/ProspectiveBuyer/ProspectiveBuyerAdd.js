@@ -362,6 +362,17 @@ class ProspectiveBuyerAdd extends Component {
                                     onChange={e => this.setField('email', e)} />
                             </fieldset>
                             <fieldset>
+                                <TextField
+                                    type="text"
+                                    name="PI"
+                                    label="Product Interested"
+                                    required={true}
+                                    fullWidth={true}
+                                 
+                                    value={this.state.formWizard.obj.email}
+                                    onChange={e => this.setField('email', e)} />
+                            </fieldset>
+                            <fieldset>
                                         <TextField
                                             name="other"
                                             type="text"

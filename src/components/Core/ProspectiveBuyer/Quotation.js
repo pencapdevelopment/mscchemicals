@@ -92,8 +92,8 @@ class Quotation extends Component {
                 {!this.state.editFlag &&
                     <div className="row">
                         <div className="col-md-12">
-                            <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
-                            currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload>
+                            {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
+                            currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
 
                             {this.state.obj &&
                             <div className="card b">
@@ -176,8 +176,8 @@ class Quotation extends Component {
                                         </tbody>
                                     </table>
                                     
-                                    <div className="text-center mt-4">
-                                        <h4>Products</h4>
+                                    <div className="mt-4">
+                                        <h4 style={{fontSize: 14}}>Products</h4>
                                     </div>
                                     <Table hover responsive>
                                         <thead>
@@ -214,6 +214,7 @@ class Quotation extends Component {
                                             })}
                                         </tbody>}
                                     </Table>
+                               
                                 </div>
                             </div>}
                             {!this.state.obj &&

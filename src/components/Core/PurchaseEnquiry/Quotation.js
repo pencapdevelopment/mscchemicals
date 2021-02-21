@@ -90,8 +90,16 @@ class Quotation extends Component {
         return (
             <div>
                 {!this.state.editFlag &&
+                 
+
+            
                     <div className="row">
                         <div className="col-md-12">
+                    //         <div className="card b">
+                    //             <div className="card-header">
+
+                    //             </div>
+                    //         </div>
                             <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
                             currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload>
 
@@ -216,10 +224,10 @@ class Quotation extends Component {
                                     </Table>
                                 </div>
                             </div>}
-                            {!this.state.obj &&
+                            {/* {!this.state.obj &&
                             <div className="text-center">
                                 {this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Generate Quotation</Button>}
-                            </div>}
+                            </div>} */}
                         </div>
                     </div>}
                 {this.state.editFlag &&

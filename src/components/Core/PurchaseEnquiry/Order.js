@@ -228,10 +228,32 @@ class Order extends Component {
                         {/* {this.state.label} */}
                     </ModalHeader>
                     <ModalBody>
-                        <fieldset>
+                        {/* <fieldset>
                             <Button
                                 variant="contained"
                                 component="label"> Select File
+                                    <input type="file" id="fileUpload"
+                                    name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
+                                    onChange={e => this.fileSelected('fileUpload', e)}
+                                    style={{ display: "none" }} />
+                            </Button>{this.state.name}
+                        </fieldset>
+                        <span>*Please upload .doc,.docx,.pdf,.png,.jpg files only</span> */}
+                        <fieldset>
+                            <Button
+                                variant="contained"
+                                component="label"> Sales Contract Upload
+                                    <input type="file" id="fileUpload"
+                                    name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
+                                    onChange={e => this.fileSelected('fileUpload', e)}
+                                    style={{ display: "none" }} />
+                            </Button>{this.state.name}
+                        </fieldset>
+                        <span>*Please upload .doc,.docx,.pdf,.png,.jpg files only</span>
+                        <fieldset>
+                            <Button
+                                variant="contained"
+                                component="label"> Perform Invoice Upload
                                     <input type="file" id="fileUpload"
                                     name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
                                     onChange={e => this.fileSelected('fileUpload', e)}
@@ -242,7 +264,7 @@ class Order extends Component {
                         {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
                         <fieldset>
                                 <FormControl>
-                                    <TextField id="Po Number" name="PO Number" label="PO Number" type="text"
+                                    <TextField id="Po Number" name="PO Number" label="Po Number" type="text"
                                         inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
                                         // helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
                                         // error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}

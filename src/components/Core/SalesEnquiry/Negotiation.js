@@ -757,7 +757,7 @@ class Negotiation extends Component {
                                    
                                     <div className=" row text-left mt-4">
                                         <div className="col-sm-12" >
-                                        <h4 style={{fontSize: 18,flexDirection: 'row'}}>Product Negoitation Tracking </h4>
+                                        <h4 style={{fontSize: 18,flexDirection: 'row'}}>Product Negotiation Tracking </h4>
                                    
                                         </div>
                                         

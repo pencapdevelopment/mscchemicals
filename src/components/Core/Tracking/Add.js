@@ -49,7 +49,7 @@ class Add extends Component {
                 outward:"",
                 trackingType:"Inward",
                 courierCompany: '',
-                dispatchDate: null,
+                emailDate: null,
                 receivedDate: null,
                 remarks: '',
                 company: '',
@@ -103,7 +103,7 @@ class Add extends Component {
                 inward:"",
                 outward:"",
                 courierCompany: '',
-                dispatchDate: null,
+                emailDate: null,
                 receivedDate: null,
                 remarks: '',
                 company: '',
@@ -323,6 +323,16 @@ class Add extends Component {
                                         queryString="&name" ></AutoSuggest>
                                 </FormControl>
                             </fieldset>
+                          
+                            <fieldset>
+                                <FormControl>
+                                    <TextField id="contactName" name="contactName" label="Contact Name" type="text" required={true}
+                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
+                                        helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
+                                        error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
+                                        defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
+                                </FormControl>
+                            </fieldset>
                             <fieldset>
                             <Select
                                 style={{marginTop: 15}}
@@ -339,16 +349,7 @@ class Add extends Component {
                                 <MenuItem value='end'>End</MenuItem>
                             </Select>
                             </fieldset>
-                            <fieldset>
-                                <FormControl>
-                                    <TextField id="contactName" name="contactName" label="Contact Name" type="text" required={true}
-                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
-                                        helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
-                                        error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
-                                        defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
-                                </FormControl>
-                            </fieldset>
-                            <fieldset>
+                            {/* <fieldset>
                            
                                 <FormControl>
                                     <TextField id="assignedTo" name="assignedTo" label="Assigned To" type="text" required={true}
@@ -357,7 +358,7 @@ class Add extends Component {
                                         error={errors?.assignedTo?.length > 0} value={this.state.formWizard.obj.assignedTo}
                                          onChange={e => this.setField("assignedTo", e)} />
                                 </FormControl>
-                            </fieldset>
+                            </fieldset> */}
                             {/* <fieldset>
                                 <TextareaAutosize placeholder="Remarks" fullWidth={true} rowsMin={3} name="remarks"
                                 inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
@@ -377,14 +378,14 @@ class Add extends Component {
                                     autoOk
                                     clearable
                                     disableFuture
-                                    label="Dispatch Date"
+                                    label="Email Date"
                                     format="DD/MM/YYYY"
-                                    value={this.state.formWizard.obj.dispatchDate} 
-                                    onChange={e => this.setDateField('dispatchDate', e)} 
+                                    value={this.state.formWizard.obj.emailDate} 
+                                    onChange={e => this.setDateField('emailDate', e)} 
                                     TextFieldComponent={(props) => (
                                         <TextField
                                         type="text"
-                                        name="dispatchDate"
+                                        name="emailDate"
                                         id={props.id}
                                         label={props.label}
                                         onClick={props.onClick}
@@ -401,6 +402,7 @@ class Add extends Component {
                                 </MuiPickersUtilsProvider>
                             </fieldset>
 
+                           
                             <fieldset>
                             <MuiPickersUtilsProvider utils={MomentUtils}>
                                     <DatePicker 
@@ -439,13 +441,13 @@ class Add extends Component {
                                         value={this.state.formWizard.obj.docketNo} onChange={e => this.setField("docketNo", e)} />
                                 </fieldset>:''
                             }
-                            <fieldset>
+                            {/* <fieldset>
                                 <TextField type="text" name="courierCompany" label="Courier Company" required={true} fullWidth={true}
                                     inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
                                     helperText={errors?.courierCompany?.length > 0 ? errors?.courierCompany[0]?.msg : ""}
                                     error={errors?.courierCompany?.length > 0}
                                     value={this.state.formWizard.obj.courierCompany} onChange={e => this.setField("courierCompany", e)} />
-                            </fieldset>       
+                            </fieldset>        */}
                         </div>
                     </div>
              
@@ -504,17 +506,8 @@ class Add extends Component {
                                         defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
                                 </FormControl>
                             </fieldset>
-                            <TextField
-                                    name="phone"
-                                    type="text"
-                                    label="Phone"
-                                    fullWidth={true}
-                                    inputProps={{ minLength: 0, maxLength: 15, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"15"}]' }}
-                                    helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ""}
-                                    error={errors?.phone?.length > 0}
-                                    value={this.state.formWizard.obj.phone}
-                                    onChange={e => this.setField('phone', e)} />
-                            <fieldset>
+                         
+                            {/* <fieldset>
                                 <FormControl>
                                     <TextField id="assignedTo" name="assignedTo" label="Assigned To" type="text" required={true}
                                         inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
@@ -522,7 +515,10 @@ class Add extends Component {
                                         error={errors?.assignedTo?.length > 0} value={this.state.formWizard.obj.assignedTo}
                                          onChange={e => this.setField("assignedTo", e)} />
                                 </FormControl>
-                            </fieldset>
+                            </fieldset> */}
+                            {/* <fieldset>
+                              <Button variant="outlined">Add Branch</Button>
+                            </fieldset> */}
                             <fieldset>
                                 <FormControl>
                                     <TextField id="Address" name="Address" label="Address" type="text" required={true}
@@ -533,7 +529,8 @@ class Add extends Component {
                                 </FormControl>
                             </fieldset>
 
-                         
+                            
+
 
                                               
                             
@@ -563,20 +560,20 @@ class Add extends Component {
                                 </FormControl>
                             </fieldset>
 
-                        <fieldset>
+                        {/* <fieldset>
                             <MuiPickersUtilsProvider utils={MomentUtils}>
                                     <DatePicker 
                                     autoOk
                                     clearable
                                     disableFuture
-                                    label="Dispatch Date"
+                                    label="Email Date"
                                     format="DD/MM/YYYY"
-                                    value={this.state.formWizard.obj.dispatchDate} 
-                                    onChange={e => this.setDateField('dispatchDate', e)} 
+                                    value={this.state.formWizard.obj.emailDate} 
+                                    onChange={e => this.setDateField('emailDate', e)} 
                                     TextFieldComponent={(props) => (
                                         <TextField
                                         type="text"
-                                        name="dispatchDate"
+                                        name="emailDate"
                                         id={props.id}
                                         label={props.label}
                                         onClick={props.onClick}
@@ -591,8 +588,30 @@ class Add extends Component {
                                         />
                                     )} />
                                 </MuiPickersUtilsProvider>
-                            </fieldset>
+                            </fieldset> */}
 
+                            <TextField
+                                    name="phone"
+                                    type="text"
+                                    label="Phone"
+                                    fullWidth={true}
+                                    inputProps={{ minLength: 0, maxLength: 15, "data-validate": '[{ "key":"phone"},{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"15"}]' }}
+                                    helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ""}
+                                    error={errors?.phone?.length > 0}
+                                    value={this.state.formWizard.obj.phone}
+                                    onChange={e => this.setField('phone', e)} />
+                            <TextField
+                                    name="email"
+                                    type="text"
+                                    label="Email"
+                                    fullWidth={true}
+                                    inputProps={{ minLength: 0, maxLength: 80, "data-validate": '[{ "key":"email"},{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"80"}]' }}
+                                    helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ""}
+                                    error={errors?.email?.length > 0}
+                                    value={this.state.formWizard.obj.email}
+                                    onChange={e => this.setField('email', e)} />
+                            <fieldset>
+                                
                             <fieldset>
                             <MuiPickersUtilsProvider utils={MomentUtils}>
                                     <DatePicker 
@@ -622,30 +641,9 @@ class Add extends Component {
                                     )} />
                                 </MuiPickersUtilsProvider>
                             </fieldset>
-                            <TextField
-                                    name="email"
-                                    type="text"
-                                    label="Email"
-                                    fullWidth={true}
-                                    inputProps={{ minLength: 0, maxLength: 80, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"80"}]' }}
-                                    helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ""}
-                                    error={errors?.email?.length > 0}
-                                    value={this.state.formWizard.obj.email}
-                                    onChange={e => this.setField('email', e)} />
-                            <fieldset>
-                                <TextField type="text" name="docketNo" label="Docket No" required={true} fullWidth={true}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.docketNo?.length > 0 ? errors?.docketNo[0]?.msg : ""}
-                                    error={errors?.docketNo?.length > 0}
-                                    value={this.state.formWizard.obj.docketNo} onChange={e => this.setField("docketNo", e)} />
+                               
                             </fieldset>
-                            <fieldset>
-                                <TextField type="text" name="courierCompany" label="Courier Company" required={true} fullWidth={true}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.courierCompany?.length > 0 ? errors?.courierCompany[0]?.msg : ""}
-                                    error={errors?.courierCompany?.length > 0}
-                                    value={this.state.formWizard.obj.courierCompany} onChange={e => this.setField("courierCompany", e)} />
-                            </fieldset>       
+                               
                         </div>
                     </div>
              

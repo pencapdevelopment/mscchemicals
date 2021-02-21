@@ -6,18 +6,21 @@ import axios from 'axios';
 // import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
+import Jumbotron from 'react-bootstrap/Jumbotron'
 // import PageLoader from '../../Common/PageLoader';
+import Chip from '@material-ui/core/Chip';
 import {
      Modal,
     ModalHeader,
     ModalBody
 } from 'reactstrap';
+
 import SalesInventory from './SalesInventory';
 // import Sorter from '../../Common/Sorter';
 // import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter,  getStatusBadge } from '../../Common/constants';
 import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
-
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
 // import {
@@ -61,6 +64,7 @@ class View extends Component {
         modalSales: false,
         modalDocs: false,
         obj: '',
+        user:"",
         subObjs: [],
         newSubObj: {},
         orderBy:'id,desc',
@@ -72,6 +76,7 @@ class View extends Component {
             totalElements: 0,
             totalPages: 0
         },
+          users: [],
         filters: {
             search: '',
             fromDate: null,
@@ -194,9 +199,21 @@ class View extends Component {
 
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=order_edit').then(res => {
-            this.setState({ obj: res.data,
+            this.setState({ 
+                obj: res.data,
                 loading:false
              });
+
+        });
+    }
+    orderUser(id) {
+        axios.get(server_url + context_path + "api/"+this.props.baseUrl+"-user?reference.id="+id+"&projection=orders-user")
+        .then(res => {
+            console.log("order user response",res);
+            this.setState({
+                users:res?.data?._embedded[Object.keys(res?.data?._embedded)[0]],
+                loading:true
+             },()=>{console.log("after setting state is",this.state)});
 
         });
     }
@@ -208,7 +225,7 @@ class View extends Component {
     componentDidMount() {
         console.log('view component did mount');
         console.log(this.props.currentId);
-
+        this.orderUser(this.props.currentId);
         this.loadObj(this.props.currentId);
         // this.loadSubObjs();
         this.props.onRef(this);
@@ -376,10 +393,10 @@ class View extends Component {
                                        
                                         <div className="col-sm-2"><Button title="status" size="small" variant="contained">Status</Button></div>
                                             <div className="col-sm-7"></div>
-                                            <div className="col-sm-1" style={{left: 110}} > <Avatar  style={{backgroundColor:"#93ed94"}} >   <EditIcon style={{color: "#000"}} fontSize="small" /></Avatar> </div>
+                                            <div className="col-sm-1" style={{left: 110}} > <Avatar   >   <EditIcon style={{color: "#000"}} fontSize="small" /></Avatar> </div>
                                          
-                                            <div className="col-sm-1" style={{left: 70}}><Avatar  style={{backgroundColor:"#93ed94"}}> <img style={{width: 25, height: 27, float: 'center', }} title="downlaod invoice" src="img/download.png"/></Avatar></div>
-                                            <div className="col-sm-1" style={{left: 30}}><Avatar  style={{backgroundColor:"#93ed94"}}><img  title="cancel order" src="img/cancel.png"/></Avatar></div>
+                                            <div className="col-sm-1" style={{left: 70}}><Avatar > <img style={{width: 25, height: 27, float: 'center', }} title="downlaod invoice" src="img/download.png"/></Avatar></div>
+                                            <div className="col-sm-1" style={{left: 30}}><Avatar  ><img  title="cancel order" src="img/cancel.png"/></Avatar></div>
 
                                         {/* {this.state.obj.type === 'Sales' && <Button variant="contained" color="warning" size="xs" onClick={() => this.downloadInvoice()}>Download Invoice</Button> }
                                               */}
@@ -427,6 +444,7 @@ class View extends Component {
                                                         <strong>Company</strong>
                                                     </td>
                                                     <td>
+                                                      
                                                         <Link to={`/companies/${this.state.obj.company.id}`}>
                                                             {this.state.obj.company.name}
                                                         </Link>
@@ -578,24 +596,70 @@ class View extends Component {
                                             <div className="col-md-4" >
                                                 <div className="row">
                                                     <div className="col-sm-12">
-                                                    <Card >
+                                               
+                                                    <Card style={{backgroundColor: "#eeeae5"}}>
+                                                 
                                                     <CardActionArea>
+                                                        
+                                                        <Typography style={{margin: 15}}  gutterBottom variant="h5" component="h2">
+                                                            <div className="row ">
+                                                                <div className="col-sm-2">
+                                                                <Avatar />
+                                                             
+                                                                </div>
+                                                                <div className="col-sm-10 "  style={{fontSize: 18, marginTop: 13 }}>                                                             
+                                                                    <span  ></span>Assign User
+                                                                </div>
+                                                            </div>
+                                                                {/* <tr >
+                                                                    <td>  <Avatar /> </td>   
+                                                                    <td><span>Assign User</span></td>
+                                                          
+                                                                </tr>  */}
+                                                                <Divider/>
+                                                               <div className="row">
+                                                                   <div className="col-sm-12" >
+                                                                   {this.state.users.map((obj, i) => {
+                                                                        return (
+                                                                            <Chip
+                                                                               style={{color: "#000",backgroundColor: "#eee342"}}
+
+                                                                                avatar={
+                                                                                    // <Avatar>
+                                                                                        {/* <AssignmentIndIcon /> */}
+                                                                                    // </Avatar>
+                                                                                }
+                                                                                label={ <Link to={`/users/${ obj.user.id}`}>
+                                                                                { obj.user.name}
+                                                                            </Link>}
+                                                                               
+                                                                                // onClick={() => this.handleClick(obj)}
+                                                                                // onDelete={() => this.handleDelete(i)}
+                                                                            // className={classes.chip}
+                                                                            />
+                                                                        )
+                                                                    })} 
+                                                                   </div>
+                                                               </div>
+                                                              
+                                                      
+                                                        </Typography>
                                                         {/* <CardMedia
                                                         component="img"
                                                         alt="Contemplative Reptile"
-                                                        height="140"
+                                                        height="60"
                                                         image="/static/images/cards/contemplative-reptile.jpg"
                                                         title="Contemplative Reptile"
                                                         /> */}
                                                         <CardContent>
-                                                        <Typography gutterBottom variant="h5" component="h2">
-                                                        Assign User
-                                                        </Typography>
+                                                       
                                                         <Typography variant="body2" color="textSecondary" component="p">
                                                             {/* Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
                                                             across all continents except Antarctica */}
                                                         </Typography>
                                                         </CardContent>
+                                                       
+                                                      
                                                     </CardActionArea>
                                                     <CardActions>
                                                         {/* <Button size="small" color="primary">
@@ -605,7 +669,9 @@ class View extends Component {
                                                            Read More
                                                         </Button> */}
                                                     </CardActions>
+                                                   
                                                 </Card>
+                                        
                                                     </div>
                                                 </div>
                                                 <div className="row">

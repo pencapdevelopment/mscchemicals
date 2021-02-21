@@ -57,7 +57,7 @@ class AddQuotation extends Component {
                 selectedProduct: '',
                 selectedCompany: '',
                 product: '',
-                products: [],
+                products: [{"product":{"id":290789,"name":"L Glutamin"},"quantity":40,"amount":452},{"product":{"id":290376,"name":"Melatonin"},"quantity":60,"amount":500}],
             },
             selectedProducts: [],
         }
@@ -451,8 +451,8 @@ class AddQuotation extends Component {
                         </div>
                     </div>
 
-                    <div className="text-center mt-4">
-                        <h4>
+                    <div className=" mt-4">
+                        <h4 style={{fontSize: 14}}>
                             Products
                             <Button className="ml-2 d-none" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
                                 <em className="fas fa-plus mr-1"></em> Add
@@ -464,6 +464,14 @@ class AddQuotation extends Component {
                         <div className="row">
                             <div className="col-md-12">
                                 <Table hover responsive>
+                                    <thead>
+                                        <tr>
+                                        <th></th>
+                                            <th>products</th>
+                                            <th>quantity</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         {this.state.formWizard.obj.products.map((prod, i) => {
                                             return (

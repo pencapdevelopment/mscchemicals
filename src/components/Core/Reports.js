@@ -7,26 +7,52 @@ import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import PageLoader from '../Common/PageLoader';
+import Dropdown from './Dropdown';
 import Sorter from '../Common/Sorter';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import FileDownload from '../Common/FileDownload';
-
+import TabPanel from '../Common/TabPanel';
 import CustomPagination from '../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, } from '@material-ui/core';
-
+import { Button, ButtonGroup,AppBar, Tab, Tabs, TextField, Select, MenuItem, InputLabel, FormControl, } from '@material-ui/core';
+import InputBase from '@material-ui/core/InputBase';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import MomentUtils from '@date-io/moment';
 import {
     DatePicker,
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import Event from '@material-ui/icons/Event';
+import Divider from '@material-ui/core/Divider';
+const items = [
+    {
+      id: 1,
+      value: 'Excel',
+    },
+    {
+        id: 1,
+        value: 'csv',
+      },
+    {
+      id: 2,
+      value: 'PDF',
+    },
+    {
+      id: 3,
+      value: 'PDF',
+    },
+    
+  ];
 
 const json2csv = require('json2csv').parse;
 
 class Reports extends Component {
+    
 
     state = {
         activeStep: 0,
+        editFlag: false,
+        editSubFlag: false,
         loading: true,
         objects: [],
         all: [],
@@ -49,6 +75,13 @@ class Reports extends Component {
         orderBy:'id,desc',
         patchError: '',
 
+    }
+    toggleTab = (tab) => {
+        if (this.state.activeTab !== tab) {
+            this.setState({
+                activeTab: tab
+            });
+        }
     }
 
     searchObject = e => {
@@ -172,13 +205,14 @@ class Reports extends Component {
         });
     }
 
-    render() {
+    render()
+     {
         return (<ContentWrapper>
             {this.state.loading && <PageLoader />}
-            <div className="card b">
-                <div className="card-body bb bt">
+            {/* <div className="card b"> */}
+                {/* <div className="card-body bb bt"> */}
                     <div className="content-heading">Reports</div>
-                    <div className="row">
+                    {/* <div className="row">
                         <div className="col-md-12">
                             <div className="row">
                                 <div className="col-md-2">
@@ -335,8 +369,603 @@ class Reports extends Component {
                             </Table>
                         </div>
                     </div>
-                </div>
-            </div>
+                 */}
+                {/* </div> */}
+            {/* </div> */}
+          
+            <AppBar position="static">
+                                <Tabs
+                                    className="bg-white"
+                                    indicatorColor="primary"
+                                    textColor="primary"
+                                    variant="scrollable"
+                                    scrollButtons="auto"
+                                    aria-label="scrollable auto tabs example"
+                                    value={this.state.activeTab}
+                                    onChange={(e, i) => this.toggleTab(i)} >
+                                    <Tab label="Sales" />
+                                    <Tab label="Purchases" />
+                                    <Tab label="Companies" />                                  
+                                    <Tab label="Sample Tracking" />
+                                    <Tab label="Prospective Buyers" />
+                                    <Tab label="Prospective Vendors" />
+                                  
+                                    {/* <Tab label="Inventory & Docs" />
+                                   <Tab label="Pharma Documents" />
+                                    <Tab label="Food Documents" />*/}
+                                </Tabs>
+                            </AppBar>
+                            {
+                            <TabPanel value={this.state.activeTab} index={0}>                          
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card b">
+                                                <div className="card-header">
+
+                                                </div>
+                                                <div className="card-body">
+                                                <div className="row" >
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                       
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>  Sales</InputLabel>
+                                        <Select
+                                            
+                                         
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={10}>Enquiries</MenuItem>
+                                               <MenuItem value={20}>Order</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                       
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>  Role</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={10}>Users</MenuItem>
+                                               <MenuItem value={20}>company</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                      
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>Status</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >Pending</MenuItem>
+                                               <MenuItem value={10}>Ongoing</MenuItem>
+                                               <MenuItem value={20}>hold</MenuItem>
+                                               <MenuItem value={30}>completed</MenuItem>
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                        
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel> Period</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >All Time</MenuItem>
+                                               <MenuItem value={1}>This Month</MenuItem>
+                                               <MenuItem value={2}>Last Month</MenuItem>
+                                               <MenuItem value={3} >This Year</MenuItem>
+                                               <MenuItem value={4}>Last Year</MenuItem>
+                                               <MenuItem value={5}>last 3 Month</MenuItem>
+                                               <MenuItem value={6}>last 6 Month</MenuItem>
+                                               <MenuItem value={7}>last 12 Month</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <div classname="card b">
+                                <div className="card-header">
+                                            <div className="row">
+                                                <div className="col-sm-1">
+                                                    <FormControl    >
+                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                        <Select
+                                                            
+
+                                                            >                                                        
+                                                            <MenuItem value={1}>10</MenuItem>                                                        
+                                                            <MenuItem value={3} >20</MenuItem>                                                           
+                                                            <MenuItem value={5}>30</MenuItem>
+                                                            <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem>
+                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                            
+                                                </div>
+                                               
+                                                    <div className="col-sm-2">
+                                                    {/* <h1 style={{ textAlign: 'center' }}>
+                                                        Buy Movies{' '}
+                                                        <span role="img" aria-label="Movie projector">
+                                                        
+                                                        </span>
+                                                    </h1> */}
+                                                    
+                                                    <Dropdown title="" items={items} multiSelect />
+                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                       <Button></Button>
+                                                        <Button><img src="img/refresh.png"/></Button>
+                                                      
+                                                    </ButtonGroup>   */}                                                    
+                                                     </div>
+                                                                                                
+                                            
+                                                <div className="col-sm-1" style={{right: 102}}>
+                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                        <Button><img src="img/refresh.png"/></Button>                                                     
+                                                    </ButtonGroup> 
+                                                    </div>     
+                                            </div>
+                                </div>
+                                <div className="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                 
+                                
+                                </TabPanel>}
+                                {
+                            <TabPanel value={this.state.activeTab} index={1}>                          
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card b">
+                                                <div className="card-header">
+
+                                                </div>
+                                                <div className="card-body">
+                                                <div className="row" >
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                       
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>  Sales</InputLabel>
+                                        <Select
+                                            
+                                         
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={10}>Enquiries</MenuItem>
+                                               <MenuItem value={20}>Order</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                       
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>  Role</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={10}>Users</MenuItem>
+                                               <MenuItem value={20}>company</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                      
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>Status</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >Pending</MenuItem>
+                                               <MenuItem value={10}>Ongoing</MenuItem>
+                                               <MenuItem value={20}>hold</MenuItem>
+                                               <MenuItem value={30}>completed</MenuItem>
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                        
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel> Period</InputLabel>
+                                        <Select
+                                            
+
+                                                 >
+                                                <MenuItem value={0} >All Time</MenuItem>
+                                               <MenuItem value={1}>This Month</MenuItem>
+                                               <MenuItem value={2}>Last Month</MenuItem>
+                                               <MenuItem value={3} >This Year</MenuItem>
+                                               <MenuItem value={4}>Last Year</MenuItem>
+                                               <MenuItem value={5}>last 3 Month</MenuItem>
+                                               <MenuItem value={6}>last 6 Month</MenuItem>
+                                               <MenuItem value={7}>last 12 Month</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+
+                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div classname="card b">
+                                                <div className="card-header">
+                                                            <div className="row">
+                                                                <div className="col-sm-1">
+                                                                    <FormControl    >
+                                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                                        <Select
+                                                                            
+
+                                                                            >
+                                                                            <MenuItem value={1}>10</MenuItem>
+                                                                            <MenuItem value={3}>20</MenuItem>
+                                                                            <MenuItem value={5}>30</MenuItem>
+                                                                            <MenuItem value={6}>40</MenuItem>
+                                                                            <MenuItem value={7}>50</MenuItem>                                                           
+                                                                            </Select>
+                                                                    </FormControl>
+                                                            
+                                                                </div>
+                                                                <div className="row">
+                                                                    <div className="col-sm-2">
+                                                                
+                                                                    <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                                        <Button>Export 
+                                                              
+                                                                        
+                                                                        </Button>
+                                                                        <Button><img src="img/refresh.png"/></Button>
+                                                                    
+                                                                    </ButtonGroup> 
+                                                                    
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                </div>
+                                                <div className="card-body">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                
+                                
+                                </TabPanel>}
+                                
+                                {
+                            <TabPanel value={this.state.activeTab} index={2}>                          
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card b">
+                                                <div className="card-header">
+
+                                                </div>
+                                                <div className="card-body">
+                                                <div className="row" >
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                       
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>  Company</InputLabel>
+                                        <Select
+                                            
+                                         
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={10}>Buyers</MenuItem>
+                                               <MenuItem value={20}>Vendors</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                      
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>Status</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={11}>Pending</MenuItem>
+                                               <MenuItem value={10}>Ongoing</MenuItem>
+                                               <MenuItem value={20}>hold</MenuItem>
+                                               <MenuItem value={30}>completed</MenuItem>
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                        
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel> Period</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >All Time</MenuItem>
+                                               <MenuItem value={1}>This Month</MenuItem>
+                                               <MenuItem value={2}>Last Month</MenuItem>
+                                               <MenuItem value={3} >This Year</MenuItem>
+                                               <MenuItem value={4}>Last Year</MenuItem>
+                                               <MenuItem value={5}>last 3 Month</MenuItem>
+                                               <MenuItem value={6}>last 6 Month</MenuItem>
+                                               <MenuItem value={7}>last 12 Month</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+
+                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div classname="card b">
+                                                <div className="card-header">
+                                                            <div className="row">
+                                                                <div className="col-sm-1">
+                                                                    <FormControl    >
+                                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                                        <Select
+                                                                            
+
+                                                                            >
+                                                                            <MenuItem value={1}>10</MenuItem>
+                                                                            <MenuItem value={3} >20</MenuItem>
+                                                                            <MenuItem value={5}>30</MenuItem>
+                                                                            <MenuItem value={6}>40</MenuItem>
+                                                                            <MenuItem value={7}>50</MenuItem>                                                           
+                                                                            </Select>
+                                                                    </FormControl>
+                                                            
+                                                                </div>
+                                                                <div className="row">
+                                                                    <div className="col-sm-2">
+                                                                
+                                                                    <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                                        <Button>Export 
+                                                                           
+                                                                        
+                                                                        </Button>
+                                                                        <Button><img src="img/refresh.png"/></Button>
+                                                                    
+                                                                    </ButtonGroup> 
+                                                                    
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                </div>
+                                                <div className="card-body">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                
+                                
+                                
+                                </TabPanel>}
+                                {
+                            <TabPanel value={this.state.activeTab} index={3}>                          
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card b">
+                                                <div className="card-header">
+
+                                                </div>
+                                                <div className="card-body">
+                                                <div className="row" >
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                       
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>  Sales</InputLabel>
+                                        <Select
+                                            
+                                         
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={10}>Inward</MenuItem>
+                                               <MenuItem value={20}>Outward</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                       
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>  Role</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={10}>Users</MenuItem>
+                                               <MenuItem value={20}>company</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                      
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel>Status</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >All</MenuItem>
+                                               <MenuItem value={10}>pending</MenuItem>
+                                               
+                                               <MenuItem value={11}>Ongoing</MenuItem>
+                                               <MenuItem value={20}>hold</MenuItem>
+                                               <MenuItem value={30}>completed</MenuItem>
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                        
+                                        </div> */}
+                                        <div className="col-md-2">
+                                        <FormControl    >
+                                            <InputLabel> Period</InputLabel>
+                                        <Select
+                                            
+
+                                               >
+                                                <MenuItem value={0} >All Time</MenuItem>
+                                               <MenuItem value={1}>This Month</MenuItem>
+                                               <MenuItem value={2}>Last Month</MenuItem>
+                                               <MenuItem value={3} >This Year</MenuItem>
+                                               <MenuItem value={4}>Last Year</MenuItem>
+                                               <MenuItem value={5}>last 3 Month</MenuItem>
+                                               <MenuItem value={6}>last 6 Month</MenuItem>
+                                               <MenuItem value={7}>last 12 Month</MenuItem>
+                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                              
+                                            </Select>
+                                            </FormControl>
+                                        
+                                        </div>
+
+                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                 
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div classname="card b">
+                                                <div className="card-header">
+                                                            <div className="row">
+                                                                <div className="col-sm-1">
+                                                                    <FormControl    >
+                                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                                        <Select
+                                                                            
+
+                                                                            >
+                                                                            <MenuItem value={1}>10</MenuItem>
+                                                                            <MenuItem value={3} >20</MenuItem>
+                                                                            <MenuItem value={5}>30</MenuItem>
+                                                                            <MenuItem value={6}>40</MenuItem>
+                                                                            <MenuItem value={7}>50</MenuItem>                                                           
+                                                                            </Select>
+                                                                    </FormControl>
+                                                            
+                                                                </div>
+                                                                <div className="row">
+                                                                    <div className="col-sm-2">
+                                                                
+                                                                    <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                                        <Button>Export 
+                                                                            
+                                                                        
+                                                                        </Button>
+                                                                        <Button><img src="img/refresh.png"/></Button>
+                                                                    
+                                                                    </ButtonGroup> 
+                                                                    
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                </div>
+                                                <div className="card-body">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                
+                                
+                                </TabPanel>}
+                                    
+                              
         </ContentWrapper>)
     }
 }

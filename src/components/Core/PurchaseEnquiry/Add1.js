@@ -878,6 +878,42 @@ class Add extends Component {
                         </div>
                         {/*<div class="col-md-3"><Button variant="contained" color="secondary" size="small" onClick={this.toggleModalAssign}>+ Assign User</Button></div>*/}
                     </div>
+                    <Divider />
+                    <div className="row">
+                        <div className=" col-md-2 text-center mt-3" >
+                        <fieldset>
+                                <FormControl>
+                                    <TextField id="Payment" name="Payment" label="Payment terms" type="text" required={true}
+                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
+                                        helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
+                                        error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
+                                        defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
+                                </FormControl>
+                            </fieldset>
+                        </div>
+                        <div className=" col-md-2 text-center mt-3" >
+                        <fieldset>
+                                <FormControl>
+                                    <TextField id="FOB" name=" FOB" label="Dispatch  FOB" type="text" required={true}
+                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
+                                        helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
+                                        error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
+                                        defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
+                                </FormControl>
+                            </fieldset>
+                        </div>
+                        <div className=" col-md-2 text-center mt-3" >
+                        <fieldset>
+                                <FormControl>
+                                    <TextField id="CIF" name="CIF" label=" Dispatch CIF " type="text" required={true}
+                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
+                                        helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
+                                        error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
+                                        defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
+                                </FormControl>
+                            </fieldset>
+                        </div>
+                    </div>
                     <div className="row" >
                         <div className=" col-md-12 text-center mt-3" >
                             <Button style={{backgroundColor:"red"}} variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
