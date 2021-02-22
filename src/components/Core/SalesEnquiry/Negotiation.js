@@ -60,6 +60,9 @@ class Negotiation extends Component {
                 negotiation_stage1:'',
                 negotiation_stage2:'',
                 negotiation_stage3:'',
+                ns1_readOnly:false,
+                ns2_readOnly:false,
+                ns3_readOnly:false,
                 remark:''
         },
        
@@ -85,14 +88,25 @@ class Negotiation extends Component {
     }
 
     negotiationTraking(){
-        axios.get( server_url + context_path + "api/sales-negotiation-tracking?projection=sales-negotiation-tracking").then(res => {
-            var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
+        axios.get( server_url + context_path + "api/sales-negotiation-tracking?reference.id="+this.props.currentId+"&sort=id,desc&projection=sales-negotiation-tracking").then(res => {
+            let ngList1 = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            let ngList =  [];
+            ngList1.map((ngt1,idx1)=>{
+                if(idx1===0){
+                    ngList.push(ngt1);
+                }
+                else{
+                    if(ngList.findIndex(nt=> nt.product.id === ngt1.product.id)===-1){
+                        ngList.push(ngt1);
+                    }
+                }
+            });
             console.log("negotiationTraking Data==>", ngList)
-
             if(ngList.length>0){
                 console.log("negotiationTraking() ngList")
               this.setState({
-                ngTracking:ngList, page:''
+                ngTracking:ngList, 
+                page:''
             });
             }else{
                 console.log("ngList")
@@ -136,39 +150,22 @@ class Negotiation extends Component {
         obj2.negotiation_stage1=this.state.ngList1.negotiation_stage1;
         obj2.negotiation_stage2=this.state.ngList1.negotiation_stage2;
         obj2.negotiation_stage3=this.state.ngList1.negotiation_stage3;
-        
-       
-        console.log("with remark product values===>", obj2);    
-        
-       // console.log("without remark product values===>",obj6);
-        //axios.patch(server_url + context_path + "api/sales-products/"+productsid, obj5)
-       
-        
-        // axios.patch(server_url + context_path + "api/sales-products/"+productsid,obj2).then(res => {
-                       
-        //                 console.log("patch data of sales-products data==>", res.data)
-        //             });
-                //    if(obj2)
-                //    {
 
-                    
-
-             axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2).then(res => {
-                        console.log("axios.get  Negotations toggleModal Negotations==>", res.data)
-                        console.log("sales-negotiation-tracking data==>", res.data)
-                        
-                            this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true });
-                            
-                            
-                            this.loadObj1(this.props.currentId);
-                            this.negotiationTraking();
-                            console.log("after componentDidMount")
-                        });           
-                    //}
-                    // this.componentDidMount();
-                    
-                   
-                }
+        if(!(obj2.negotiation_stage1.length>0 && obj2.negotiation_stage2.length>0 && obj2.negotiation_stage3.length>0)){
+            axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2)
+            .then(res => {
+                console.log("axios.get  Negotations toggleModal Negotations==>", res.data)
+                console.log("sales-negotiation-tracking data==>", res.data)
+                this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true });
+                this.loadObj1(this.props.currentId);
+                this.negotiationTraking();
+                console.log("after componentDidMount")
+            }); 
+        }else{
+            this.setState({ modalnegatation:false});
+        }
+    }
+            
 
     toggleModalNegotation = (productId) => {
         console.log("toggleModalNegotation calling productId=> ",productId )
@@ -197,15 +194,26 @@ class Negotiation extends Component {
                 //var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
                 var ngList=res.data._embedded[Object.keys(res.data._embedded)[0]];
                 console.log("negotiationTraking Data ngList==>", ngList)
-                if(ngList.length){
-                    this.setState({ ngList1:ngList[0]},()=>{console.log("After Setting State==>", this.state.ngList1)});
-                }else{
+                if (ngList.length) {
+                    if(ngList[0].negotiation_stage1 === 0 ){ngList[0]['negotiation_stage1']= ''}
+                    if(ngList[0].negotiation_stage2 === 0){ngList[0]['negotiation_stage2']= ''}
+                    if(ngList[0].negotiation_stage3 === 0){ngList[0]['negotiation_stage3']= ''}
+
+                    if(ngList[0].negotiation_stage1 !== '' ){ngList[0]['ns1_readOnly']= true}
+                    if(ngList[0].negotiation_stage2 !== ''){ngList[0]['ns2_readOnly']= true}
+                    if(ngList[0].negotiation_stage3 !== ''){ngList[0]['ns3_readOnly']= true}
+                    this.setState({ ngList1: ngList[0] }, () => { console.log("After Setting State==>", this.state.ngList1) });
+                } else {
                     this.setState({
-                        ngList1:{negotiation_stage1:'',
-                        negotiation_stage2:'',
-                        negotiation_stage3:'',
-                        remark:''
-                    }
+                        ngList1: {
+                            negotiation_stage1: '',
+                            negotiation_stage2: '',
+                            negotiation_stage3: '',
+                            ns1_readOnly:false,
+                            ns2_readOnly:false,
+                            ns3_readOnly:false,
+                            remark: ''
+                        }
                     })
                 }
             });            
@@ -340,15 +348,19 @@ class Negotiation extends Component {
     }
 
     negotiation_stage1(e){
+        
         console.log("savenegotiation_stage1");
         var ngList1=this.state.ngList1;
         var input=e.target;
-        ngList1.negotiation_stage1=input.value;
+        ngList1.negotiation_stage1=input.value ;
         this.setState({
             ngList1
         });
         console.log("saveNgAmount==>", ngList1);
-    }
+
+
+  
+}
     
 
     negotiation_stage2(e){
@@ -500,35 +512,50 @@ class Negotiation extends Component {
                                     <strong>Negotiation Stage1 :</strong>
                                 </div>
                               <div className="col-md-5">  
-                              {this.state.ngList1.negotiation_stage1===''?
+                              {!this.state.ngList1.ns1_readOnly ?
                                       <TextField type="number" name="negotiation_stage1" label="Amount" required={true} 
                                       value={this.state.ngList1.negotiation_stage1} onChange={(e) => this.negotiation_stage1(e)}/>:
 
                                      <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  inputProps={{ readOnly: true }}
-                                      value={this.state.ngList1.negotiation_stage1} onChange={(e) => this.negotiation_stage1(e)}/>}
+                                      value={this.state.ngList1.negotiation_stage1} onChange={(e) => this.negotiation_stage1(e)}/>
+                                      }
                              </div>
                             </div>
 
+                            {this.state.ngList1.ns1_readOnly &&
                             <div className="row">
                                 <div className="col-md-4">
                                     <strong>Negotiation Stage2 :</strong>
                                 </div>
-                              <div className="col-md-5">    
+                              <div className="col-md-5">
+                              {!this.state.ngList1.ns2_readOnly ?    
                                       <TextField type="number" name="negotiation_stage2" label="Amount" required={true} 
-                                      value={this.state.ngList1.negotiation_stage2} onChange={(e) => this.negotiation_stage2(e)}/>
-                             </div>
-                            </div>
+                                      value={this.state.ngList1.negotiation_stage2} onChange={(e) => this.negotiation_stage2(e)}/>:
 
+
+                                      <TextField type="number" name="negotiation_stage2" label="Amount" required={true}  inputProps={{ readOnly: true }}
+                                      value={this.state.ngList1.negotiation_stage2} onChange={(e) => this.negotiation_stage2(e)}/>}
+                             </div>
+                            </div>}
+                            
+                            {(this.state.ngList1.ns1_readOnly && this.state.ngList1.ns2_readOnly) &&
                             <div className="row">
                                 <div className="col-md-4">
                                     <strong>Negotiation Stage3 :</strong>
                                 </div>
-                              <div className="col-md-5">    
+                              <div className="col-md-5"> 
+                              {!this.state.ngList1.ns3_readOnly ?    
                                       <TextField type="number" name="negotiation_stage3" label="Amount" required={true} 
-                                      value={this.state.ngList1.negotiation_stage3} onChange={(e) => this.negotiation_stage3(e)}/>
+                                      value={this.state.ngList1.negotiation_stage3} onChange={(e) => this.negotiation_stage3(e)}/>:
+
+                                     
+                                      <TextField type="number" name="negotiation_stage2" label="Amount" required={true}  inputProps={{ readOnly: true }}
+                                      value={this.state.ngList1.negotiation_stage3} onChange={(e) => this.negotiation_stage3(e)}/>}
                              </div>
                                         
-                            </div>
+                            </div>}
+
+
                             </div>
                             
 
