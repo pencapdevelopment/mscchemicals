@@ -676,54 +676,41 @@ class Negotiation extends Component {
                     <div className="col-sm-12">
                     <div className="card b">
                     <div className="row ml-1 mt-4">
-                                        <div className="col-sm-12" >
-                                        <h4 style={{fontSize: 18,flexDirection: 'row'}}>Generated Quotation</h4>
-                                   
-                                        </div>
-                                        
-                                    </div>
-                        <Table className="card-header" hover responsive>
-                        <thead>
-                                            <tr>
-                                                <th>Quotation Code</th>
-                                                <th>Sent Date</th>
-                                                <th>Create On</th>
-                                                
-                                            </tr>
-                                        </thead>
-                  
-                                
-                    <tbody className="card-body bb bt" hover responsive>
-                                <tr>
-                                <td>{this.state.obj.code}</td>
-                                <td> hgjhjh</td>
-                                <td>{this.state.obj.creationDate}</td>
-                                </tr>      
-                                       
-                    </tbody>           
-                    </Table>
-                            </div>    
+                        <div className="col-sm-12" >
+                        <h4 style={{fontSize: 18,flexDirection: 'row'}}>Generated Quotation</h4>
+                        </div>               
                     </div>
-                </div>
+                    <Table className="card-header" hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Quotation Code</th>
+                                <th>Sent Date</th>
+                                <th>Create On</th>
+                            </tr>
+                        </thead>        
+                        <tbody className="card-body bb bt" hover responsive>
+                            <tr>
+                                <td>{this.state.obj.code}</td>
+                                <td></td>
+                                <td>{this.state.obj.creationDate}</td>
+                            </tr>      
+                        </tbody>
+                    </Table>
+                </div>    
+            </div>
+        </div>
                 {!this.state.editFlag &&
-                    <div className="row">
-                        
+                    <div className="row">                
                         <div className="col-md-12">
                             {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
                             currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
-
                             {this.state.obj &&
                             <div className="card b">
-                                
                                 <div className="card-body bb bt">
-                          
-                                   
                                     <div className=" row text-left mt-4">
                                         <div className="col-sm-12" >
                                         <h4 style={{fontSize: 18,flexDirection: 'row'}}>Products</h4>
-                                   
                                         </div>
-                                        
                                     </div>
                                     <Table hover responsive>
                                         <thead>
@@ -737,12 +724,10 @@ class Negotiation extends Component {
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
-                                       
                                         {this.state.obj1.products &&
                                         <tbody>
                                         {this.state.obj1.products.map((product, i) => {
                                             return (
-                                                
                                                 <tr key={i}>
                                                     <td className="va-middle">{i + 1}</td>
                                                     <td>

@@ -60,7 +60,6 @@ class UOM extends Component {
         <FormControl>
             <InputLabel  id="uomLabel">UOM</InputLabel>
             <Select
-            inputProps={{ readOnly: true }}
                 name="uom" 
                 labelId="uomLabel"
                 id="demo-mutiple-checkbox"
