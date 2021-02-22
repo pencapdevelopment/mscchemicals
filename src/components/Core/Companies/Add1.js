@@ -52,13 +52,8 @@ function getSteps() {
 
 
 class Add extends Component {
-
-
-
     state = {
-
         classes: makeStyles((theme) => ({
-
             root: {
                 width: '100%',
             },
@@ -79,7 +74,6 @@ class Add extends Component {
         loading: false,
         activeStep: 0,
         modal: false,
-        modalproduct: false,
         steps: getSteps(),
         formWizard: {
             editFlag: false,
@@ -108,7 +102,7 @@ class Add extends Component {
                 categoriesInterested: '',
                 gstin: '',
                 credit: '',
-                product: '',
+                products: [],
                 pan: '',
                 fssai: '',
                 drugLicense: '',
@@ -123,28 +117,6 @@ class Add extends Component {
                 msmeId: '',
                 
             },
-            tempproduct: {
-                code: getUniqueCode('PD'),
-                name: '',
-                category: '',
-                type: '',
-                subCategory: '',
-                specification: '',
-                make: '',
-                batch: '',
-                mfgDate: null,
-                expDate: null,
-                shelfLife: '',
-                deliveryPeriod: '',
-                hsnCode: '',
-                packagingType: '',
-                quantity: '',
-                incoming: '',
-                outgoing: '',
-                selectedMakes: [],
-                selectedTypes: [],
-            },
-
             tempbranch: {
                 name: getUniqueCode('CB'),
                 type: '',
@@ -283,11 +255,6 @@ class Add extends Component {
             modal: !this.state.modal
         });
     };
-    closetoggleModalProduct = () => {
-        this.setState({
-            modalproduct: !this.state.modalproduct
-        });
-    };
     toggleModal = (label) => {
         this.setState({
             modal: !this.state.modal,
@@ -349,45 +316,44 @@ class Add extends Component {
     //         });
     //     }
     // }
-
-
-
-
     loadData() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id)
-            .then(res => {
-                var formWizard = this.state.formWizard;
-                console.log(res.data);
-                var newobj = res.data;
-
-                if (newobj['categories']) {
-                    newobj.selectedCategories = newobj['categories'].split(",");
-                } else {
-                    newobj.selectedCategories = [];
-                }
-                if (newobj['customerType']) {
-                    newobj.selectedCustomerTypes = newobj['customerType'].split(",");//
-                } else {
-                    newobj.selectedCustomerTypes = [];//
-                }
-
-                if (newobj['categoriesInterested']) {
-                    newobj.selectedInterests = newobj['categoriesInterested'].split(",");
-                } else {
-                    newobj.selectedInterests = [];
-                }
-
-                if (newobj['organizations']) {
-                    newobj.selectedorganizations = newobj['organizations'].split(",");
-                } else {
-                    newobj.selectedorganizations = [];
-                }
-
-                formWizard.obj = newobj;
-                this.setState({ formWizard });
-            });
+        .then(res => {
+            var formWizard = this.state.formWizard;
+            var newobj = res.data;
+            if (newobj['categories']) {
+                newobj.selectedCategories = newobj['categories'].split(",");
+            } else {
+                newobj.selectedCategories = [];
+            }
+            if (newobj['customerType']) {
+                newobj.selectedCustomerTypes = newobj['customerType'].split(",");
+            } else {
+                newobj.selectedCustomerTypes = [];
+            }
+            if (newobj['categoriesInterested']) {
+                newobj.selectedInterests = newobj['categoriesInterested'].split(",");
+            } else {
+                newobj.selectedInterests = [];
+            }
+            if (newobj['organizations']) {
+                newobj.selectedorganizations = newobj['organizations'].split(",");
+            } else {
+                newobj.selectedorganizations = [];
+            }
+            newobj.products = [];
+            formWizard.obj = newobj;
+            this.setState({ formWizard },this.getCompanyProducts);
+        });
     }
-
+    getCompanyProducts() {
+        axios.get(server_url + context_path + "api/company-products/?&projection=company_product&company.id=" + this.state.formWizard.obj.id)
+        .then(res => {
+            let formWizard =  this.state.formWizard;
+            formWizard.obj.products = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            this.setState({formWizard});
+        });
+    }
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadSubObjs)
@@ -396,17 +362,12 @@ class Add extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&company=" + this.props.currentId;
 
         if (this.state.filters.search) {
@@ -416,20 +377,18 @@ class Add extends Component {
         url = defaultDateFilter(this.state, url);
 
         axios.get(url)
-            .then(res => {
-                this.setState({
-                    subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                    subPage: res.data.page
-                });
+        .then(res => {
+            this.setState({
+                subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                subPage: res.data.page
+            });
 
-                if (callBack) {
-                    callBack();
-                }
-            })
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
     createNewObj() {
-
         var formWizard = {
             globalErrors: [],
             msg: '',
@@ -440,7 +399,6 @@ class Add extends Component {
         }
         this.setState({ formWizard });
     }
-
     updateObj(id) {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
@@ -448,18 +406,55 @@ class Add extends Component {
 
         this.setState({ formWizard }, this.loadData);
     }
+    setProducts(field, val) {
+        console.log("value keys length:",Object.keys(val).length);
+        if(Object.keys(val).length){
+            let formWizard = this.state.formWizard;
+            let prod = {id:val.id,name:val.name}
+            if(formWizard.obj.products.length>0){
+                if(formWizard.obj.products.findIndex(compProd => compProd.product.id===val.id) === -1){formWizard.obj.products.push({product:prod});}
+            }
+            else{
+                formWizard.obj.products.push({product:prod});
+            }
+            this.setState({formWizard});
+        }
+    }
+    handleSelectedProductDelete = (i) => {
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this product!",
+            icon: "warning",
+            dangerMode: true,
+            button: {
+                text: "Yes, delete it!",
+                closeModal: true,
+            }
+        }).
+        then(willDelete => {
+            if (willDelete) {
+                if(!this.state.formWizard.editFlag){
+                    var formWizard = this.state.formWizard;
+                    formWizard.obj.products.splice(i, 1);
+                    this.setState({ formWizard });
+                }
+                else{
+                    this.setState({loading:true});
+                    axios.delete(server_url + context_path + "api/company-products/"+ this.state.formWizard.obj.products[i].id)
+                    .then(res => {this.getCompanyProducts();})
+                    .finally(() => {this.setState({ loading: false })});
+                }
+            }
+        });
+    }
     setField2(field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.tempcontact[field] = input.value;
-
         if (field === 'phone' && input.value >= 10) {
             formWizard.tempcontact.whatsapp = input.value;
         }
-
         this.setState({ formWizard });
-
         if (!noValidate) {
             const result = FormValidator.validate(input);
             formWizard.errors[input.name] = result;
@@ -468,56 +463,21 @@ class Add extends Component {
             });
         }
     }
-    setSelectField3(field, e) {
-        this.setField3(field, e, true);
-
-    }
-
-    setField3(field, e) {
-        var formWizard = this.state.formWizard;
-
-        var input = e.target;
-        formWizard.tempproduct[field] = e.target.value;
-        if (field === 'category') {
-            formWizard.tempproduct['subCategory'] = '';
-        }
-
-        this.setState({ formWizard }, function () {
-            if (field === 'category') {
-                console.log(e.target.value);
-                this.setState({ subCategory: allcats.filter(g => g.type === e.target.value).map(g => { return { label: g.name, value: g.name } }) });
-
-            }
-        });
-
-
-    }
     setField1(field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.tempbranch[field] = input.value;
-
-
-
         this.setState({ formWizard });
-
-
     }
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.obj[field] = input.value;
-
         if (field === 'gstin' && input.value && input.value.length === 15) {
             formWizard.obj.pan = input.value.substr(2, 10);
         }
-
         this.setState({ formWizard });
-
         console.log("Add1 set field", formWizard);
-
         if (!noValidate) {
             const result = FormValidator.validate(input);
             formWizard.errors[input.name] = result;
@@ -527,16 +487,12 @@ class Add extends Component {
         }
         if(this.state.formWizard.obj.locationType=='I'){
             formWizard.obj.province = 'province'
-
             console.log("Add1 set field");
         }
        else{
         formWizard.obj.province = 'state'
        }
-
     }
-
-
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
@@ -546,31 +502,24 @@ class Add extends Component {
     setSelectField2(field, e) {
         this.setField2(field, e, true);
     }
-
-
     setDateField2(field, e) {
         var formWizard = this.state.formWizard;
-
         if (e) {
             formWizard.tempcontact[field] = e.format();
         } else {
             formWizard.tempcontact[field] = null;
         }
-
         this.setState({ formWizard });
     }
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
-
         if (e) {
             formWizard.obj[field] = e.format();
         } else {
             formWizard.obj[field] = null;
         }
-
         this.setState({ formWizard });
     }
-
     setAutoSuggest1(field, val, multi) {
         var formWizard = this.state.formWizard;
         if (!multi) {
@@ -589,28 +538,6 @@ class Add extends Component {
         }
         this.setState({ formWizard });
     }
-    setAutoSuggest(field, val, multi) {
-        var formWizard = this.state.formWizard;
-        // if (!multi) {
-        //     formWizard.obj[field] = val;
-        // }
-        if(Object.keys(val).length){
-            formWizard.obj['selected' + field].push(val);
-        }
-        this.setState({ formWizard });
-    }
-    setAutoSuggest(field, val, multi) {
-        var formWizard = this.state.formWizard;
-        // if (!multi) {
-        //     formWizard.obj[field] = val;
-        // }
-        if(Object.keys(val).length){
-            formWizard.obj['selected' + field].push(val);
-        }
-        this.setState({ formWizard });
-    }
-    
-
     checkForError() {
         // const form = this.formWizardRef;
 
@@ -789,9 +716,6 @@ class Add extends Component {
         })
     }
     saveDetails() {
-
-
-
         var hasError = this.checkForError();
         if (!hasError) {
             var newObj = this.state.formWizard.obj;
@@ -801,12 +725,11 @@ class Add extends Component {
                 this.setState({ formWizard });
                 return;
             }
-
             newObj['categories'] = newObj.selectedCategories.join(",");
-            newObj['customerType'] = newObj.selectedCustomerTypes.join(",");//
-            newObj['productslist'] = newObj.selectedInterests;
+            newObj['customerType'] = newObj.selectedCustomerTypes.join(",");
             newObj['categoriesInterested'] = newObj.selectedInterests.join(",");
             newObj['organizations'] = newObj.selectedorganizations.join(",");
+            newObj['products'] = [];
             this.setState({ loading: true });
             var promise = undefined;
             if (!this.state.formWizard.editFlag) {
@@ -818,8 +741,6 @@ class Add extends Component {
                 var formWizard = this.state.formWizard;
                 formWizard.obj.id = res.data.id;
                 formWizard.msg = 'successfully Saved';
-
-
                 // this.props.onSave(res.data.id);
                 this.setState(formWizard);
                 console.log(res, this.state.formWizard);
@@ -832,13 +753,10 @@ class Add extends Component {
                         })
                         return value;
                     })
-
                 }
                 var activeStep = this.state.activeStep + 1;
                 this.setState({ activeStep, loading: false });
             }).finally(() => {
-
-
             }).catch(err => {
                 // this.toggleTab(0);
                 //this.setState({ addError: err.response.data.globalErrors[0] });
@@ -849,7 +767,6 @@ class Add extends Component {
                         formWizard.globalErrors.push(e);
                     });
                 }
-
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
@@ -882,31 +799,30 @@ class Add extends Component {
     }
     loadproducts() {
         axios.get(server_url + context_path + "api/products")
-            .then(res => {
-                var lis = res.data._embedded[Object.keys(res.data._embedded)];
-                if (lis) {
-                    var products = this.state.products;
-                    lis.forEach(e => {
-                        products.push({ label: e.name, value: e.name, id: e.id });
-                    })
-
-                    this.setState({ products });
-                }
-            });
+        .then(res => {
+            var lis = res.data._embedded[Object.keys(res.data._embedded)];
+            if (lis) {
+                var products = this.state.products;
+                lis.forEach(e => {
+                    products.push({ label: e.name, value: e.name, id: e.id });
+                })
+                this.setState({ products });
+            }
+        });
     }
     loadOrgs() {
         axios.get(server_url + context_path + "api/companies?projection=company_auto_suggest_product")
-            .then(res => {
-                var lis = res.data._embedded[Object.keys(res.data._embedded)];
-                if (lis) {
-                    var organizations = this.state.organizations;
-                    lis.forEach(e => {
-                        organizations.push({ label: e.name, value: e.name });
-                    })
+        .then(res => {
+            var lis = res.data._embedded[Object.keys(res.data._embedded)];
+            if (lis) {
+                var organizations = this.state.organizations;
+                lis.forEach(e => {
+                    organizations.push({ label: e.name, value: e.name });
+                })
 
-                    this.setState({ organizations });
-                }
-            });
+                this.setState({ organizations });
+            }
+        });
         this.loadproducts();
         axios.get(server_url + context_path + "api/companies?projection=company_auto_suggest&type=V")
             .then(res => {
@@ -943,69 +859,51 @@ class Add extends Component {
         this.setState({ name: file.name });
     }
     addProduct() {
-        var newObj = this.state.formWizard.tempproduct;
+        if(this.productASRef.state.searchParam !== ""){
+            this.setState({ loading: true });
+            var newObj = {code: getUniqueCode('PD'),name: this.productASRef.state.searchParam,specification:'',make:'',type:'Food grade',category:''};
+            var promise = undefined;
+            promise = axios.post(server_url + context_path + "api/products", newObj)
+            promise.then(res => {
+                this.setState({ loading: false });
+            }).finally(() => {
+                this.loadproducts();
+                this.setState({ loading: false });
+            }).catch(err => {
+                console.log("product add error is",err);
+                // this.toggleTab(0);
+                //this.setState({ addError: err.response.data.globalErrors[0] });
+                var formWizard = this.state.formWizard;
+                formWizard.globalErrors = [];
+                if (err.response.data.globalErrors) {
+                    err.response.data.fieldError.forEach(e => {
+                        formWizard.globalErrors.push(e);
+                    });
+                }
+                var errors = {};
+                if (err.response.data.fieldError) {
+                    err.response.data.fieldError.forEach(e => {
 
-
-        newObj['make'] = newObj.selectedMakes.join(",");//
-        newObj['type'] = newObj.selectedTypes.join(",");
-
-
-        var promise = undefined;
-        // if (!this.state.formWizard.editFlag) {
-        promise = axios.post(server_url + context_path + "api/products", newObj)
-        // } else {
-        //     promise = axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id, newObj)
-        // }
-        promise.then(res => {
-            // var formw = this.state.formWizard;
-            // formw.obj.id = res.data.id;
-            // formw.msg = 'successfully Saved';
-
-
-            // this.props.onSave(res.data.id);
-
-        }).finally(() => {
-            var products = this.state.products;
-            products = [];
-            this.loadproducts();
-            this.closetoggleModalProduct();
-            this.setState({ loading: false, products });
-        }).catch(err => {
-            // this.toggleTab(0);
-            //this.setState({ addError: err.response.data.globalErrors[0] });
-            var formWizard = this.state.formWizard;
-            formWizard.globalErrors = [];
-            if (err.response.data.globalErrors) {
-                err.response.data.fieldError.forEach(e => {
-                    formWizard.globalErrors.push(e);
-                });
-            }
-
-            var errors = {};
-            if (err.response.data.fieldError) {
-                err.response.data.fieldError.forEach(e => {
-
-                    if (errors[e.field]) {
-                        errors[e.field].push(e.errorMessage);
-                    } else {
-                        errors[e.field] = [];
-                        errors[e.field].push(e.errorMessage);
-
-                    }
-
-                });
-            }
-            var errorMessage = "";
-            if (err.response.data.globalErrors) {
-                err.response.data.globalErrors.forEach(e => {
-                    errorMessage += e + ""
-                });
-            }
-            formWizard.errors = errors;
-            this.setState({ formWizard });
-            if (!errorMessage) errorMessage = "Please resolve the errors";
-            swal("Unable to Save!", errorMessage, "error");
-        })
+                        if (errors[e.field]) {
+                            errors[e.field].push(e.errorMessage);
+                        } else {
+                            errors[e.field] = [];
+                            errors[e.field].push(e.errorMessage);
+                        }
+                    });
+                }
+                var errorMessage = "";
+                if (err.response.data.globalErrors) {
+                    err.response.data.globalErrors.forEach(e => {
+                        errorMessage += e + ""
+                    });
+                }
+                formWizard.errors = errors;
+                this.setState({ loading: false,formWizard });
+                if (!errorMessage) errorMessage = "Please resolve the errors";
+                swal("Unable to Save!", errorMessage, "error");
+            })
+        }
     }
     uploadFiles() {
         var formData = new FormData();
@@ -1033,174 +931,17 @@ class Add extends Component {
             }
         }).catch(err => {
             var msg = "Select File";
-
             if (err.response.data.globalErrors && err.response.data.globalErrors[0]) {
                 msg = err.response.data.globalErrors[0];
             }
-
             swal("Unable to Upload!", msg, "error");
         })
     }
-
     render() {
-
         const errors = this.state.formWizard.errors;
-
         return (
             <ContentWrapper>
                 {this.state.loading && <PageLoader />}
-                <Modal isOpen={this.state.modalproduct} backdrop="static" toggle={this.closetoggleModalProduct} size={'md'}>
-                    <ModalHeader toggle={this.closetoggleModalProduct}>
-                        Add Product
-                    </ModalHeader>
-                    <ModalBody>
-                        <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
-
-                            <div className="row">
-                                <div className="col-md-10 offset-md-1">
-
-                                    <fieldset>
-                                        <TextField type="text" name="name" label="Product Name"
-                                            required={true}
-                                            fullWidth={true}
-                                            value={this.state.formWizard.tempproduct.name}
-                                            inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
-                                            helperText={errors?.name?.length > 0 ? errors?.name[0]?.msg : ""}
-                                            error={errors?.name?.length > 0}
-
-                                            onChange={e => this.setField3("name", e)} />
-                                    </fieldset>
-                                    <fieldset>
-                                        <TextField type="text" name="code" label="Product Code"
-                                            required={true} fullWidth={true}
-                                            value={this.state.formWizard.tempproduct.code}
-                                            disabled={this.state.formWizard.editFlag}
-                                            inputProps={{ readOnly: this.state.formWizard.tempproduct.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
-                                            helperText={errors?.code?.length > 0 ? errors?.code[0]?.msg : ""}
-                                            error={errors?.code?.length > 0}
-
-                                            onChange={e => this.setField3("code", e)} />
-                                    </fieldset>
-                                    <fieldset>
-                                        <FormControl>
-                                            <InputLabel id="demo-mutiple-checkbox-label">Category</InputLabel>
-
-                                            <Select
-                                                name="category"
-                                                labelId="demo-mutiple-checkbox-label"
-                                                id="demo-mutiple-checkbox"
-                                                value={this.state.formWizard.tempproduct.category}
-
-                                                helperText={errors?.category?.length > 0 ? errors?.category[0]?.msg : ""}
-                                                error={errors?.category?.length > 0}
-                                                onChange={e => this.setSelectField3('category', e)}
-
-                                            > {this.state.category.map((e, keyIndex) => {
-                                                return (
-                                                    <MenuItem key={keyIndex} value={e.value}>{e.label}</MenuItem>
-                                                );
-                                            })}
-                                            </Select>
-                                        </FormControl>
-                                    </fieldset>
-                                  
-
-                                    <fieldset>
-                                        <TextField type="text" name="specification" label="Specification"
-                                            required={true} fullWidth={true}
-                                            // value={this.state.formWizard.obj.subCategory}
-                                            inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
-                                            helperText={errors?.specification?.length > 0 ? errors?.specification[0]?.msg : ""}
-                                            error={errors?.specification?.length > 0}
-
-                                            value={this.state.formWizard.tempproduct.specification} onChange={e => this.setField3("specification", e)} />
-                                    </fieldset>
-                                    <fieldset>
-                                        <FormControl>
-                                            <InputLabel id="demo-mutiple-checkbox-label">Make</InputLabel>
-                                            <Select
-                                                name="make"
-                                                required={true}
-                                                labelId="demo-mutiple-checkbox-label"
-                                                id="demo-mutiple-checkbox"
-                                                inputProps={{ maxLength: 200, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"200"}]' }}
-                                                helperText={errors?.make?.length > 0 ? errors?.make[0]?.msg : ""}
-                                                error={errors?.make?.length > 0}
-
-                                                value={this.state.formWizard.tempproduct.selectedMakes}
-                                                renderValue={(selected) => selected.join(', ')}
-                                                onChange={e => this.setSelectField3('selectedMakes', e)}
-                                                multiple={true}
-                                            > {this.state.make.map((e, keyIndex) => {
-                                                return (
-                                                    <MenuItem key={keyIndex} value={e.value}>
-                                                        <Checkbox checked={this.state.formWizard.tempproduct.selectedMakes.indexOf(e.value) > -1} />
-                                                        <ListItemText primary={e.label} />
-                                                    </MenuItem>
-                                                )
-                                            })}
-                                            </Select>
-                                        </FormControl>
-                                    </fieldset>
-                                    <fieldset>
-                                        <FormControl>
-                                            <InputLabel id="demo-mutiple-checkbox-label">Type</InputLabel>
-                                            <Select
-                                                name="type"
-                                                labelId="demo-mutiple-checkbox-label"
-                                                id="demo-mutiple-checkbox"
-                                                value={this.state.formWizard.tempproduct.selectedTypes}
-                                                renderValue={(selected) => selected.join(', ')}
-                                                inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                                helperText={errors?.type?.length > 0 ? errors?.type[0]?.msg : ""}
-                                                error={errors?.type?.length > 0}
-
-                                                onChange={e => this.setSelectField3('selectedTypes', e)}
-                                                multiple={true}
-                                            >
-                                                {this.state.type.map((e, keyIndex) => {
-                                                    return (
-                                                        <MenuItem key={keyIndex} value={e.value}>
-                                                            <Checkbox checked={this.state.formWizard.tempproduct.selectedTypes.indexOf(e.value) > -1} />
-                                                            <ListItemText primary={e.label} />
-                                                        </MenuItem>
-                                                    );
-                                                })}
-                                            </Select>
-                                        </FormControl>
-                                    </fieldset>
-
-                                    {/* <fieldset>
-                                        <TextField type="text" name="hsnCode" label="HSN Code"
-                                            required={true} fullWidth={true}
-                                            // value={this.state.formWizard.obj.subCategory}
-                                            inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
-                                            helperText={errors?.hsnCode?.length > 0 ? errors?.hsnCode[0]?.msg : ""}
-                                            error={errors?.hsnCode?.length > 0}
-
-                                            value={this.state.formWizard.obj.hsnCode} onChange={e => this.setField("hsnCode", e)} />
-                                    </fieldset> */}
-
-                                    {/* <fieldset>
-                                        <TextField type="text" name="packagingType" label="Packaging Type"
-                                            required={true} fullWidth={true}
-                                            // value={this.state.formWizard.obj.subCategory}
-                                            inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
-                                            helperText={errors?.packagingType?.length > 0 ? errors?.packagingType[0]?.msg : ""}
-                                            error={errors?.packagingType?.length > 0}
-
-                                            value={this.state.formWizard.obj.packagingType} onChange={e => this.setField("packagingType", e)} />
-                                    </fieldset> */}
-
-
-                                </div>
-                            </div>
-                        </Form>
-                        <div className="text-center">
-                            <Button variant="contained" color="primary" onClick={e => this.addProduct()}>Save</Button>
-                        </div>
-                    </ModalBody>
-                </Modal>
                 <Modal isOpen={this.state.modal} backdrop="static" toggle={this.closetoggleModal} size={'md'}>
                     <ModalHeader toggle={this.closetoggleModal}>
                         Upload - {this.state.label}
@@ -1557,55 +1298,40 @@ class Add extends Component {
                                                 </fieldset>} */}
                                             <fieldset className="row">
                                                 <FormControl className="col-md-8">
-                                                    {this.state.formWizard.obj.type === 'B' && <InputLabel id="demo-mutiple-checkbox-label">Products Focused</InputLabel>}
-                                                    {this.state.formWizard.obj.type === 'V' && <InputLabel id="demo-mutiple-checkbox-label">Products Offered</InputLabel>}
-                                                    <Select
-                                                        name="categoriesInterested"
-                                                        labelId="demo-mutiple-checkbox-label"
-                                                        id="demo-mutiple-checkbox"
-                                                        value={this.state.formWizard.obj.selectedInterests}
-
-                                                        helperText={errors?.category?.length > 0 ? errors?.category[0]?.msg : ""}
-                                                        error={errors?.category?.length > 0}
-                                                        renderValue={(selected) => selected.join(', ')}
-                                                        onChange={e => this.setSelectField('selectedInterests', e)}
-                                                        multiple={true}
-                                                    >
-                                                        {this.state.products.map((e, keyIndex) => {
-                                                            return (
-                                                                <MenuItem key={keyIndex} value={e.value}>
-                                                                    <Checkbox checked={this.state.formWizard.obj.selectedInterests.indexOf(e.value) > -1} />
-                                                                    <ListItemText primary={e.label} />
-                                                                </MenuItem>
-                                                            );
-                                                        })}
-                                                    </Select>
-                                                   
+                                                    <AutoSuggest url="products"
+                                                        name="products"
+                                                        displayColumns="name"
+                                                        label={this.state.formWizard.obj.type === 'B' ? "Products Focused" : "Products Offered"}
+                                                        onRef={ref => {
+                                                            (this.productASRef = ref)
+                                                            if (ref) {
+                                                                this.productASRef.load();
+                                                            }
+                                                        }}
+                                                        placeholder="Search Product by name"
+                                                        arrayName="products"
+                                                        helperText={errors?.products?.length > 0 ? errors?.products[0]?.msg : ""}
+                                                        error={errors?.productName_auto_suggest?.length > 0}
+                                                        projection="product_auto_suggest"
+                                                        value={this.state.assignProduct}
+                                                        onSelect={e => this.setProducts('products', e)}
+                                                        queryString="&name" >
+                                                    </AutoSuggest>
                                                 </FormControl>
-
                                                 <Button
                                                     variant="contained"
                                                     color="primary"
-                                                    onClick={e => this.closetoggleModalProduct()}
+                                                    onClick={e => this.addProduct()}
                                                     className={this.state.classes.button + " col-md-4 p-2"}
-                                                >
-                                                    + Add Product  </Button>
-
+                                                >+ Add Product  </Button>
                                             </fieldset>
                                              <div class="col-md-12" style={{marginLeft:"4px"}}>
-                                                {this.state.formWizard.obj.selectedInterests.map((obj, i) => {
+                                                {this.state.formWizard.obj.products.length > 0 && this.state.formWizard.obj.products.map((compProd, i) => {
                                                     return (
                                                         <Chip
-                                                            // avatar={
-                                                            //     <Avatar>
-                                                            //         <AssignmentIndIcon />
-                                                            //     </Avatar>
-                                                            // }
-                                                            label={obj}
-
-                                                            // onClick={() => this.handleClick(obj)}
-                                                            onDelete={() => this.handleSelectedInterestsDelete(i)}
-                                                        // className={classes.chip}
+                                                            label={compProd.product.name}
+                                                            // onClick={() => this.handleSelectedProducClick(compProd)}
+                                                            onDelete={() => this.handleSelectedProductDelete(i)}
                                                         />
                                                     )
                                                 })}
@@ -1674,7 +1400,6 @@ class Add extends Component {
                             
                                             <fieldset className="row">
                                                 <FormControl className="col-md-12">
-                                                  
                                                     <AutoSuggest url="companies"
                                                             name="organizations"
                                                             onRef={ref => (this.companyASRef = ref)}
@@ -1689,27 +1414,16 @@ class Add extends Component {
                                                             value={this.state.formWizard.selectedorganizations}
                                                             onSelect={e => this.setAutoSuggest('organizations', e, true)}
                                                             queryString="&name" >
-                                                                
-                                                            </AutoSuggest>
-
+                                                    </AutoSuggest>
                                                 </FormControl>
-
-
                                             </fieldset>
                                             <div class="col-md-12" style={{marginLeft:"4px"}}>
                                                 {this.state.formWizard.obj.selectedorganizations.map((obj, i) => {
                                                     return (
                                                         <Chip
-                                                            // avatar={
-                                                            //     <Avatar>
-                                                            //         <AssignmentIndIcon />
-                                                            //     </Avatar>
-                                                            // }
-                                                            label={obj.name}
-
+                                                            label={obj}
                                                             // onClick={() => this.handleClick(obj)}
                                                             onDelete={() => this.handleAssOrgDelete(i)}
-                                                        // className={classes.chip}
                                                         />
                                                     )
                                                 })}

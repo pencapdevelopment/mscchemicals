@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
     Form, Modal,
-
     ModalBody, ModalHeader, Table
 } from 'reactstrap';
 import swal from 'sweetalert';
@@ -15,19 +14,15 @@ import AutoSuggest from '../../Common/AutoSuggest';
 import { context_path, server_url } from '../../Common/constants';
 import FormValidator from '../../Forms/FormValidator';
 import Divider from '@material-ui/core/Divider';
-
-
-
-
-
+import PageLoader from '../../Common/PageLoader';
 // const json2csv = require('json2csv').parse;
-
 class Products extends Component {
     state = {
         activeTab: 0,
         editFlag: false,
         viewFlag: false,
         modal: false,
+        loading: false,
         type: '',
         newObj: '',
         errors: {},
@@ -53,48 +48,36 @@ class Products extends Component {
             { label: 'Warehouse', value: 'WH' }
         ]
     }
-
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
-
     getProducts() {
         var newObj = this.state.newObj;
         axios.get(this.state.productsUrl + "?size=100000&projection=company_product&company.id=" + newObj.id + "&type=" + this.state.type)
-            .then(res => {
-                newObj[this.state.type] = res.data._embedded[Object.keys(res.data._embedded)[0]];
-                var selectedProducts = this.state.selectedProducts;
-
-                this.productASRef = [];
-
-                newObj[this.state.type].forEach((p, idx) => {
-                    selectedProducts[idx] = p;
-                });
-
-                this.setState({
-                    products: cloneDeep(newObj[this.state.type]),
-                    newObj: newObj,
-                    selectedProducts: selectedProducts
-                });
-            })
+        .then(res => {
+            newObj[this.state.type] = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            var selectedProducts = this.state.selectedProducts;
+            this.productASRef = [];
+            newObj[this.state.type].forEach((p, idx) => {
+                selectedProducts[idx] = p;
+            });
+            this.setState({
+                products: cloneDeep(newObj[this.state.type]),
+                newObj: newObj,
+                selectedProducts: selectedProducts
+            });
+        })
     }
-
     setAutoSuggest(idx, val) {
         var products = this.state.products;
         var selectedProducts = this.state.selectedProducts;
-        
         products[idx].product = val;
         selectedProducts[idx] = {id: val};
-
         products[idx].updated = true;
-    
         this.setState({ products, selectedProducts });
     }
-    
     openProducts = () => {
         this.setState({
             products: cloneDeep(this.state.newObj[this.state.type])
@@ -102,9 +85,7 @@ class Products extends Component {
             if(!this.state.newObj[this.state.type].length) {
                 this.addProduct();
             }
-    
             this.toggleModal();
-
             // setTimeout(() => {
             //     this.state.selectedProducts.forEach((p, idx) => {
             //         this.productASRef[idx].setInitialField(p);
@@ -112,7 +93,6 @@ class Products extends Component {
             // }, 500);
         });
     }
-    
     addProduct = () => {
         var products = this.state.products;
         var idx = products.length;
@@ -121,113 +101,88 @@ class Products extends Component {
             phone: '',
             email: ''
         })
-    
         this.setState({ products }, o => {
-            this.productASRef[idx].setInitialField(this.state.selectedProducts[idx]);
+            if(idx){
+                this.productASRef[idx].setInitialField(this.state.selectedProducts[idx]);
+            }
         });
     }
-    
     deleteProduct = (i) => {
         var products = this.state.products;
-    
         if(products[i].id) {
             products[i].delete = true;
         } else {
             products.splice(i, 1);
         }
-    
         this.setState({ products });
     }
-    
     checkForError() {
         // const form = this.formWizardRef;
-    
         const tabPane = document.getElementById('saveCForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         console.log(errors);
-    
         this.setState({errors});
-    
         return hasError;
     }
-    
     saveDetails = () => {
         var hasError = this.checkForError();
-    
         if (!hasError) {
             var products = this.state.products;
-    
             if(products && products.length) {
                 this.setState({ loading: true });
-    
                 products.forEach((prod, idx) => {
                     if(prod.delete) {
                         axios.delete(this.state.productsUrl + prod.id)
-                            .then(res => {
-    
-                            }).catch(err => {
-                                swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
-                            })
+                        .then(res => {
+                        }).catch(err => {
+                            swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
+                        })
                     } else if(!prod.id || prod.updated) {
                         prod.company = '/companies/' + this.state.newObj.id;
                         prod.product = '/products/' + prod.product;
                         prod.type = this.state.type;
-    
                         var promise = undefined;
                         if (!prod.id) {
                             promise = axios.post(this.state.productsUrl, prod)
                         } else {
                             promise = axios.patch(this.state.productsUrl + prod.id, prod)
                         }
-    
                         promise.then(res => {
                             prod.id = res.data.id;
                         }).catch(err => {
                             swal("Unable to Save!", "Please resolve the errors", "error");
                         })
                     }
-    
                     if(idx === products.length - 1) {
                         this.setState({ loading: false });
-    
                         setTimeout(() => {
                             this.getProducts();
                             this.toggleModal();
-                        }, 500);
+                        }, 5000);
                     }
                 })
             } else {
                 this.toggleModal();
             }
         }
-    
         return true;
     }
-
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
-        console.log('products component did mount');
-        console.log(this.props.currentId);
-
         this.setState({newObj: this.props.parentObj, type: this.props.type}, () => {
             this.getProducts();
-        });
-        
+        });   
         this.props.onRef(this);
     }
-
-
     render() {
         const errors = this.state.errors;
-
         return (
             <div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} size={'lg'}>
+                    {this.state.loading && <PageLoader />}
                     <ModalHeader toggle={this.toggleModal}>
                         <h4>
                             Products {this.state.type}
@@ -254,14 +209,14 @@ class Products extends Component {
                                                                 {!prod.id &&                                                                      
                                                                 <FormControl>
                                                                     <AutoSuggest url="products"
-                                                                        name="productName"
+                                                                        name={"productName"+i}
                                                                         displayColumns="name"
                                                                         label="Product"
                                                                         placeholder="Search Product by name"
                                                                         arrayName="products"
-                                                                        helperText={errors?.productName_auto_suggest?.length > 0 ? errors?.productName_auto_suggest[i]?.msg : ""}
-                                                                        error={errors?.productName_auto_suggest?.length > 0}
-                                                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                                        helperText={errors && errors.hasOwnProperty("productName"+i+"_auto_suggest") && errors["productName"+i+"_auto_suggest"].length > 0?errors["productName"+i+"_auto_suggest"][0]["msg"]:""}
+                                                                        error={errors && errors.hasOwnProperty("productName"+i+"_auto_suggest") && errors["productName"+i+"_auto_suggest"].length > 0}
+                                                                        inputProps={{ "data-validate": '[{ "key":"required","msg":"Product Name is required"}]' }}
                                                                         onRef={ref => (this.productASRef[i] = ref)}
                                                                         projection="product_auto_suggest"
                                                                         value={this.state.selectedProducts[i]}
@@ -279,7 +234,6 @@ class Products extends Component {
                                             })}
                                         </tbody>
                                     </Table>            
-
                                     <div className="text-center">
                                         <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save</Button>
                                     </div>
@@ -289,22 +243,15 @@ class Products extends Component {
                     </ModalBody>
                 </Modal>
                 <div className="row mt-4">
-                    
                 <div className="col-sm-9 mt-4">
-                    
                     <span >  Products  </span> {this.state.type}
-                   
-                   
-                     
                 </div>
                 <div className="col-sm-3 mt-4">
                     <h4>
-                   
                     <Button  size="small" style={{textTransform: 'none', fontWeight: "normal"}} className="ml-3" variant="contained" color="white" size="sm" onClick={this.openProducts} title="Add Product">
-                            Add/Update
-                        </Button>  
+                        Add/Update
+                    </Button>  
                     </h4>
-                     
                 </div>
                 </div>
                 <Divider/>
@@ -332,20 +279,16 @@ class Products extends Component {
                         })}
                     </tbody>
                 </Table>
-                
             }
                    </div>
-               </div>
-            
+               </div>           
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Products);

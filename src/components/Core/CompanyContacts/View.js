@@ -124,9 +124,6 @@ class View extends Component {
                 }
             })
     }
-
-
-
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + "?projection=company_contact_edit").then(res => {
             this.setState({ obj: res.data,
@@ -154,13 +151,13 @@ class View extends Component {
     }
 
     saveSuccess(id) {
-        this.setState({ editFlag: false });
+        this.setState({loading:true, editFlag: false });
+        this.loadObj(id);
     }
 
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
 
     toggleModal = () => {
         this.setState({
@@ -170,13 +167,11 @@ class View extends Component {
 
     addSubObj = () => {
         this.setState({ editSubFlag: false });
-
         this.toggleModal();
     }
 
     editSubObj = (i) => {
         var obj = this.state.subObjs[i].id;
-
         this.setState({ editSubFlag: true, subId: obj }, this.toggleModal);
     }
 

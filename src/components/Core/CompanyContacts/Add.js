@@ -20,20 +20,8 @@ import AutoSuggest from '../../Common/AutoSuggest';
 import { context_path, server_url } from '../../Common/constants';
 import FormValidator from '../../Forms/FormValidator';
 import ContentWrapper from '../../Layout/ContentWrapper';
-
-
-
-
-
-
-
-
-
 // const json2csv = require('json2csv').parse;
-
-
 class Add extends Component {
-
     state = {
         formWizard: {
             editFlag: false,
@@ -91,32 +79,26 @@ class Add extends Component {
 
     loadData() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + "?projection=company_contact_edit")
-            .then(res => {
-                var formWizard = this.state.formWizard;
-                formWizard.obj = res.data;
-
-                formWizard.selectedcompany = formWizard.obj.company;
-                formWizard.selectedbranch = formWizard.obj.branch;
-                if (formWizard.obj.company) {
-                    formWizard.obj.company = formWizard.obj.company.id;
-                }
-                console.log(formWizard.selectedcompany)
-
-                this.companyASRef.setInitialField(formWizard.selectedcompany)
-                  this.branchASRef.setInitialField(formWizard.obj.selectedbranch)
-
-                this.setState({ formWizard });
-            });
+        .then(res => {
+            var formWizard = this.state.formWizard;
+            formWizard.obj = res.data;
+            formWizard.selectedcompany = formWizard.obj.company;
+            formWizard.selectedbranch = formWizard.obj.branch;
+            if (formWizard.obj.company) {
+                formWizard.obj.company = formWizard.obj.company.id;
+            }
+            this.companyASRef.setInitialField(formWizard.selectedcompany);
+            this.branchASRef.setInitialField(formWizard.selectedbranch);
+            this.setState({ formWizard });
+        });
     }
 
     createNewObj() {
-
         var formWizard = {
             globalErrors: [],
             msg: '',
             errors: {},
             obj: {
-
             }
         }
         this.setState({ formWizard });
@@ -126,22 +108,17 @@ class Add extends Component {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
         formWizard.editFlag = true;
-
         this.setState({ formWizard }, this.loadData);
     }
 
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.obj[field] = input.value;
-
         if (field === 'phone' && input.value >= 10) {
             formWizard.obj.whatsapp = input.value;
         }
-
         this.setState({ formWizard });
-
         if (!noValidate) {
             const result = FormValidator.validate(input);
             formWizard.errors[input.name] = result;
@@ -177,16 +154,13 @@ class Add extends Component {
 
     checkForError() {
         // const form = this.formWizardRef;
-
         const tabPane = document.getElementById('saveForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
         formWizard.errors = errors;
-
         this.setState({ formWizard });
         console.log(errors);
-
         return hasError;
     }
 
@@ -194,7 +168,6 @@ class Add extends Component {
         var hasError = this.checkForError();
         if (!hasError) {
             var newObj = this.state.formWizard.obj;
-
             if (this.state.formWizard.obj.gender === '') {
                 swal("Unable to Save!", "Please select gender", "error");
                 return;
@@ -202,11 +175,9 @@ class Add extends Component {
             if (this.state.formWizard.selectedcompany) {
                 newObj.company = '/companies/' + this.state.formWizard.selectedcompany.id;
             }
-
             if (this.state.formWizard.selectedbranch) {
-                newObj.branch = '/branches/' + this.state.formWizard.selectedbranch;
+                newObj.branch = '/branches/' + this.state.formWizard.selectedbranch.id;
             }
-
             var promise = undefined;
             if (!this.state.formWizard.editFlag) {
                 promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
@@ -217,10 +188,7 @@ class Add extends Component {
                 var formw = this.state.formWizard;
                 formw.obj.id = res.data.id;
                 formw.msg = 'successfully Saved';
-
-
                 this.props.onSave(res.data.id);
-
             }).finally(() => {
                 this.setState({ loading: false });
             }).catch(err => {
@@ -233,19 +201,15 @@ class Add extends Component {
                         formWizard.globalErrors.push(e);
                     });
                 }
-
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
-
                         if (errors[e.field]) {
                             errors[e.field].push(e.errorMessage);
                         } else {
                             errors[e.field] = [];
                             errors[e.field].push(e.errorMessage);
-
                         }
-
                     });
                 }
                 var errorMessage = "";
@@ -259,20 +223,15 @@ class Add extends Component {
                 if (!errorMessage) errorMessage = "Please resolve the errors";
                 swal("Unable to Save!", errorMessage, "error");
             })
-
-
         }
         return true;
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
 
     componentDidMount() {
-
         this.props.onRef(this);
-        console.log(this.props.company)
         if (this.props.company) {
             var formWizard = this.state.formWizard;
             formWizard.selectedcompany = this.props.company;
@@ -322,7 +281,7 @@ class Add extends Component {
                             <fieldset>
                                 <TextField type="text" label="Name" required={true}
                                     fullWidth={true} name="name"
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
+                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required","msg":"Name is required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
                                     helperText={errors?.name?.length > 0 ? errors?.name[0]?.msg : ''}
                                     error={errors?.name?.length > 0}
 
@@ -363,7 +322,7 @@ class Add extends Component {
                                             arrayName="branches"
                                             projection="branch_auto_suggest"
                                             value={this.state.formWizard.selectedbranch}
-                                            onSelect={e => this.setAutoSuggest('branch', e.id)}
+                                            onSelect={e => this.setAutoSuggest('branch', e)}
                                             queryString={`&company.id=${this.state.formWizard.obj.company ? this.state.formWizard.obj.company.id : 0}&branchName`}></AutoSuggest>
                                     </FormControl>
                                 </fieldset>}

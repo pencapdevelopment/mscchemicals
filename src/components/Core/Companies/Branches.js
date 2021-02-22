@@ -83,7 +83,6 @@ class Branches extends Component {
 
     viewObj = (i) => {
         var newObj = this.state.objs[i];
-
         this.setState({ newObj: newObj, viewFlag: true }, o => {
             this.getContacts();
         });
@@ -356,7 +355,7 @@ class Branches extends Component {
                                                     <tr key={obj.id}>
                                                         <td>{i + 1}</td>
                                                         <td>
-                                                            <a href="#s" className="btn-link" onClick={() => this.viewObj(i)}>
+                                                            <a href="javascript:void(0);" className="btn-link" onClick={() => this.viewObj(i)}>
                                                                 {obj.name}
                                                             </a>
                                                         </td>
@@ -366,12 +365,11 @@ class Branches extends Component {
                                                         <td>
                                                             {obj.city}
                                                         </td>
-
                                                         <td>
                                                             <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
                                                         </td>
                                                         <td>
-                                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.editObj(i)}>Edit1</Button>
+                                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.editObj(i)}>Edit</Button>
                                                         </td>
                                                     </tr>
                                                 )

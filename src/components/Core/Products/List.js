@@ -305,7 +305,7 @@ class List extends Component {
                                     </Link>
                                 </td>
                                 <td>
-                                    {obj.type === 'B' ? "Buyer" : "Vendor"}
+                                    {obj.type}
                                 </td>
                                 <td>
 

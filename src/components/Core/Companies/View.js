@@ -143,35 +143,26 @@ class View extends Component {
 
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&company=" + this.props.currentId;
-
         if (this.state.filters.search) {
             url += "&name=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         url = defaultDateFilter(this.state, url);
-
         axios.get(url)
-            .then(res => {
-                this.setState({
-                    subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                    subPage: res.data.page
-                });
-
-                if (callBack) {
-                    callBack();
-                }
-            })
+        .then(res => {
+            this.setState({
+                subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                subPage: res.data.page
+            });
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
@@ -243,25 +234,19 @@ class View extends Component {
         this.props.onRef(this);
         this.setState({loading:true})
     }
-
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
         })
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: false });
         this.loadObj();
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
         this.loadObj();
     }
-
-
-
     render() {
         return (
             <div>
@@ -524,36 +509,24 @@ class View extends Component {
                                              </div>
                                              </div>
                                             <Divider />
+                                            {this.state.newObj.type === 'B' ?
+                                            <div>
                                                 <div className="row">
                                                     <div className="col-sm-12">
-                                                       
-                                                                <Products  baseUrl={this.props.baseUrl} onRef={ref => (this.productTemplateRef = ref)}
-                                                                    currentId={this.props.currentId} type="interested" parentObj={this.state.newObj}>
-                                                                </Products>
-                                                             
-                                                               
-                                                            
+                                                        <Products  baseUrl={this.props.baseUrl} onRef={ref => (this.productTemplateRef = ref)}
+                                                            currentId={this.props.currentId} type="interested" parentObj={this.state.newObj}>
+                                                        </Products>  
                                                     </div>
                                                 </div>
                                                 <Divider />
-                                                <div className="row">
-                                                    <div className="col-sm-12">
-                                                       
-                                                               
-                                                             
-                                                                <Products baseUrl={this.props.baseUrl} onRef={ref => (this.productTemplateRef = ref)}
-                                                                     currentId={this.props.currentId} type="focused" parentObj={this.state.newObj}>
-                                                                 </Products>
-                                                            
-                                                    </div>
+                                            </div>:
+                                            <div className="row">
+                                                <div className="col-sm-12">
+                                                    <Products baseUrl={this.props.baseUrl} onRef={ref => (this.productTemplateRef = ref)}
+                                                        currentId={this.props.currentId} type="focused" parentObj={this.state.newObj}>
+                                                    </Products>
                                                 </div>
-                                           
-
-                                            
-                                     
-                                   
-                                    
-                                     
+                                            </div>}
                                 </div>
                                 </TabPanel>}
                             <TabPanel value={this.state.activeTab} index={1}>
@@ -568,10 +541,8 @@ class View extends Component {
                                     fileTypes={this.state.newObj.locationType === 'I' ? this.state.fileTypes2 : this.state.fileTypes1}></Upload>
                             </TabPanel>
                             <TabPanel value={this.state.activeTab} index={4}>
-                              
                             </TabPanel>
                             <TabPanel value={this.state.activeTab} index={5}>
-                                
                             </TabPanel>
                         </div>
                     </div>}

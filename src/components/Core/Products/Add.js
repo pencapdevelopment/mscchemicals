@@ -77,25 +77,24 @@ class Add extends Component {
         ],
         subCategory: [],        
         make: [
-
         ]
     }
 
     loadData() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id)
-            .then(res => {
-                var formWizard = this.state.formWizard;
-                console.log(res.data);
-                var newobj = res.data;
+        .then(res => {
+            var formWizard = this.state.formWizard;
+            console.log(res.data);
+            var newobj = res.data;
 
-                newobj.selectedMakes = newobj['make'].split(",");
-                newobj.selectedTypes = newobj['type'].split(",");
+            newobj.selectedMakes = (newobj['make'] && newobj['make'] !=="")?newobj['make'].split(","):'';
+            newobj.selectedTypes = (newobj['type'] && newobj['type'] !=="")?newobj['type'].split(","):'Food grade';
 
-                this.setState({ subCategory: allcats.filter(g => g.type === newobj['category']).map(g => { return { label: g.name, value: g.name } }) });
-                // this.uomRef.updateVal(newobj.uom);
-                formWizard.obj = newobj;
-                this.setState({ formWizard });
-            });
+            this.setState({ subCategory: allcats.filter(g => g.type === newobj['category']).map(g => { return { label: g.name, value: g.name } }) });
+            // this.uomRef.updateVal(newobj.uom);
+            formWizard.obj = newobj;
+            this.setState({ formWizard });
+        });
     }
 
     createNewObj() {
@@ -163,11 +162,8 @@ class Add extends Component {
 
         this.setState({ formWizard });
     }
-
-
     checkForError() {
         // const form = this.formWizardRef;
-
         const tabPane = document.getElementById('saveForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
@@ -178,14 +174,11 @@ class Add extends Component {
 
         return hasError;
     }
-
     saveDetails() {
         var hasError = this.checkForError();
         if (!hasError) {
             var newObj = this.state.formWizard.obj;
-
-            newObj['make'] = newObj.selectedMakes.join(",");
-
+            newObj['make'] = (newObj.selectedMakes && newObj.selectedMakes !=='')?newObj.selectedMakes.join(","):'';
             var promise = undefined;
             if (!this.state.formWizard.editFlag) {
                 promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
@@ -196,10 +189,7 @@ class Add extends Component {
                 var formw = this.state.formWizard;
                 formw.obj.id = res.data.id;
                 formw.msg = 'successfully Saved';
-
-
                 this.props.onSave(res.data.id);
-
             }).finally(() => {
                 this.setState({ loading: false });
             }).catch(err => {
@@ -212,19 +202,15 @@ class Add extends Component {
                         formWizard.globalErrors.push(e);
                     });
                 }
-
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
-
                         if (errors[e.field]) {
                             errors[e.field].push(e.errorMessage);
                         } else {
                             errors[e.field] = [];
                             errors[e.field].push(e.errorMessage);
-
                         }
-
                     });
                 }
                 var errorMessage="";

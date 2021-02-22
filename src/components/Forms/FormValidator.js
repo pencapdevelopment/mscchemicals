@@ -1,6 +1,5 @@
 // https://github.com/chriso/validator.js
 import validator from 'validator';
-
 /**
  * Helper methods to validate form inputs
  * using controlled components
@@ -14,28 +13,21 @@ const FormValidator = {
      *     data-m.param: used to provide arguments for certain methods.
      */
     validate(element) {
-
         const isCheckbox = element.type === 'checkbox';
         const value = isCheckbox ? element.checked : element.value;
         const name = element.name;
-
         if (!name) throw new Error('Input name must not be empty.');
-
         // use getAttribute to support IE10+
-        console.log("element is:",element);
          const validations = JSON.parse(element.getAttribute('data-validate'));
-        
         let result = []
         if(validations && validations.length) {
             /*  Result of each validation must be true if the input is invalid
                 and false if valid. */
-                
             validations.forEach(m => {
                 switch (m.key) {
                     case 'required':
-
                         if(isCheckbox ? value === false : validator.isEmpty(value)){
-                            result.push({key:m.key,msg:'this field is required'});
+                            result.push({key:m.key,msg:m.msg?m.msg:'this field is required'});
                         }
                         break;
                     case 'phone':
@@ -70,21 +62,18 @@ const FormValidator = {
                         var isValid4 = !validator.isInt(value);
                         if(isValid4){
                             result.push({key:m.key,msg:'Field should be integer'});
-                        
                         }
                         break;
                     case 'alphanum':
                         var isValid5 = !validator.isAlphanumeric(value);
                         if(isValid5){
                             result.push({key:m.key,msg:'Field should be alpha numeric'});
-                        
                         }
                         break;
                     case 'url':
                         var isValid6 = !validator.isURL(value);
                         if(isValid6){
                             result.push({key:m.key,msg:'Field should be url'});
-                        
                         }
                         break;
                     case 'equalto':
@@ -93,7 +82,6 @@ const FormValidator = {
                         var isValid7 = !validator.equals(value, value2);
                         if(isValid7){
                             result.push({key:m.key,msg:'Field should be match'});
-                        
                         }
                         break;
                     case 'minlen':
@@ -136,10 +124,8 @@ const FormValidator = {
                     default:
                         throw new Error('Unrecognized validator.');
                 }
-
             })
         }
-        
         return result;
     },
 
@@ -153,24 +139,17 @@ const FormValidator = {
     bulkValidate(inputs) {
         let errors = {},
             hasError = false;
-
         inputs.forEach(input => {
             let result = this.validate(input)
-            
             if (!hasError){
                 hasError=result.length>0;
-                
             } 
             errors = { ...errors, [input.name]: result }
-            
-            
         })
-        
         return {
             errors,
             hasError
         }
     }
 }
-
 export default FormValidator;

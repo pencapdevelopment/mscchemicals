@@ -212,7 +212,7 @@ class Upload extends Component {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
         if (doc) {
             // return doc.fileName;
-            return <a href="#s" className="btn-link" onClick={(e) => this.downloadFile(e, type)}>
+            return <a href="javascript:void(0);" className="btn-link" onClick={(e) => this.downloadFile(e, type)}>
                         {doc.fileName}
                     </a>
         } else {
@@ -261,10 +261,8 @@ class Upload extends Component {
     downloadFile = (e, type) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-
         // var doc = this.state.docs[idx];
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
-
         axios({
             url: server_url + context_path + "docs/" + doc.id,
             method: 'GET',
@@ -272,7 +270,6 @@ class Upload extends Component {
         }).then(response => {
             var fileType = doc.fileName.substr(doc.fileName.lastIndexOf('.') + 1);
             fileType = this.state.exts[fileType];
-
             const url = window.URL.createObjectURL(new Blob([response.data], { type: fileType }));
             const link = document.createElement('a');
             link.href = url;
@@ -363,7 +360,6 @@ class Upload extends Component {
                                                 <td>
                                                     {this.getFileName(obj.label)}
                                                 </td>
-                                                
                                                 <td>
                                                 {/* this.state.formWizard.obj.enableExpiryDate ? : '-NA-' */}
                                                     { this.getExpiryDate(obj.label) }

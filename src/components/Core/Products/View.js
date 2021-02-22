@@ -92,46 +92,34 @@ class View extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/product-flow?projection=product_flow_list&&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&product.id=" + this.props.currentId;
-
         if (this.state.filters.search) {
             url += "&name=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         url = defaultDateFilter(this.state, url);
-
         axios.get(url)
-            .then(res => {
-                this.setState({
-                    subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                    subPage: res.data.page
-                });
+        .then(res => {
+            this.setState({
+                subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                subPage: res.data.page
+            });
 
-                if (callBack) {
-                    callBack();
-                }
-            })
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
-
-
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id).then(res => {
             this.setState({ obj: res.data });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
@@ -226,7 +214,7 @@ class View extends Component {
                                                     <td>
                                                         <strong>Code</strong>
                                                     </td>
-                                                    <td>{this.state.obj.name}</td>
+                                                    <td>{this.state.obj.code}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>

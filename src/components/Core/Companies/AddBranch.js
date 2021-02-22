@@ -341,7 +341,6 @@ class AddBranch extends Component {
 
     render() {
         const errors = this.state.formWizard.errors;
-
         return (
             <ContentWrapper>
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
@@ -358,9 +357,7 @@ class AddBranch extends Component {
                                     inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"5"}]' }}
                                     helperText={errors?.name?.length > 0 ? errors?.name[0]?.msg : ""}
                                     error={errors?.name?.length > 0}
-
                                     fullWidth={true}
-
                                     value={this.state.formWizard.obj.name}
                                     onChange={e => this.setField('name', e)} />
                             </fieldset>
@@ -371,10 +368,9 @@ class AddBranch extends Component {
                                         label="Select Type..."
                                         name="type"
                                         value={this.state.formWizard.obj.type}
-                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                        inputProps={{ "data-validate": '[{ "key":"required","msg":"Type is required"}]' }}
                                         helperText={errors?.type?.length > 0 ? errors?.type[0]?.msg : ""}
                                         error={errors?.type?.length > 0}
-
                                         onChange={e => this.setSelectField('type', e)}
                                     >
                                         {this.state.addressTypes.map((e, keyIndex) => {
@@ -388,7 +384,7 @@ class AddBranch extends Component {
                             <fieldset>
                                 <TextareaAutosize placeholder="Street Address"
                                     name="street"
-                                    inputProps={{ "data-validate": '[{ "key":"required"}]', maxLength: 50 }}
+                                    inputProps={{ "data-validate": '[{ "key":"required","msg":"Street is required"}]', maxLength: 50 }}
                                     fullWidth={true} rowsMin={3}
                                     value={this.state.formWizard.obj.street} onChange={e => this.setField("street", e)} />
                             </fieldset>
@@ -417,15 +413,13 @@ class AddBranch extends Component {
                                         label="Landmark"
                                         required={true}
                                         fullWidth={true}
-
                                         helperText={errors?.landmark?.length > 0 ? errors?.landmark[0]?.msg : ""}
                                         error={errors?.landmark?.length > 0}
-                                        inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required"}]' }}
-                                        value={this.state.formWizard.obj.landmark}
+                                        inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required","msg":"Landmark is required"}]' }}
+                                        value={this.state.formWizard.obj.landmark}  
                                         onChange={e => this.setField('landmark', e)} />
 
                                 </fieldset>}
-
                             <fieldset>
                                 <TextField
                                     type="text"
@@ -433,13 +427,12 @@ class AddBranch extends Component {
                                     label="Pincode"
                                     required={true}
                                     fullWidth={true}
-                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                    inputProps={{ "data-validate": '[{ "key":"required","msg":"Pincode is required"}]' }}
                                     helperText={errors?.pincode?.length > 0 ? errors?.pincode[0]?.msg : ""}
                                     error={errors?.pincode?.length > 0}
                                     value={this.state.formWizard.obj.pincode}
                                     onChange={e => this.setSelectField('pincode', e)} />
                             </fieldset>
-
                             <fieldset>
                                 <FormControl>
                                     <TextField
@@ -448,14 +441,13 @@ class AddBranch extends Component {
                                         label="City"
                                         required={true}
                                         fullWidth={true}
-                                        inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required"}]' }}
+                                        inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required","msg":"City is required"}]' }}
                                         helperText={errors?.city?.length > 0 ? errors?.city[0]?.msg : ""}
                                         error={errors?.city?.length > 0}
                                         value={this.state.formWizard.obj.city}
                                         onChange={e => this.setField('city', e)} />
                                 </FormControl>
                             </fieldset>
-
                             <fieldset>
                                 <FormControl>
                                     <TextField
@@ -466,13 +458,11 @@ class AddBranch extends Component {
                                         fullWidth={true}
                                         helperText={errors?.state?.length > 0 ? errors?.state[0]?.msg : ""}
                                         error={errors?.state?.length > 0}
-                                        inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required"}]' }}
+                                        inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required","msg":"State is required"}]' }}
                                         value={this.state.formWizard.obj.state}
                                         onChange={e => this.setField('state', e)} />
                                 </FormControl>
                             </fieldset>
-
-
                             <fieldset>
                                 <FormControl>
                                     <AutoSuggest url="countries"
@@ -480,7 +470,6 @@ class AddBranch extends Component {
                                         displayColumns="name"
                                         label="Country"
                                         onRef={ref => (this.countryASRef = ref)}
-
                                         placeholder="Search Country by name"
                                         arrayName="countries"
                                         projection=""
@@ -489,10 +478,7 @@ class AddBranch extends Component {
                                         queryString="&name" ></AutoSuggest>
                                 </FormControl>
                             </fieldset>
-
-
                         </div>
-
                         <div className="col-md-12">
                             <div className="text-center">
                                 <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
@@ -504,12 +490,10 @@ class AddBranch extends Component {
             </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(AddBranch);
