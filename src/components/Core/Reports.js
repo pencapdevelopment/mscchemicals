@@ -8,15 +8,15 @@ import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import PageLoader from '../Common/PageLoader';
 import Dropdown from './Dropdown';
-import Sorter from '../Common/Sorter';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+// import Sorter from '../Common/Sorter';
+// import { makeStyles, withStyles } from '@material-ui/core/styles';
 import FileDownload from '../Common/FileDownload';
 import TabPanel from '../Common/TabPanel';
-import CustomPagination from '../Common/CustomPagination';
+// import CustomPagination from '../Common/CustomPagination';
+import AutoSuggest from '../Common/AutoSuggest';
 import { server_url, context_path, defaultDateFilter } from '../Common/constants';
 import { Button, ButtonGroup,AppBar, Tab, Tabs, TextField, Select, MenuItem, InputLabel, FormControl, } from '@material-ui/core';
-import InputBase from '@material-ui/core/InputBase';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+
 import MomentUtils from '@date-io/moment';
 import {
     DatePicker,
@@ -56,7 +56,21 @@ class Reports extends Component {
         loading: true,
         objects: [],
         all: [],
+        assignUser: '',
         baseUrl: 'reports',
+        formWizard: {
+            globalErrors: [],
+            msg: '',
+            errors: {},
+            obj: {
+                assignedTo: '',
+                company: '',
+              timePeriod:'all',
+                
+            },
+
+
+        },
         page: {
             number: 0,
             size: 20,
@@ -83,7 +97,53 @@ class Reports extends Component {
             });
         }
     }
+    setAutoSuggest(field, val) {
+        var formWizard = this.state.formWizard;
+        formWizard.obj[field] = val;
+        formWizard['selected' + field] = val;
+        this.setState({ formWizard });
+        if (field === 'company') {
+            this.loadCompany(val)
+        }
+    }
+    setAutoSuggestAssignUser(field, val) {
+        var assignUser=this.state.assignUser;
+        assignUser=val;
+        this.setState({assignUser})
+        // var formWizard = this.state.formWizard;
+        // formWizard.obj[field] = val;
+        // formWizard['selected' + field] = val;
+        // this.setState({ formWizard });
+        // if (field === 'company') {
+            //     this.loadCompany(val)
+        // }
+    }
+    setField(field, e, noValidate) {
+        var formWizard = this.state.formWizard;
+        var input = e.target;
+       console.log("element is:",input);
+       console.log("field is:",field);
+        formWizard.obj[field] = e.target.value;
+        this.setState({ formWizard });
+        // if (!noValidate) {
+        //     const result = FormValidator.validate(input);
+        //     formWizard.errors[input.name] = result;
+        //     this.setState({
+        //         formWizard
+        //     });
+        // }
+    }
+    setDateField(field, e) {
+        var formWizard = this.state.formWizard;
 
+        if(e) {
+            formWizard.obj[field] = e.format();
+        } else {
+            formWizard.obj[field] = null;
+        }
+
+        this.setState({ formWizard });
+    }
     searchObject = e => {
         var str = e.target.value;
         var filters = this.state.filters;
@@ -120,7 +180,44 @@ class Reports extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadObjects);
         }
     }
+    loadCompany(companyId) {
+        axios.get(server_url + context_path + "api/companies/" + companyId + '?projection=company_auto_suggest_product')
+        .then(res => {
+            var formWizard = this.state.formWizard;
+            formWizard.obj.email = res.data.email;
+            formWizard.obj.phone = res.data.phone;
+            formWizard.obj.contactName = res.data.name;
+            if (res.data.products) {
+                res.data.products.forEach(p => {
+                    formWizard.obj.products = [];
+                    formWizard.selectedProducts = [];
+                    var products = formWizard.obj.products;
+                    //var idx = products.length;
+                    products.push({ quantity: '', amount: '' })
+                    formWizard.selectedProducts.push(p.product);
+                })
+            }
 
+            this.setState({ formWizard }, o => {
+                if (res.data.products) {
+                    res.data.products.forEach((p, idx) => {
+                        if(this.productASRef[idx]){
+                            this.productASRef[idx].setInitialField(formWizard.selectedProducts[idx]);
+                        }
+                    });
+                }
+            });
+
+            axios.get(server_url + context_path + "api/company-contact?sort=id,asc&projection=company_contact_name&page=0&size=1&company=" + companyId)
+            .then(res => {
+                if (res.data._embedded['company-contact'] && res.data._embedded['company-contact'].length) {
+                    var formWizard = this.state.formWizard;
+                    formWizard.obj.contactName = res.data._embedded['company-contact'][0].name;
+                    this.setState({ formWizard });
+                }
+            });
+        });
+    }
     loadObjects(offset, all, callBack) {
         if (!offset) offset = 1;
 
@@ -206,7 +303,9 @@ class Reports extends Component {
     }
 
     render()
+   
      {
+        const errors = this.state.formWizard.errors;
         return (<ContentWrapper>
             {this.state.loading && <PageLoader />}
             {/* <div className="card b"> */}
@@ -400,94 +499,205 @@ class Reports extends Component {
                                     <div className="row">
                                         <div className="col-sm-12">
                                             <div className="card b">
-                                                <div className="card-header">
+                                                {/* <div className="card-header">
 
+                                                </div> */}
+                                <div className="card-body">
+                                    <div className="row" >
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                    <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>  Sales</InputLabel>
+                                                    <Select
+                                                        
+                                                    
+                                                        >
+                                                            <MenuItem value={0} >All</MenuItem>
+                                                        <MenuItem value={10}>Enquiries</MenuItem>
+                                                        <MenuItem value={20}>Order</MenuItem>
+                                                        {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                     <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                                    <fieldset>
+                                            <FormControl>
+                                                <AutoSuggest url="companies"
+                                                    name="companyName"
+                                                    displayColumns="name"
+                                                    label="Company"
+                                                    onRef={ref => {
+                                                        (this.companyASRef = ref)
+                                                        if (ref) {
+                                                            this.companyASRef.load();
+                                                        }
+                                                    }}
+                                                    placeholder="Search Company by name"
+                                                    arrayName="companies"
+                                                    helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                                    error={errors?.companyName_auto_suggest?.length > 0}
+                                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                    projection="company_auto_suggest"
+                                                    value={this.state.formWizard.obj.selectedCompany}
+                                                    onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                                    queryString="&name" >
+                                                </AutoSuggest>
+                                            </FormControl>
+                                        </fieldset>
+                                                    
+                                                    </div>
+                                    
+                                            <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                            <fieldset>
+                                                <FormControl>
+                                                    <AutoSuggest url="users"
+                                                        name="usersName"
+                                                        displayColumns="name"
+                                                        label="Assign"
+                                                        onRef={ref => {
+                                                            (this.userASRef = ref)
+                                                            if (ref) {
+                                                                this.userASRef.load();
+                                                            }
+                                                        }}
+                                                        placeholder="Search User by name"
+                                                        arrayName="users"
+                                                        helperText={errors?.usersName_auto_suggest?.length > 0 ? errors?.usersName_auto_suggest[0]?.msg : ""}
+                                                        error={errors?.usersName_auto_suggest?.length > 0}
+                                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                        projection="user_details_mini"
+                                                        value={this.state.assignUser}
+                                                        onSelect={e => this.setAutoSuggestAssignUser('user', e)}
+                                                        queryString="&name" >
+                                                    </AutoSuggest>
+                                                </FormControl>
+                                            </fieldset>                     
+                                        </div>
+                                        <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>Status</InputLabel>
+                                                    <Select
+                                                        
+
+                                                        >
+                                                                <MenuItem value={1} >All</MenuItem>
+                                                            <MenuItem value={11} >Pending</MenuItem>
+                                                        <MenuItem value={10}>Ongoing</MenuItem>
+                                                        <MenuItem value={20}>hold</MenuItem>
+                                                        <MenuItem value={30}>completed</MenuItem>
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <FormControl   >
+                                                            <InputLabel> Period</InputLabel>
+                                                        <Select
+                                                            
+                                                            onChange={e => this.setField("timePeriod", e)}
+                                                            >
+                                                                <MenuItem value="all" >All Time</MenuItem>
+                                                                <MenuItem value="thismonth">This Month</MenuItem>
+                                                                <MenuItem value="lastmonth">Last Month</MenuItem>
+                                                                <MenuItem value="thisyear" >This Year</MenuItem>
+                                                                <MenuItem value="lastyear">Last Year</MenuItem>
+                                                                <MenuItem value="last3month">last 3 Month</MenuItem>
+                                                                <MenuItem value="last6month">last 6 Month</MenuItem>
+                                                                <MenuItem value="period">period</MenuItem>                                                
+                                                            </Select>
+                                                            </FormControl>
+
+                                                        {this.state.formWizard.obj.timePeriod === "period"?  
+                                                <div className="col-md-12" >
+                                                    <table>                                         
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                <fieldset >
+                                                        <MuiPickersUtilsProvider utils={MomentUtils} >
+                                                                <DatePicker 
+                                                                autoOk
+                                                                clearable
+                                                                disableFuture
+                                                                label="From Date"
+                                                                format="DD/MM/YYYY"
+                                                                value={this.state.formWizard.obj.receivedDate} 
+                                                                onChange={e => this.setDateField('receivedDate', e)} 
+                                                                TextFieldComponent={(props) => (
+                                                                    <TextField
+                                                                    type="text"
+                                                                    name="receivedDate"
+                                                                    id={props.id}
+                                                                    label={props.label}
+                                                                    onClick={props.onClick}
+                                                                    value={props.value}
+                                                                    disabled={props.disabled}
+                                                                    {...props.inputProps}
+                                                                    InputProps={{
+                                                                        endAdornment: (
+                                                                            <Event />
+                                                                        ),
+                                                                    }}
+                                                                    />
+                                                                )} />
+                                                            </MuiPickersUtilsProvider>
+                                                    </fieldset>
+                                                                </td>
+                                                                <td>
+                                                                <fieldset>
+                                                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                            <DatePicker 
+                                                        
+                                                            autoOk
+                                                            clearable
+                                                            disableFuture
+                                                            label="To Date"
+                                                            format="DD/MM/YYYY"
+                                                            value={this.state.formWizard.obj.emailDate} 
+                                                            onChange={e => this.setDateField('emailDate', e)} 
+                                                            TextFieldComponent={(props) => (
+                                                                <TextField
+                                                            
+                                                                type="text"
+                                                                name="emailDate"
+                                                                id={props.id}
+                                                                label={props.label}
+                                                                onClick={props.onClick}
+                                                                value={props.value}
+                                                                disabled={props.disabled}
+                                                                {...props.inputProps}
+                                                                InputProps={{
+                                                                    endAdornment: (
+                                                                        <Event />
+                                                                    ),
+                                                                }}
+                                                                />
+                                                            )} />
+                                                        </MuiPickersUtilsProvider>
+                                                </fieldset>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                
                                                 </div>
-                                                <div className="card-body">
-                                                <div className="row" >
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                       
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>  Sales</InputLabel>
-                                        <Select
+                                                :""} 
+                                                    </div>
+                                                
                                             
-                                         
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={10}>Enquiries</MenuItem>
-                                               <MenuItem value={20}>Order</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                       
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>  Role</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={10}>Users</MenuItem>
-                                               <MenuItem value={20}>company</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                      
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>Status</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >Pending</MenuItem>
-                                               <MenuItem value={10}>Ongoing</MenuItem>
-                                               <MenuItem value={20}>hold</MenuItem>
-                                               <MenuItem value={30}>completed</MenuItem>
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                        
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel> Period</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >All Time</MenuItem>
-                                               <MenuItem value={1}>This Month</MenuItem>
-                                               <MenuItem value={2}>Last Month</MenuItem>
-                                               <MenuItem value={3} >This Year</MenuItem>
-                                               <MenuItem value={4}>Last Year</MenuItem>
-                                               <MenuItem value={5}>last 3 Month</MenuItem>
-                                               <MenuItem value={6}>last 6 Month</MenuItem>
-                                               <MenuItem value={7}>last 12 Month</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-
+                                   
+                                    
+     
                                     </div>
+                                   
                                 </div>
 
                             </div>
@@ -498,7 +708,808 @@ class Reports extends Component {
                             <div classname="card b">
                                 <div className="card-header">
                                             <div className="row">
-                                                <div className="col-sm-1">
+                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
+                                                    <FormControl    >
+                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                        <Select
+                                                            
+
+                                                            >                                                        
+                                                            <MenuItem value={1}>10</MenuItem>                                                        
+                                                            <MenuItem value={3} >20</MenuItem>                                                           
+                                                            <MenuItem value={5}>30</MenuItem>
+                                                            <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem>
+                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                            
+                                                </div>
+                                               
+                                                    <div className="col-sm-2">
+                                                    {/* <h1 style={{ textAlign: 'center' }}>
+                                                        Buy Movies{' '}
+                                                        <span role="img" aria-label="Movie projector">
+                                                        
+                                                        </span>
+                                                    </h1> */}
+                                                    
+                                                    <Dropdown title="" items={items} multiSelect />
+                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                       <Button></Button>
+                                                        <Button><img src="img/refresh.png"/></Button>
+                                                      
+                                                    </ButtonGroup>   */}                                                    
+                                                     </div>
+                                                                                                
+                                            
+                                                <div className="col-sm-1" style={{right: 102}}>
+                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                        <Button><img src="img/refresh.png"/></Button>                                                     
+                                                    </ButtonGroup> 
+                                                    </div>     
+                                            </div>
+                                </div>
+                                <div className="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                 
+                                
+                                </TabPanel>}
+                               
+                                {
+                            <TabPanel value={this.state.activeTab} index={1}>                          
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card b">
+                                                {/* <div className="card-header">
+
+                                                </div> */}
+                                <div className="card-body">
+                                    <div className="row" >
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                    <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>  Sales</InputLabel>
+                                                    <Select
+                                                        
+                                                    
+                                                        >
+                                                            <MenuItem value={0} >All</MenuItem>
+                                                        <MenuItem value={10}>Enquiries</MenuItem>
+                                                        <MenuItem value={20}>Order</MenuItem>
+                                                        {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                     <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                                    <fieldset>
+                                            <FormControl>
+                                                <AutoSuggest url="companies"
+                                                    name="companyName"
+                                                    displayColumns="name"
+                                                    label="Company"
+                                                    onRef={ref => {
+                                                        (this.companyASRef = ref)
+                                                        if (ref) {
+                                                            this.companyASRef.load();
+                                                        }
+                                                    }}
+                                                    placeholder="Search Company by name"
+                                                    arrayName="companies"
+                                                    helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                                    error={errors?.companyName_auto_suggest?.length > 0}
+                                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                    projection="company_auto_suggest"
+                                                    value={this.state.formWizard.obj.selectedCompany}
+                                                    onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                                    queryString="&name" >
+                                                </AutoSuggest>
+                                            </FormControl>
+                                        </fieldset>
+                                                    
+                                                    </div>
+                                    
+                                            <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                            <fieldset>
+                                                <FormControl>
+                                                    <AutoSuggest url="users"
+                                                        name="usersName"
+                                                        displayColumns="name"
+                                                        label="Assign"
+                                                        onRef={ref => {
+                                                            (this.userASRef = ref)
+                                                            if (ref) {
+                                                                this.userASRef.load();
+                                                            }
+                                                        }}
+                                                        placeholder="Search User by name"
+                                                        arrayName="users"
+                                                        helperText={errors?.usersName_auto_suggest?.length > 0 ? errors?.usersName_auto_suggest[0]?.msg : ""}
+                                                        error={errors?.usersName_auto_suggest?.length > 0}
+                                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                        projection="user_details_mini"
+                                                        value={this.state.assignUser}
+                                                        onSelect={e => this.setAutoSuggestAssignUser('user', e)}
+                                                        queryString="&name" >
+                                                    </AutoSuggest>
+                                                </FormControl>
+                                            </fieldset>                     
+                                        </div>
+                                        <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>Status</InputLabel>
+                                                    <Select
+                                                        
+
+                                                        >
+                                                                <MenuItem value={1} >All</MenuItem>
+                                                            <MenuItem value={11} >Pending</MenuItem>
+                                                        <MenuItem value={10}>Ongoing</MenuItem>
+                                                        <MenuItem value={20}>hold</MenuItem>
+                                                        <MenuItem value={30}>completed</MenuItem>
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <FormControl   >
+                                                            <InputLabel> Period</InputLabel>
+                                                        <Select
+                                                            
+                                                            onChange={e => this.setField("timePeriod", e)}
+                                                            >
+                                                                <MenuItem value="all" >All Time</MenuItem>
+                                                                <MenuItem value="thismonth">This Month</MenuItem>
+                                                                <MenuItem value="lastmonth">Last Month</MenuItem>
+                                                                <MenuItem value="thisyear" >This Year</MenuItem>
+                                                                <MenuItem value="lastyear">Last Year</MenuItem>
+                                                                <MenuItem value="last3month">last 3 Month</MenuItem>
+                                                                <MenuItem value="last6month">last 6 Month</MenuItem>
+                                                                <MenuItem value="period">period</MenuItem>                                                
+                                                            </Select>
+                                                            </FormControl>
+
+                                                        {this.state.formWizard.obj.timePeriod === "period"?  
+                                                <div className="col-md-12" >
+                                                    <table>                                         
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                <fieldset >
+                                                        <MuiPickersUtilsProvider utils={MomentUtils} >
+                                                                <DatePicker 
+                                                                autoOk
+                                                                clearable
+                                                                disableFuture
+                                                                label="From Date"
+                                                                format="DD/MM/YYYY"
+                                                                value={this.state.formWizard.obj.receivedDate} 
+                                                                onChange={e => this.setDateField('receivedDate', e)} 
+                                                                TextFieldComponent={(props) => (
+                                                                    <TextField
+                                                                    type="text"
+                                                                    name="receivedDate"
+                                                                    id={props.id}
+                                                                    label={props.label}
+                                                                    onClick={props.onClick}
+                                                                    value={props.value}
+                                                                    disabled={props.disabled}
+                                                                    {...props.inputProps}
+                                                                    InputProps={{
+                                                                        endAdornment: (
+                                                                            <Event />
+                                                                        ),
+                                                                    }}
+                                                                    />
+                                                                )} />
+                                                            </MuiPickersUtilsProvider>
+                                                    </fieldset>
+                                                                </td>
+                                                                <td>
+                                                                <fieldset>
+                                                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                            <DatePicker 
+                                                        
+                                                            autoOk
+                                                            clearable
+                                                            disableFuture
+                                                            label="To Date"
+                                                            format="DD/MM/YYYY"
+                                                            value={this.state.formWizard.obj.emailDate} 
+                                                            onChange={e => this.setDateField('emailDate', e)} 
+                                                            TextFieldComponent={(props) => (
+                                                                <TextField
+                                                            
+                                                                type="text"
+                                                                name="emailDate"
+                                                                id={props.id}
+                                                                label={props.label}
+                                                                onClick={props.onClick}
+                                                                value={props.value}
+                                                                disabled={props.disabled}
+                                                                {...props.inputProps}
+                                                                InputProps={{
+                                                                    endAdornment: (
+                                                                        <Event />
+                                                                    ),
+                                                                }}
+                                                                />
+                                                            )} />
+                                                        </MuiPickersUtilsProvider>
+                                                </fieldset>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                
+                                                </div>
+                                                :""} 
+                                                    </div>
+                                                
+                                            
+                                   
+                                    
+     
+                                    </div>
+                                   
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <div classname="card b">
+                                <div className="card-header">
+                                            <div className="row">
+                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
+                                                    <FormControl    >
+                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                        <Select
+                                                            
+
+                                                            >                                                        
+                                                            <MenuItem value={1}>10</MenuItem>                                                        
+                                                            <MenuItem value={3} >20</MenuItem>                                                           
+                                                            <MenuItem value={5}>30</MenuItem>
+                                                            <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem>
+                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                            
+                                                </div>
+                                               
+                                                    <div className="col-sm-2">
+                                                    {/* <h1 style={{ textAlign: 'center' }}>
+                                                        Buy Movies{' '}
+                                                        <span role="img" aria-label="Movie projector">
+                                                        
+                                                        </span>
+                                                    </h1> */}
+                                                    
+                                                    <Dropdown title="" items={items} multiSelect />
+                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                       <Button></Button>
+                                                        <Button><img src="img/refresh.png"/></Button>
+                                                      
+                                                    </ButtonGroup>   */}                                                    
+                                                     </div>
+                                                                                                
+                                            
+                                                <div className="col-sm-1" style={{right: 102}}>
+                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                        <Button><img src="img/refresh.png"/></Button>                                                     
+                                                    </ButtonGroup> 
+                                                    </div>     
+                                            </div>
+                                </div>
+                                <div className="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                 
+                                
+                                </TabPanel>}
+                               
+                                {
+                            <TabPanel value={this.state.activeTab} index={2}>                          
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card b">
+                                                {/* <div className="card-header">
+
+                                                </div> */}
+                                <div className="card-body">
+                                    <div className="row" >
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                    <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>  Sales</InputLabel>
+                                                    <Select
+                                                        
+                                                    
+                                                        >
+                                                            <MenuItem value={0} >All</MenuItem>
+                                                        <MenuItem value={10}>Buyers</MenuItem>
+                                                        <MenuItem value={20}>Vendors</MenuItem>
+                                                        {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                     {/* <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                                    <fieldset>
+                                            <FormControl>
+                                                <AutoSuggest url="companies"
+                                                    name="companyName"
+                                                    displayColumns="name"
+                                                    label="Company"
+                                                    onRef={ref => {
+                                                        (this.companyASRef = ref)
+                                                        if (ref) {
+                                                            this.companyASRef.load();
+                                                        }
+                                                    }}
+                                                    placeholder="Search Company by name"
+                                                    arrayName="companies"
+                                                    helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                                    error={errors?.companyName_auto_suggest?.length > 0}
+                                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                    projection="company_auto_suggest"
+                                                    value={this.state.formWizard.obj.selectedCompany}
+                                                    onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                                    queryString="&name" >
+                                                </AutoSuggest>
+                                            </FormControl>
+                                        </fieldset>
+                                                    
+                                                    </div>
+                                     */}
+                                            <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                            <fieldset>
+                                                <FormControl>
+                                                    <AutoSuggest url="users"
+                                                        name="usersName"
+                                                        displayColumns="name"
+                                                        label="Assign"
+                                                        onRef={ref => {
+                                                            (this.userASRef = ref)
+                                                            if (ref) {
+                                                                this.userASRef.load();
+                                                            }
+                                                        }}
+                                                        placeholder="Search User by name"
+                                                        arrayName="users"
+                                                        helperText={errors?.usersName_auto_suggest?.length > 0 ? errors?.usersName_auto_suggest[0]?.msg : ""}
+                                                        error={errors?.usersName_auto_suggest?.length > 0}
+                                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                        projection="user_details_mini"
+                                                        value={this.state.assignUser}
+                                                        onSelect={e => this.setAutoSuggestAssignUser('user', e)}
+                                                        queryString="&name" >
+                                                    </AutoSuggest>
+                                                </FormControl>
+                                            </fieldset>                     
+                                        </div>
+                                        <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>Status</InputLabel>
+                                                    <Select
+                                                        
+
+                                                        >
+                                                                <MenuItem value={1} >All</MenuItem>
+                                                            <MenuItem value={11} >Pending</MenuItem>
+                                                        <MenuItem value={10}>Ongoing</MenuItem>
+                                                        <MenuItem value={20}>hold</MenuItem>
+                                                        <MenuItem value={30}>completed</MenuItem>
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <FormControl   >
+                                                            <InputLabel> Period</InputLabel>
+                                                        <Select
+                                                            
+                                                            onChange={e => this.setField("timePeriod", e)}
+                                                            >
+                                                                <MenuItem value="all" >All Time</MenuItem>
+                                                                <MenuItem value="thismonth">This Month</MenuItem>
+                                                                <MenuItem value="lastmonth">Last Month</MenuItem>
+                                                                <MenuItem value="thisyear" >This Year</MenuItem>
+                                                                <MenuItem value="lastyear">Last Year</MenuItem>
+                                                                <MenuItem value="last3month">last 3 Month</MenuItem>
+                                                                <MenuItem value="last6month">last 6 Month</MenuItem>
+                                                                <MenuItem value="period">period</MenuItem>                                                
+                                                            </Select>
+                                                            </FormControl>
+
+                                                        {this.state.formWizard.obj.timePeriod === "period"?  
+                                                <div className="col-md-12" >
+                                                    <table>                                         
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                <fieldset >
+                                                        <MuiPickersUtilsProvider utils={MomentUtils} >
+                                                                <DatePicker 
+                                                                autoOk
+                                                                clearable
+                                                                disableFuture
+                                                                label="From Date"
+                                                                format="DD/MM/YYYY"
+                                                                value={this.state.formWizard.obj.receivedDate} 
+                                                                onChange={e => this.setDateField('receivedDate', e)} 
+                                                                TextFieldComponent={(props) => (
+                                                                    <TextField
+                                                                    type="text"
+                                                                    name="receivedDate"
+                                                                    id={props.id}
+                                                                    label={props.label}
+                                                                    onClick={props.onClick}
+                                                                    value={props.value}
+                                                                    disabled={props.disabled}
+                                                                    {...props.inputProps}
+                                                                    InputProps={{
+                                                                        endAdornment: (
+                                                                            <Event />
+                                                                        ),
+                                                                    }}
+                                                                    />
+                                                                )} />
+                                                            </MuiPickersUtilsProvider>
+                                                    </fieldset>
+                                                                </td>
+                                                                <td>
+                                                                <fieldset>
+                                                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                            <DatePicker 
+                                                        
+                                                            autoOk
+                                                            clearable
+                                                            disableFuture
+                                                            label="To Date"
+                                                            format="DD/MM/YYYY"
+                                                            value={this.state.formWizard.obj.emailDate} 
+                                                            onChange={e => this.setDateField('emailDate', e)} 
+                                                            TextFieldComponent={(props) => (
+                                                                <TextField
+                                                            
+                                                                type="text"
+                                                                name="emailDate"
+                                                                id={props.id}
+                                                                label={props.label}
+                                                                onClick={props.onClick}
+                                                                value={props.value}
+                                                                disabled={props.disabled}
+                                                                {...props.inputProps}
+                                                                InputProps={{
+                                                                    endAdornment: (
+                                                                        <Event />
+                                                                    ),
+                                                                }}
+                                                                />
+                                                            )} />
+                                                        </MuiPickersUtilsProvider>
+                                                </fieldset>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                
+                                                </div>
+                                                :""} 
+                                                    </div>
+                                                
+                                            
+                                   
+                                    
+     
+                                    </div>
+                                   
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <div classname="card b">
+                                <div className="card-header">
+                                            <div className="row">
+                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
+                                                    <FormControl    >
+                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                        <Select
+                                                            
+
+                                                            >                                                        
+                                                            <MenuItem value={1}>10</MenuItem>                                                        
+                                                            <MenuItem value={3} >20</MenuItem>                                                           
+                                                            <MenuItem value={5}>30</MenuItem>
+                                                            <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem>
+                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                            
+                                                </div>
+                                               
+                                                    <div className="col-sm-2">
+                                                    {/* <h1 style={{ textAlign: 'center' }}>
+                                                        Buy Movies{' '}
+                                                        <span role="img" aria-label="Movie projector">
+                                                        
+                                                        </span>
+                                                    </h1> */}
+                                                    
+                                                    <Dropdown title="" items={items} multiSelect />
+                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                       <Button></Button>
+                                                        <Button><img src="img/refresh.png"/></Button>
+                                                      
+                                                    </ButtonGroup>   */}                                                    
+                                                     </div>
+                                                                                                
+                                            
+                                                <div className="col-sm-1" style={{right: 102}}>
+                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                        <Button><img src="img/refresh.png"/></Button>                                                     
+                                                    </ButtonGroup> 
+                                                    </div>     
+                                            </div>
+                                </div>
+                                <div className="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                 
+                                
+                                </TabPanel>}
+                               
+                                {
+                            <TabPanel value={this.state.activeTab} index={3}>                          
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card b">
+                                                {/* <div className="card-header">
+
+                                                </div> */}
+                                <div className="card-body">
+                                    <div className="row" >
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                    <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>  Sales</InputLabel>
+                                                    <Select
+                                                        
+                                                    
+                                                        >
+                                                            <MenuItem value={0} >All</MenuItem>
+                                                        <MenuItem value={10}>Inward</MenuItem>
+                                                        <MenuItem value={20}>outward</MenuItem>
+                                                        {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                     <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                                    <fieldset>
+                                            <FormControl>
+                                                <AutoSuggest url="companies"
+                                                    name="companyName"
+                                                    displayColumns="name"
+                                                    label="Company"
+                                                    onRef={ref => {
+                                                        (this.companyASRef = ref)
+                                                        if (ref) {
+                                                            this.companyASRef.load();
+                                                        }
+                                                    }}
+                                                    placeholder="Search Company by name"
+                                                    arrayName="companies"
+                                                    helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                                    error={errors?.companyName_auto_suggest?.length > 0}
+                                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                    projection="company_auto_suggest"
+                                                    value={this.state.formWizard.obj.selectedCompany}
+                                                    onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                                    queryString="&name" >
+                                                </AutoSuggest>
+                                            </FormControl>
+                                        </fieldset>
+                                                    
+                                                    </div>
+                                    
+                                            <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                            <fieldset>
+                                                <FormControl>
+                                                    <AutoSuggest url="users"
+                                                        name="usersName"
+                                                        displayColumns="name"
+                                                        label="Assign"
+                                                        onRef={ref => {
+                                                            (this.userASRef = ref)
+                                                            if (ref) {
+                                                                this.userASRef.load();
+                                                            }
+                                                        }}
+                                                        placeholder="Search User by name"
+                                                        arrayName="users"
+                                                        helperText={errors?.usersName_auto_suggest?.length > 0 ? errors?.usersName_auto_suggest[0]?.msg : ""}
+                                                        error={errors?.usersName_auto_suggest?.length > 0}
+                                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                        projection="user_details_mini"
+                                                        value={this.state.assignUser}
+                                                        onSelect={e => this.setAutoSuggestAssignUser('user', e)}
+                                                        queryString="&name" >
+                                                    </AutoSuggest>
+                                                </FormControl>
+                                            </fieldset>                     
+                                        </div>
+                                        <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>Status</InputLabel>
+                                                    <Select
+                                                        
+
+                                                        >
+                                                                <MenuItem value={1} >All</MenuItem>
+                                                            <MenuItem value={11} >Pending</MenuItem>
+                                                        <MenuItem value={10}>Ongoing</MenuItem>
+                                                        <MenuItem value={20}>hold</MenuItem>
+                                                        <MenuItem value={30}>completed</MenuItem>
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <FormControl   >
+                                                            <InputLabel> Period</InputLabel>
+                                                        <Select
+                                                            
+                                                            onChange={e => this.setField("timePeriod", e)}
+                                                            >
+                                                                <MenuItem value="all" >All Time</MenuItem>
+                                                                <MenuItem value="thismonth">This Month</MenuItem>
+                                                                <MenuItem value="lastmonth">Last Month</MenuItem>
+                                                                <MenuItem value="thisyear" >This Year</MenuItem>
+                                                                <MenuItem value="lastyear">Last Year</MenuItem>
+                                                                <MenuItem value="last3month">last 3 Month</MenuItem>
+                                                                <MenuItem value="last6month">last 6 Month</MenuItem>
+                                                                <MenuItem value="period">period</MenuItem>                                                
+                                                            </Select>
+                                                            </FormControl>
+
+                                                        {this.state.formWizard.obj.timePeriod === "period"?  
+                                                <div className="col-md-12" >
+                                                    <table>                                         
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                <fieldset >
+                                                        <MuiPickersUtilsProvider utils={MomentUtils} >
+                                                                <DatePicker 
+                                                                autoOk
+                                                                clearable
+                                                                disableFuture
+                                                                label="From Date"
+                                                                format="DD/MM/YYYY"
+                                                                value={this.state.formWizard.obj.receivedDate} 
+                                                                onChange={e => this.setDateField('receivedDate', e)} 
+                                                                TextFieldComponent={(props) => (
+                                                                    <TextField
+                                                                    type="text"
+                                                                    name="receivedDate"
+                                                                    id={props.id}
+                                                                    label={props.label}
+                                                                    onClick={props.onClick}
+                                                                    value={props.value}
+                                                                    disabled={props.disabled}
+                                                                    {...props.inputProps}
+                                                                    InputProps={{
+                                                                        endAdornment: (
+                                                                            <Event />
+                                                                        ),
+                                                                    }}
+                                                                    />
+                                                                )} />
+                                                            </MuiPickersUtilsProvider>
+                                                    </fieldset>
+                                                                </td>
+                                                                <td>
+                                                                <fieldset>
+                                                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                            <DatePicker 
+                                                        
+                                                            autoOk
+                                                            clearable
+                                                            disableFuture
+                                                            label="To Date"
+                                                            format="DD/MM/YYYY"
+                                                            value={this.state.formWizard.obj.emailDate} 
+                                                            onChange={e => this.setDateField('emailDate', e)} 
+                                                            TextFieldComponent={(props) => (
+                                                                <TextField
+                                                            
+                                                                type="text"
+                                                                name="emailDate"
+                                                                id={props.id}
+                                                                label={props.label}
+                                                                onClick={props.onClick}
+                                                                value={props.value}
+                                                                disabled={props.disabled}
+                                                                {...props.inputProps}
+                                                                InputProps={{
+                                                                    endAdornment: (
+                                                                        <Event />
+                                                                    ),
+                                                                }}
+                                                                />
+                                                            )} />
+                                                        </MuiPickersUtilsProvider>
+                                                </fieldset>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                
+                                                </div>
+                                                :""} 
+                                                    </div>
+                                                
+                                            
+                                   
+                                    
+     
+                                    </div>
+                                   
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <div classname="card b">
+                                <div className="card-header">
+                                            <div className="row">
+                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
                                                     <FormControl    >
                                                         {/* <InputLabel> Period</InputLabel> */}
                                                         <Select
@@ -551,421 +1562,539 @@ class Reports extends Component {
                                 
                                 </TabPanel>}
                                 {
-                            <TabPanel value={this.state.activeTab} index={1}>                          
+                            <TabPanel value={this.state.activeTab} index={4}>                          
                                     <div className="row">
                                         <div className="col-sm-12">
                                             <div className="card b">
-                                                <div className="card-header">
+                                                {/* <div className="card-header">
 
-                                                </div>
-                                                <div className="card-body">
-                                                <div className="row" >
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                       
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>  Sales</InputLabel>
-                                        <Select
-                                            
-                                         
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={10}>Enquiries</MenuItem>
-                                               <MenuItem value={20}>Order</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
+                                                </div> */}
+                                <div className="card-body">
+                                    <div className="row" >
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                    <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>  Sales</InputLabel>
+                                                    <Select
+                                                        
+                                                    
+                                                        >
+                                                            <MenuItem value={0} >All</MenuItem>
+                                                        <MenuItem value={10}>Enquiries</MenuItem>
+                                                        <MenuItem value={20}>Order</MenuItem>
+                                                        {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                     <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                                    <fieldset>
+                                            <FormControl>
+                                                <AutoSuggest url="companies"
+                                                    name="companyName"
+                                                    displayColumns="name"
+                                                    label="Company"
+                                                    onRef={ref => {
+                                                        (this.companyASRef = ref)
+                                                        if (ref) {
+                                                            this.companyASRef.load();
+                                                        }
+                                                    }}
+                                                    placeholder="Search Company by name"
+                                                    arrayName="companies"
+                                                    helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                                    error={errors?.companyName_auto_suggest?.length > 0}
+                                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                    projection="company_auto_suggest"
+                                                    value={this.state.formWizard.obj.selectedCompany}
+                                                    onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                                    queryString="&name" >
+                                                </AutoSuggest>
                                             </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                       
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>  Role</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={10}>Users</MenuItem>
-                                               <MenuItem value={20}>company</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                      
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>Status</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >Pending</MenuItem>
-                                               <MenuItem value={10}>Ongoing</MenuItem>
-                                               <MenuItem value={20}>hold</MenuItem>
-                                               <MenuItem value={30}>completed</MenuItem>
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                        
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel> Period</InputLabel>
-                                        <Select
-                                            
-
-                                                 >
-                                                <MenuItem value={0} >All Time</MenuItem>
-                                               <MenuItem value={1}>This Month</MenuItem>
-                                               <MenuItem value={2}>Last Month</MenuItem>
-                                               <MenuItem value={3} >This Year</MenuItem>
-                                               <MenuItem value={4}>Last Year</MenuItem>
-                                               <MenuItem value={5}>last 3 Month</MenuItem>
-                                               <MenuItem value={6}>last 6 Month</MenuItem>
-                                               <MenuItem value={7}>last 12 Month</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-
-                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-sm-12">
-                                            <div classname="card b">
-                                                <div className="card-header">
-                                                            <div className="row">
-                                                                <div className="col-sm-1">
-                                                                    <FormControl    >
-                                                                        {/* <InputLabel> Period</InputLabel> */}
-                                                                        <Select
-                                                                            
-
-                                                                            >
-                                                                            <MenuItem value={1}>10</MenuItem>
-                                                                            <MenuItem value={3}>20</MenuItem>
-                                                                            <MenuItem value={5}>30</MenuItem>
-                                                                            <MenuItem value={6}>40</MenuItem>
-                                                                            <MenuItem value={7}>50</MenuItem>                                                           
-                                                                            </Select>
-                                                                    </FormControl>
-                                                            
-                                                                </div>
-                                                                <div className="row">
-                                                                    <div className="col-sm-2">
-                                                                
-                                                                    <ButtonGroup size="small" aria-label="small outlined button group" >
-                                                                        <Button>Export 
-                                                              
-                                                                        
-                                                                        </Button>
-                                                                        <Button><img src="img/refresh.png"/></Button>
-                                                                    
-                                                                    </ButtonGroup> 
-                                                                    
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                </div>
-                                                <div className="card-body">
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>                                
-                                
-                                </TabPanel>}
-                                
-                                {
-                            <TabPanel value={this.state.activeTab} index={2}>                          
-                                    <div className="row">
-                                        <div className="col-sm-12">
-                                            <div className="card b">
-                                                <div className="card-header">
-
-                                                </div>
-                                                <div className="card-body">
-                                                <div className="row" >
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                       
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>  Company</InputLabel>
-                                        <Select
-                                            
-                                         
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={10}>Buyers</MenuItem>
-                                               <MenuItem value={20}>Vendors</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                      
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>Status</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={11}>Pending</MenuItem>
-                                               <MenuItem value={10}>Ongoing</MenuItem>
-                                               <MenuItem value={20}>hold</MenuItem>
-                                               <MenuItem value={30}>completed</MenuItem>
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                        
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel> Period</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >All Time</MenuItem>
-                                               <MenuItem value={1}>This Month</MenuItem>
-                                               <MenuItem value={2}>Last Month</MenuItem>
-                                               <MenuItem value={3} >This Year</MenuItem>
-                                               <MenuItem value={4}>Last Year</MenuItem>
-                                               <MenuItem value={5}>last 3 Month</MenuItem>
-                                               <MenuItem value={6}>last 6 Month</MenuItem>
-                                               <MenuItem value={7}>last 12 Month</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-
-                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-sm-12">
-                                            <div classname="card b">
-                                                <div className="card-header">
-                                                            <div className="row">
-                                                                <div className="col-sm-1">
-                                                                    <FormControl    >
-                                                                        {/* <InputLabel> Period</InputLabel> */}
-                                                                        <Select
-                                                                            
-
-                                                                            >
-                                                                            <MenuItem value={1}>10</MenuItem>
-                                                                            <MenuItem value={3} >20</MenuItem>
-                                                                            <MenuItem value={5}>30</MenuItem>
-                                                                            <MenuItem value={6}>40</MenuItem>
-                                                                            <MenuItem value={7}>50</MenuItem>                                                           
-                                                                            </Select>
-                                                                    </FormControl>
-                                                            
-                                                                </div>
-                                                                <div className="row">
-                                                                    <div className="col-sm-2">
-                                                                
-                                                                    <ButtonGroup size="small" aria-label="small outlined button group" >
-                                                                        <Button>Export 
-                                                                           
-                                                                        
-                                                                        </Button>
-                                                                        <Button><img src="img/refresh.png"/></Button>
-                                                                    
-                                                                    </ButtonGroup> 
-                                                                    
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                </div>
-                                                <div className="card-body">
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>                                
-                                
-                                
-                                </TabPanel>}
-                                {
-                            <TabPanel value={this.state.activeTab} index={3}>                          
-                                    <div className="row">
-                                        <div className="col-sm-12">
-                                            <div className="card b">
-                                                <div className="card-header">
-
-                                                </div>
-                                                <div className="card-body">
-                                                <div className="row" >
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                       
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>  Sales</InputLabel>
-                                        <Select
-                                            
-                                         
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={10}>Inward</MenuItem>
-                                               <MenuItem value={20}>Outward</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                       
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>  Role</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={10}>Users</MenuItem>
-                                               <MenuItem value={20}>company</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                      
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel>Status</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >All</MenuItem>
-                                               <MenuItem value={10}>pending</MenuItem>
-                                               
-                                               <MenuItem value={11}>Ongoing</MenuItem>
-                                               <MenuItem value={20}>hold</MenuItem>
-                                               <MenuItem value={30}>completed</MenuItem>
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-                                        {/* <div className="col-md-1"  style={{marginTop: 20}}  >
-                                        
-                                        </div> */}
-                                        <div className="col-md-2">
-                                        <FormControl    >
-                                            <InputLabel> Period</InputLabel>
-                                        <Select
-                                            
-
-                                               >
-                                                <MenuItem value={0} >All Time</MenuItem>
-                                               <MenuItem value={1}>This Month</MenuItem>
-                                               <MenuItem value={2}>Last Month</MenuItem>
-                                               <MenuItem value={3} >This Year</MenuItem>
-                                               <MenuItem value={4}>Last Year</MenuItem>
-                                               <MenuItem value={5}>last 3 Month</MenuItem>
-                                               <MenuItem value={6}>last 6 Month</MenuItem>
-                                               <MenuItem value={7}>last 12 Month</MenuItem>
-                                               {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                              
-                                            </Select>
-                                            </FormControl>
-                                        
-                                        </div>
-
-                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                 
-                                    <div className="row">
-                                        <div className="col-sm-12">
-                                            <div classname="card b">
-                                                <div className="card-header">
-                                                            <div className="row">
-                                                                <div className="col-sm-1">
-                                                                    <FormControl    >
-                                                                        {/* <InputLabel> Period</InputLabel> */}
-                                                                        <Select
-                                                                            
-
-                                                                            >
-                                                                            <MenuItem value={1}>10</MenuItem>
-                                                                            <MenuItem value={3} >20</MenuItem>
-                                                                            <MenuItem value={5}>30</MenuItem>
-                                                                            <MenuItem value={6}>40</MenuItem>
-                                                                            <MenuItem value={7}>50</MenuItem>                                                           
-                                                                            </Select>
-                                                                    </FormControl>
-                                                            
-                                                                </div>
-                                                                <div className="row">
-                                                                    <div className="col-sm-2">
-                                                                
-                                                                    <ButtonGroup size="small" aria-label="small outlined button group" >
-                                                                        <Button>Export 
-                                                                            
-                                                                        
-                                                                        </Button>
-                                                                        <Button><img src="img/refresh.png"/></Button>
-                                                                    
-                                                                    </ButtonGroup> 
-                                                                    
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                </div>
-                                                <div className="card-body">
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>                                
-                                
-                                </TabPanel>}
+                                        </fieldset>
+                                                    
+                                                    </div>
                                     
-                              
+                                            <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                            <fieldset>
+                                                <FormControl>
+                                                    <AutoSuggest url="users"
+                                                        name="usersName"
+                                                        displayColumns="name"
+                                                        label="Assign"
+                                                        onRef={ref => {
+                                                            (this.userASRef = ref)
+                                                            if (ref) {
+                                                                this.userASRef.load();
+                                                            }
+                                                        }}
+                                                        placeholder="Search User by name"
+                                                        arrayName="users"
+                                                        helperText={errors?.usersName_auto_suggest?.length > 0 ? errors?.usersName_auto_suggest[0]?.msg : ""}
+                                                        error={errors?.usersName_auto_suggest?.length > 0}
+                                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                        projection="user_details_mini"
+                                                        value={this.state.assignUser}
+                                                        onSelect={e => this.setAutoSuggestAssignUser('user', e)}
+                                                        queryString="&name" >
+                                                    </AutoSuggest>
+                                                </FormControl>
+                                            </fieldset>                     
+                                        </div>
+                                        <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>Status</InputLabel>
+                                                    <Select
+                                                        
+
+                                                        >
+                                                                <MenuItem value={1} >All</MenuItem>
+                                                            <MenuItem value={11} >Pending</MenuItem>
+                                                        <MenuItem value={10}>Ongoing</MenuItem>
+                                                        <MenuItem value={20}>hold</MenuItem>
+                                                        <MenuItem value={30}>completed</MenuItem>
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <FormControl   >
+                                                            <InputLabel> Period</InputLabel>
+                                                        <Select
+                                                            
+                                                            onChange={e => this.setField("timePeriod", e)}
+                                                            >
+                                                                <MenuItem value="all" >All Time</MenuItem>
+                                                                <MenuItem value="thismonth">This Month</MenuItem>
+                                                                <MenuItem value="lastmonth">Last Month</MenuItem>
+                                                                <MenuItem value="thisyear" >This Year</MenuItem>
+                                                                <MenuItem value="lastyear">Last Year</MenuItem>
+                                                                <MenuItem value="last3month">last 3 Month</MenuItem>
+                                                                <MenuItem value="last6month">last 6 Month</MenuItem>
+                                                                <MenuItem value="period">period</MenuItem>                                                
+                                                            </Select>
+                                                            </FormControl>
+
+                                                        {this.state.formWizard.obj.timePeriod === "period"?  
+                                                <div className="col-md-12" >
+                                                    <table>                                         
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                <fieldset >
+                                                        <MuiPickersUtilsProvider utils={MomentUtils} >
+                                                                <DatePicker 
+                                                                autoOk
+                                                                clearable
+                                                                disableFuture
+                                                                label="From Date"
+                                                                format="DD/MM/YYYY"
+                                                                value={this.state.formWizard.obj.receivedDate} 
+                                                                onChange={e => this.setDateField('receivedDate', e)} 
+                                                                TextFieldComponent={(props) => (
+                                                                    <TextField
+                                                                    type="text"
+                                                                    name="receivedDate"
+                                                                    id={props.id}
+                                                                    label={props.label}
+                                                                    onClick={props.onClick}
+                                                                    value={props.value}
+                                                                    disabled={props.disabled}
+                                                                    {...props.inputProps}
+                                                                    InputProps={{
+                                                                        endAdornment: (
+                                                                            <Event />
+                                                                        ),
+                                                                    }}
+                                                                    />
+                                                                )} />
+                                                            </MuiPickersUtilsProvider>
+                                                    </fieldset>
+                                                                </td>
+                                                                <td>
+                                                                <fieldset>
+                                                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                            <DatePicker 
+                                                        
+                                                            autoOk
+                                                            clearable
+                                                            disableFuture
+                                                            label="To Date"
+                                                            format="DD/MM/YYYY"
+                                                            value={this.state.formWizard.obj.emailDate} 
+                                                            onChange={e => this.setDateField('emailDate', e)} 
+                                                            TextFieldComponent={(props) => (
+                                                                <TextField
+                                                            
+                                                                type="text"
+                                                                name="emailDate"
+                                                                id={props.id}
+                                                                label={props.label}
+                                                                onClick={props.onClick}
+                                                                value={props.value}
+                                                                disabled={props.disabled}
+                                                                {...props.inputProps}
+                                                                InputProps={{
+                                                                    endAdornment: (
+                                                                        <Event />
+                                                                    ),
+                                                                }}
+                                                                />
+                                                            )} />
+                                                        </MuiPickersUtilsProvider>
+                                                </fieldset>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                
+                                                </div>
+                                                :""} 
+                                                    </div>
+                                                
+                                            
+                                   
+                                    
+     
+                                    </div>
+                                   
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <div classname="card b">
+                                <div className="card-header">
+                                            <div className="row">
+                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
+                                                    <FormControl    >
+                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                        <Select
+                                                            
+
+                                                            >                                                        
+                                                            <MenuItem value={1}>10</MenuItem>                                                        
+                                                            <MenuItem value={3} >20</MenuItem>                                                           
+                                                            <MenuItem value={5}>30</MenuItem>
+                                                            <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem>
+                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                            
+                                                </div>
+                                               
+                                                    <div className="col-sm-2">
+                                                    {/* <h1 style={{ textAlign: 'center' }}>
+                                                        Buy Movies{' '}
+                                                        <span role="img" aria-label="Movie projector">
+                                                        
+                                                        </span>
+                                                    </h1> */}
+                                                    
+                                                    <Dropdown title="" items={items} multiSelect />
+                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                       <Button></Button>
+                                                        <Button><img src="img/refresh.png"/></Button>
+                                                      
+                                                    </ButtonGroup>   */}                                                    
+                                                     </div>
+                                                                                                
+                                            
+                                                <div className="col-sm-1" style={{right: 102}}>
+                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                        <Button><img src="img/refresh.png"/></Button>                                                     
+                                                    </ButtonGroup> 
+                                                    </div>     
+                                            </div>
+                                </div>
+                                <div className="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                 
+                                
+                                </TabPanel>}
+                               
+                                {
+                            <TabPanel value={this.state.activeTab} index={5}>                          
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card b">
+                                                {/* <div className="card-header">
+
+                                                </div> */}
+                                <div className="card-body">
+                                    <div className="row" >
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                    <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>  Sales</InputLabel>
+                                                    <Select
+                                                        
+                                                    
+                                                        >
+                                                            <MenuItem value={0} >All</MenuItem>
+                                                        <MenuItem value={10}>Enquiries</MenuItem>
+                                                        <MenuItem value={20}>Order</MenuItem>
+                                                        {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    {/* <div className="col-md-1"  style={{marginTop: 20}}  >
+                                                
+                                                    </div> */}
+                                                     <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                                    <fieldset>
+                                            <FormControl>
+                                                <AutoSuggest url="companies"
+                                                    name="companyName"
+                                                    displayColumns="name"
+                                                    label="Company"
+                                                    onRef={ref => {
+                                                        (this.companyASRef = ref)
+                                                        if (ref) {
+                                                            this.companyASRef.load();
+                                                        }
+                                                    }}
+                                                    placeholder="Search Company by name"
+                                                    arrayName="companies"
+                                                    helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                                    error={errors?.companyName_auto_suggest?.length > 0}
+                                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                    projection="company_auto_suggest"
+                                                    value={this.state.formWizard.obj.selectedCompany}
+                                                    onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                                    queryString="&name" >
+                                                </AutoSuggest>
+                                            </FormControl>
+                                        </fieldset>
+                                                    
+                                                    </div>
+                                    
+                                            <div className="col-md-2" style={{marginTop: "-15px"}}>
+                                            <fieldset>
+                                                <FormControl>
+                                                    <AutoSuggest url="users"
+                                                        name="usersName"
+                                                        displayColumns="name"
+                                                        label="Assign"
+                                                        onRef={ref => {
+                                                            (this.userASRef = ref)
+                                                            if (ref) {
+                                                                this.userASRef.load();
+                                                            }
+                                                        }}
+                                                        placeholder="Search User by name"
+                                                        arrayName="users"
+                                                        helperText={errors?.usersName_auto_suggest?.length > 0 ? errors?.usersName_auto_suggest[0]?.msg : ""}
+                                                        error={errors?.usersName_auto_suggest?.length > 0}
+                                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                        projection="user_details_mini"
+                                                        value={this.state.assignUser}
+                                                        onSelect={e => this.setAutoSuggestAssignUser('user', e)}
+                                                        queryString="&name" >
+                                                    </AutoSuggest>
+                                                </FormControl>
+                                            </fieldset>                     
+                                        </div>
+                                        <div className="col-md-2">
+                                                    <FormControl    >
+                                                        <InputLabel>Status</InputLabel>
+                                                    <Select
+                                                        
+
+                                                        >
+                                                                <MenuItem value={1} >All</MenuItem>
+                                                            <MenuItem value={11} >Pending</MenuItem>
+                                                        <MenuItem value={10}>Ongoing</MenuItem>
+                                                        <MenuItem value={20}>hold</MenuItem>
+                                                        <MenuItem value={30}>completed</MenuItem>
+                                                        
+                                                        </Select>
+                                                        </FormControl>
+                                                    
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <FormControl   >
+                                                            <InputLabel> Period</InputLabel>
+                                                        <Select
+                                                            
+                                                            onChange={e => this.setField("timePeriod", e)}
+                                                            >
+                                                                <MenuItem value="all" >All Time</MenuItem>
+                                                                <MenuItem value="thismonth">This Month</MenuItem>
+                                                                <MenuItem value="lastmonth">Last Month</MenuItem>
+                                                                <MenuItem value="thisyear" >This Year</MenuItem>
+                                                                <MenuItem value="lastyear">Last Year</MenuItem>
+                                                                <MenuItem value="last3month">last 3 Month</MenuItem>
+                                                                <MenuItem value="last6month">last 6 Month</MenuItem>
+                                                                <MenuItem value="period">period</MenuItem>                                                
+                                                            </Select>
+                                                            </FormControl>
+
+                                                        {this.state.formWizard.obj.timePeriod === "period"?  
+                                                <div className="col-md-12" >
+                                                    <table>                                         
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                <fieldset >
+                                                        <MuiPickersUtilsProvider utils={MomentUtils} >
+                                                                <DatePicker 
+                                                                autoOk
+                                                                clearable
+                                                                disableFuture
+                                                                label="From Date"
+                                                                format="DD/MM/YYYY"
+                                                                value={this.state.formWizard.obj.receivedDate} 
+                                                                onChange={e => this.setDateField('receivedDate', e)} 
+                                                                TextFieldComponent={(props) => (
+                                                                    <TextField
+                                                                    type="text"
+                                                                    name="receivedDate"
+                                                                    id={props.id}
+                                                                    label={props.label}
+                                                                    onClick={props.onClick}
+                                                                    value={props.value}
+                                                                    disabled={props.disabled}
+                                                                    {...props.inputProps}
+                                                                    InputProps={{
+                                                                        endAdornment: (
+                                                                            <Event />
+                                                                        ),
+                                                                    }}
+                                                                    />
+                                                                )} />
+                                                            </MuiPickersUtilsProvider>
+                                                    </fieldset>
+                                                                </td>
+                                                                <td>
+                                                                <fieldset>
+                                                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                            <DatePicker 
+                                                        
+                                                            autoOk
+                                                            clearable
+                                                            disableFuture
+                                                            label="To Date"
+                                                            format="DD/MM/YYYY"
+                                                            value={this.state.formWizard.obj.emailDate} 
+                                                            onChange={e => this.setDateField('emailDate', e)} 
+                                                            TextFieldComponent={(props) => (
+                                                                <TextField
+                                                            
+                                                                type="text"
+                                                                name="emailDate"
+                                                                id={props.id}
+                                                                label={props.label}
+                                                                onClick={props.onClick}
+                                                                value={props.value}
+                                                                disabled={props.disabled}
+                                                                {...props.inputProps}
+                                                                InputProps={{
+                                                                    endAdornment: (
+                                                                        <Event />
+                                                                    ),
+                                                                }}
+                                                                />
+                                                            )} />
+                                                        </MuiPickersUtilsProvider>
+                                                </fieldset>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                
+                                                </div>
+                                                :""} 
+                                                    </div>
+                                                
+                                            
+                                   
+                                    
+     
+                                    </div>
+                                   
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <div classname="card b">
+                                <div className="card-header">
+                                            <div className="row">
+                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
+                                                    <FormControl    >
+                                                        {/* <InputLabel> Period</InputLabel> */}
+                                                        <Select
+                                                            
+
+                                                            >                                                        
+                                                            <MenuItem value={1}>10</MenuItem>                                                        
+                                                            <MenuItem value={3} >20</MenuItem>                                                           
+                                                            <MenuItem value={5}>30</MenuItem>
+                                                            <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem>
+                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                            
+                                                </div>
+                                               
+                                                    <div className="col-sm-2">
+                                                    {/* <h1 style={{ textAlign: 'center' }}>
+                                                        Buy Movies{' '}
+                                                        <span role="img" aria-label="Movie projector">
+                                                        
+                                                        </span>
+                                                    </h1> */}
+                                                    
+                                                    <Dropdown title="" items={items} multiSelect />
+                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                       <Button></Button>
+                                                        <Button><img src="img/refresh.png"/></Button>
+                                                      
+                                                    </ButtonGroup>   */}                                                    
+                                                     </div>
+                                                                                                
+                                            
+                                                <div className="col-sm-1" style={{right: 102}}>
+                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                        <Button><img src="img/refresh.png"/></Button>                                                     
+                                                    </ButtonGroup> 
+                                                    </div>     
+                                            </div>
+                                </div>
+                                <div className="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                 
+                                
+                                </TabPanel>}
+                                
         </ContentWrapper>)
     }
 }

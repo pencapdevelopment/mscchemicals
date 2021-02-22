@@ -95,11 +95,11 @@ class Quotation extends Component {
             
                     <div className="row">
                         <div className="col-md-12">
-                    //         <div className="card b">
-                    //             <div className="card-header">
+                             <div className="card b">
+                                 {/* <div className="card-header">
 
-                    //             </div>
-                    //         </div>
+                                 </div> */}
+                             </div>
                             <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
                             currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload>
 

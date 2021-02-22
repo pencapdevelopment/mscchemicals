@@ -20,7 +20,7 @@ import SalesInventory from './SalesInventory';
 // import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter,  getStatusBadge } from '../../Common/constants';
 import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+// import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
 // import {
@@ -34,7 +34,7 @@ import AddInventory from './AddInventory';
 import Add from './Add';
 import EditIcon from '@material-ui/icons/Edit';
 import Upload from '../Common/Upload';
-import Status from '../Common/Status';
+// import Status from '../Common/Status';
 import Followups from '../Followups/Followups';
 import ShipmentDetails from './ShipmentDetails';
 import { mockActivity } from '../../Timeline';
@@ -46,7 +46,7 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
+// import CardMedia from '@material-ui/core/CardMedia';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider'

@@ -290,7 +290,7 @@ class Upload extends Component {
                     <div className="col-md-12">
                         <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModal} size={'md'}>
                             <ModalHeader toggle={this.toggleModal}>
-                                <img  style={{width: 20,height: 40, }} src="img/upload.jpg" />
+                                <img   src="img/upload.png" />
                                 - {this.state.formWizard.obj.label}
                             </ModalHeader>
                             <ModalBody>
