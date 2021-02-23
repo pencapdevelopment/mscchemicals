@@ -225,47 +225,62 @@ class Add extends Component {
         this.setState({ user: val });
     }
 
-    addCompany = () => {
+    checkForAddCompError() {
+        // const form = this.formWizardRef;
+        const tabPane = document.getElementById('companyvalidatorDiv');
+        const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
+        const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
-        var selectedCompanies = this.state.selectedCompanies;
-        if(this.state.formWizard.editFlag){
-            selectedCompanies = [];
-        }
-        var exists = selectedCompanies.length>0?selectedCompanies.findIndex(c => c.companyId === formWizard.selectedcompany):-1;
-        if(formWizard.selectedcompany && formWizard.obj.contactName !== '' && formWizard.obj.source !== ''){
-            if(exists === -1){
-                selectedCompanies.push({
-                    companyId:formWizard.selectedcompany,
-                    name:this.companyASRef.state.searchParam,
-                    type:formWizard.obj.type,
-                    email:formWizard.obj.email,
-                    phone:formWizard.obj.phone,
-                    contactName:formWizard.obj.contactName,
-                    source:formWizard.obj.source,
-                    description:formWizard.obj.description
-                });
+        console.log("form errors are ",errors);
+        formWizard.errors = errors;
+        this.setState({ formWizard });
+        return hasError;
+    }
+
+    addCompany = () => {
+        var hasError = this.checkForAddCompError();
+        if (!hasError) {
+            var formWizard = this.state.formWizard;
+            var selectedCompanies = this.state.selectedCompanies;
+            if(this.state.formWizard.editFlag){
+                selectedCompanies = [];
             }
-            else{
-                selectedCompanies[exists] = {
-                    companyId:formWizard.selectedcompany,
-                    name:this.companyASRef.state.searchParam,
-                    type:formWizard.obj.type,
-                    email:formWizard.obj.email,
-                    phone:formWizard.obj.phone,
-                    contactName:formWizard.obj.contactName,
-                    source:formWizard.obj.source,
-                    description:formWizard.obj.description
+            var exists = selectedCompanies.length>0?selectedCompanies.findIndex(c => c.companyId === formWizard.selectedcompany):-1;
+            if(formWizard.selectedcompany && formWizard.obj.contactName !== '' && formWizard.obj.source !== ''){
+                if(exists === -1){
+                    selectedCompanies.push({
+                        companyId:formWizard.selectedcompany,
+                        name:this.companyASRef.state.searchParam,
+                        type:formWizard.obj.type,
+                        email:formWizard.obj.email,
+                        phone:formWizard.obj.phone,
+                        contactName:formWizard.obj.contactName,
+                        source:formWizard.obj.source,
+                        description:formWizard.obj.description
+                    });
                 }
+                else{
+                    selectedCompanies[exists] = {
+                        companyId:formWizard.selectedcompany,
+                        name:this.companyASRef.state.searchParam,
+                        type:formWizard.obj.type,
+                        email:formWizard.obj.email,
+                        phone:formWizard.obj.phone,
+                        contactName:formWizard.obj.contactName,
+                        source:formWizard.obj.source,
+                        description:formWizard.obj.description
+                    }
+                }
+                formWizard.selectedcompany = '';
+                formWizard.obj.type = '';
+                formWizard.obj.email = '';
+                formWizard.obj.phone = '';
+                formWizard.obj.contactName = '';
+                formWizard.obj.source = '';
+                formWizard.obj.description = '';
+                this.companyASRef.setInitialField({name:''});
+                this.setState({formWizard,selectedCompanies});
             }
-            formWizard.selectedcompany = '';
-            formWizard.obj.type = '';
-            formWizard.obj.email = '';
-            formWizard.obj.phone = '';
-            formWizard.obj.contactName = '';
-            formWizard.obj.source = '';
-            formWizard.obj.description = '';
-            this.companyASRef.setInitialField({name:''});
-            this.setState({formWizard,selectedCompanies});
         }
     }
 
@@ -394,16 +409,34 @@ class Add extends Component {
         }
         this.setState({ formWizard });
     }
-
     checkForError() {
         // const form = this.formWizardRef;
         const tabPane = document.getElementById('salesEnquiryForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
+        console.log("form errors are ",errors);
+        if(this.state.users.length>0 && errors.hasOwnProperty('usersName_auto_suggest')){
+            errors.usersName_auto_suggest = [];
+        }
+        if(this.state.formWizard.obj.products.length>0 && errors.hasOwnProperty('productName_auto_suggest')){
+            errors.productName_auto_suggest = [];
+        }
+        if(this.state.selectedCompanies.length>0){
+            errors.companyName_auto_suggest = [];
+            errors.contactName = [];
+            errors.source = [];
+        }
         formWizard.errors = errors;
         this.setState({ formWizard });
-        return hasError;
+        let hserr = false;
+        let errKeys = Object.keys(errors);
+        for(var i=0;i<errKeys.length;i++){
+            if(errors[errKeys[i]].length){
+                hserr = true;break;
+            }
+        }
+        return hserr;
     }
 
     saveDetails() {
@@ -557,177 +590,179 @@ class Add extends Component {
                             </fieldset>
                         </div>
                     </div> */}
-                    <div className="row">
-                        <div className="col-3">
-                            <fieldset>
-                                <FormControl>
-                                    <AutoSuggest url="companies"
-                                        name="companyName"
-                                        displayColumns="name"
-                                        label="Company"
-                                        onRef={ref => {
-                                            (this.companyASRef = ref)
-                                            if (ref) {
-                                                this.companyASRef.load();
+                    <div id="companyvalidatorDiv">
+                        <div className="row">
+                            <div className="col-3">
+                                <fieldset>
+                                    <FormControl>
+                                        <AutoSuggest url="companies"
+                                            name="companyName"
+                                            displayColumns="name"
+                                            label="Company"
+                                            onRef={ref => {
+                                                (this.companyASRef = ref)
+                                                if (ref) {
+                                                    this.companyASRef.load();
+                                                }
+                                            }}
+                                            placeholder="Search Company by name"
+                                            arrayName="companies"
+                                            helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
+                                            error={errors?.companyName_auto_suggest?.length > 0}
+                                            inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                            projection="company_auto_suggest"
+                                            value={this.state.formWizard.obj.selectedCompany}
+                                            onSelect={e => this.setAutoSuggest('company', e?.id)}
+                                            queryString="&name" >
+                                        </AutoSuggest>
+                                    </FormControl>
+                                </fieldset>
+                            </div>
+                            <div className="col-2 mt-4">
+                                {/*<Button className="ml-2 btn-primary" style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="outlined" color="#fff" size="sm" onClick={this.addProduct} title="Add Product">
+                                    <em className="fas fa-plus"></em> Add
+                                            </Button> */}
+                                <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="contained" color="secondary" size="small" onClick={this.addCompany}>+ Add Company </Button>
+                            </div>
+                            <div className="col-md-4  offset-md-2" style={{marginTop:"4px"}}>
+                                <fieldset>
+                                    <FormControl>
+                                        {/* <FormLabel component="legend">Type</FormLabel> */}
+                                        <RadioGroup aria-label="type" name="type" row>
+                                            <FormControlLabel
+                                                value="B" checked={this.state.formWizard.obj.type === 'B'}
+                                                label="Email"
+                                                onChange={e => this.setField("type", e)}
+                                                control={<Radio color="primary" />}
+                                                labelPlacement="end"
+                                            />
+                                            <FormControlLabel
+                                                value="V" checked={this.state.formWizard.obj.type === 'V'}
+                                                label="Phone"
+                                                onChange={e => this.setField("type", e)}
+                                                control={<Radio color="primary" />}
+                                                labelPlacement="end"
+                                            />
+                                        </RadioGroup>
+                                    </FormControl>
+                                
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div className="row">   
+                            <div class="col-md-5" style={{marginLeft:"4px"}}>
+                                {this.state.selectedCompanies.map((comp, i) => {
+                                    return (
+                                        <Chip
+                                            avatar={
+                                                <Avatar>
+                                                    <AssignmentIndIcon />
+                                                </Avatar>
                                             }
-                                        }}
-                                        placeholder="Search Company by name"
-                                        arrayName="companies"
-                                        helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
-                                        error={errors?.companyName_auto_suggest?.length > 0}
-                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                        projection="company_auto_suggest"
-                                        value={this.state.formWizard.obj.selectedCompany}
-                                        onSelect={e => this.setAutoSuggest('company', e?.id)}
-                                        queryString="&name" >
-                                    </AutoSuggest>
-                                </FormControl>
-                            </fieldset>
-                        </div>
-                        <div className="col-2 mt-4">
-                            {/*<Button className="ml-2 btn-primary" style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="outlined" color="#fff" size="sm" onClick={this.addProduct} title="Add Product">
-                                <em className="fas fa-plus"></em> Add
-                                        </Button> */}
-                            <Button style={{backgroundColor:"#2b3db6",color:"#fff"}} variant="contained" color="secondary" size="small" onClick={this.addCompany}>+ Add Company </Button>
-                        </div>
-                        <div className="col-md-4  offset-md-2" style={{marginTop:"4px"}}>
-                            <fieldset>
-                                <FormControl>
-                                    {/* <FormLabel component="legend">Type</FormLabel> */}
-                                    <RadioGroup aria-label="type" name="type" row>
-                                        <FormControlLabel
-                                            value="B" checked={this.state.formWizard.obj.type === 'B'}
-                                            label="Email"
-                                            onChange={e => this.setField("type", e)}
-                                            control={<Radio color="primary" />}
-                                            labelPlacement="end"
+                                            label={comp.name}
+                                            onClick={() => this.onSelectCompChip(comp)}
+                                            onDelete={() => this.removeCompany(i)}
                                         />
-                                        <FormControlLabel
-                                            value="V" checked={this.state.formWizard.obj.type === 'V'}
-                                            label="Phone"
-                                            onChange={e => this.setField("type", e)}
-                                            control={<Radio color="primary" />}
-                                            labelPlacement="end"
-                                        />
-                                    </RadioGroup>
-                                </FormControl>
-                               
-                            </fieldset>
+                                    )
+                                })}
+                            </div>
+                            {this.state.formWizard.obj.type === 'V' &&
+                                <div className="col-md-4 offset-md-2">
+                                    <TextField
+                                        name="phone"
+                                        type="text"
+                                        label="Phone"
+                                        fullWidth={true}
+                                        inputProps={{ minLength: 0, maxLength: 15, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"15"}]' }}
+                                        helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ""}
+                                        error={errors?.phone?.length > 0}
+                                        value={this.state.formWizard.obj.phone}
+                                        onChange={e => this.setField('phone', e)} />
+                                    {/* <fieldset>
+                                        <TextField type="text" name="phone" label="Phone" required={true} fullWidth={true}
+                                        inputProps={{ maxLength: 13, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"10"},{"key":"maxlen","param":"30"}]' }}
+                                        helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ""}
+                                        error={errors?.phone?.length > 0}
+                                        value={this.state.formWizard.obj.phone} onChange={e => this.setField("phone", e)} />
+                                    </fieldset> */}
+                                </div>
+                            }
+                            {this.state.formWizard.obj.type === 'B' &&
+                                <div className="col-md-4 offset-md-2">
+                                    <TextField
+                                        name="email"
+                                        type="text"
+                                        label="Email"
+                                        fullWidth={true}
+                                        inputProps={{ minLength: 0, maxLength: 80, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"80"}]' }}
+                                        helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ""}
+                                        error={errors?.email?.length > 0}
+                                        value={this.state.formWizard.obj.email}
+                                        onChange={e => this.setField('email', e)} />
+                                </div>
+                            }
                         </div>
-                    </div>
-                    <div className="row">   
-                        <div class="col-md-5" style={{marginLeft:"4px"}}>
-                            {this.state.selectedCompanies.map((comp, i) => {
-                                return (
-                                    <Chip
-                                        avatar={
-                                            <Avatar>
-                                                <AssignmentIndIcon />
-                                            </Avatar>
-                                        }
-                                        label={comp.name}
-                                        onClick={() => this.onSelectCompChip(comp)}
-                                        onDelete={() => this.removeCompany(i)}
-                                    />
-                                )
-                            })}
-                        </div>
-                        {this.state.formWizard.obj.type === 'V' &&
-                            <div className="col-md-4 offset-md-2">
-                                <TextField
-                                    name="phone"
-                                    type="text"
-                                    label="Phone"
-                                    fullWidth={true}
-                                    inputProps={{ minLength: 0, maxLength: 15, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"15"}]' }}
-                                    helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ""}
-                                    error={errors?.phone?.length > 0}
-                                    value={this.state.formWizard.obj.phone}
-                                    onChange={e => this.setField('phone', e)} />
+                        <div className="row">
+                            <div className="col-md-4">
+                                <fieldset>
+                                    <FormControl>
+                                        <TextField id="contactName" name="contactName" label="Contact Name" type="text" required={true}
+                                            inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
+                                            helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
+                                            error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
+                                            defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
+                                    </FormControl>
+                                </fieldset>
                                 {/* <fieldset>
-                                    <TextField type="text" name="phone" label="Phone" required={true} fullWidth={true}
-                                    inputProps={{ maxLength: 13, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"10"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ""}
-                                    error={errors?.phone?.length > 0}
-                                    value={this.state.formWizard.obj.phone} onChange={e => this.setField("phone", e)} />
+                                    <TextField type="text" name="email" label="Email" required={true} fullWidth={true}
+                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"email"},{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                        helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ""}
+                                        error={errors?.email?.length > 0}
+                                        value={this.state.formWizard.obj.email} onChange={e => this.setField("email", e)} />
                                 </fieldset> */}
-                            </div>
-                        }
-                        {this.state.formWizard.obj.type === 'B' &&
-                            <div className="col-md-4 offset-md-2">
-                                <TextField
-                                    name="email"
-                                    type="text"
-                                    label="Email"
-                                    fullWidth={true}
-                                    inputProps={{ minLength: 0, maxLength: 80, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"80"}]' }}
-                                    helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ""}
-                                    error={errors?.email?.length > 0}
-                                    value={this.state.formWizard.obj.email}
-                                    onChange={e => this.setField('email', e)} />
-                            </div>
-                        }
-                    </div>
-                    <div className="row">
-                        <div className="col-md-4">
-                            <fieldset>
-                                <FormControl>
-                                    <TextField id="contactName" name="contactName" label="Contact Name" type="text" required={true}
-                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
-                                        helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
-                                        error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
-                                        defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)} />
-                                </FormControl>
-                            </fieldset>
-                            {/* <fieldset>
-                                <TextField type="text" name="email" label="Email" required={true} fullWidth={true}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"email"},{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ""}
-                                    error={errors?.email?.length > 0}
-                                    value={this.state.formWizard.obj.email} onChange={e => this.setField("email", e)} />
-                            </fieldset> */}
-                        </div> 
-                    </div>
-                    <div className="row">
-                        <div className="col-md-4">
-                            <fieldset>
-                                <TextField type="text" name="source" label="Source" required={true} fullWidth={true}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.source?.length > 0 ? errors?.source[0]?.msg : ""}
-                                    error={errors?.source?.length > 0}
-                                    value={this.state.formWizard.obj.source} onChange={e => this.setField("source", e)} />
-                            </fieldset>
+                            </div> 
                         </div>
-                        <div className="col-md-5  offset-md-3 " style={{marginTop:"-30px",marginBottom:"-3px"}}>
-                            {/*<fieldset>
-                                <FormControl>
-                                    <InputLabel>Enquiry Status</InputLabel>
-                                    <Select label="Enquiry Status" name="status" disabled={true}
-                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"}]' }}
-                                        helperText={errors?.status?.length > 0 ? errors?.status[0]?.msg : ""}
-                                        error={errors?.status?.length > 0}
-                                        value={this.state.formWizard.obj.status}
-                                        onChange={e => this.setSelectField('status', e)}> {this.state.status.map((e, keyIndex) => {
-                                            return (
-                                                <MenuItem key={keyIndex} value={e.value}>{e.label}</MenuItem>
-                                            );
-                                        })}
-                                    </Select>
-                                </FormControl>
-                            </fieldset>*/}
-                            <fieldset>
-                                <TextareaAutosize placeholder="Description" fullWidth={true} rowsMin={3} name="description"
-                                   style={{padding: 10}}
-                                   inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
-                                    helperText={errors?.description?.length > 0 ? errors?.description[0]?.msg : ""}
-                                    error={errors?.description?.length > 0}
-                                    value={this.state.formWizard.obj.description} onChange={e => this.setField("description", e)} />
-                            </fieldset>
+                        <div className="row">
+                            <div className="col-md-4">
+                                <fieldset>
+                                    <TextField type="text" name="source" label="Source" required={true} fullWidth={true}
+                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
+                                        helperText={errors?.source?.length > 0 ? errors?.source[0]?.msg : ""}
+                                        error={errors?.source?.length > 0}
+                                        value={this.state.formWizard.obj.source} onChange={e => this.setField("source", e)} />
+                                </fieldset>
+                            </div>
+                            <div className="col-md-5  offset-md-3 " style={{marginTop:"-30px",marginBottom:"-3px"}}>
+                                {/*<fieldset>
+                                    <FormControl>
+                                        <InputLabel>Enquiry Status</InputLabel>
+                                        <Select label="Enquiry Status" name="status" disabled={true}
+                                            inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"}]' }}
+                                            helperText={errors?.status?.length > 0 ? errors?.status[0]?.msg : ""}
+                                            error={errors?.status?.length > 0}
+                                            value={this.state.formWizard.obj.status}
+                                            onChange={e => this.setSelectField('status', e)}> {this.state.status.map((e, keyIndex) => {
+                                                return (
+                                                    <MenuItem key={keyIndex} value={e.value}>{e.label}</MenuItem>
+                                                );
+                                            })}
+                                        </Select>
+                                    </FormControl>
+                                </fieldset>*/}
+                                <fieldset>
+                                    <TextareaAutosize placeholder="Description" fullWidth={true} rowsMin={3} name="description"
+                                    style={{padding: 10}}
+                                    inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
+                                        helperText={errors?.description?.length > 0 ? errors?.description[0]?.msg : ""}
+                                        error={errors?.description?.length > 0}
+                                        value={this.state.formWizard.obj.description} onChange={e => this.setField("description", e)} />
+                                </fieldset>
+                            </div>
                         </div>
-                    </div>
-                    <div className="row" style={{padding:"20px"}}>
-                        <div className="col-md-12 " >
-                            {/* <span  >Products</span>  */}  
+                        <div className="row" style={{padding:"20px"}}>
+                            <div className="col-md-12 " >
+                                {/* <span  >Products</span>  */}  
+                            </div>
                         </div>
                     </div>
                     <Divider /> 

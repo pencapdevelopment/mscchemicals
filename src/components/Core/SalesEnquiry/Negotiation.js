@@ -29,14 +29,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import PageLoader from '../../Common/PageLoader';
 // import CustomPagination from '../../Common/CustomPagination';
 import styled from "styled-components";
-
-
-
-
-
-
 // const json2csv = require('json2csv').parse;
-
 class Negotiation extends Component {
     state = {
         activeTab: 0,
@@ -47,7 +40,7 @@ class Negotiation extends Component {
         obj1:'',
         obj2:'',
         obj3:'',
-        obj4:'',
+        obj4:{},
         page:'',
         ngTracking : [],
         remark:'',
@@ -64,16 +57,8 @@ class Negotiation extends Component {
                 ns2_readOnly:false,
                 ns3_readOnly:false,
                 remark:''
-        },
-       
-        remarkObj:{
-            remark:'',
-           
         }
-      
     }
-
-
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
@@ -86,7 +71,6 @@ class Negotiation extends Component {
         });
            
     }
-
     negotiationTraking(){
         axios.get( server_url + context_path + "api/sales-negotiation-tracking?reference.id="+this.props.currentId+"&sort=id,desc&projection=sales-negotiation-tracking").then(res => {
             let ngList1 = res.data._embedded[Object.keys(res.data._embedded)[0]];
@@ -118,27 +102,18 @@ class Negotiation extends Component {
             
         });   
     }
-
     loadObj1(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
             console.log("loadObj1 Products", res.data)
             this.setState({ obj1: res.data });
-        });
-
-       
+        });  
     }
-
     // loadObj2(id) {
     //     axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
     //         var newData=res.data;
     //         this.setState({ obj: newData });
     //     });
     // }
-
-
-
-
-
     saveNegotiation= (productsid) => {
         console.log(" save negotiation", productsid);
         var obj2=this.state.obj2;
@@ -150,111 +125,115 @@ class Negotiation extends Component {
         obj2.negotiation_stage1=this.state.ngList1.negotiation_stage1;
         obj2.negotiation_stage2=this.state.ngList1.negotiation_stage2;
         obj2.negotiation_stage3=this.state.ngList1.negotiation_stage3;
-
-        if(!(obj2.negotiation_stage1.length>0 && obj2.negotiation_stage2.length>0 && obj2.negotiation_stage3.length>0)){
+        if(!(this.state.ngList1.ns1_readOnly && this.state.ngList1.ns2_readOnly && this.state.ngList1.ns3_readOnly)){
             axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2)
             .then(res => {
-                console.log("axios.get  Negotations toggleModal Negotations==>", res.data)
-                console.log("sales-negotiation-tracking data==>", res.data)
                 this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true });
                 this.loadObj1(this.props.currentId);
                 this.negotiationTraking();
-                console.log("after componentDidMount")
             }); 
         }else{
             this.setState({ modalnegatation:false});
         }
     }
-            
-
     toggleModalNegotation = (productId) => {
         console.log("toggleModalNegotation calling productId=> ",productId )
         //console.log("toggleModalNegotation calling p==> ",p )
-        
-
-       
-
         // axios.get( server_url + context_path + "api/sales-products/"+ productId ).then(res => {
         //     console.log("toggleModal Negotations==>", res.data)
         //     console.log("toggleModal Negotations==>", res.data.amount)
           
         //         this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
         //     });
-        axios.get( server_url + context_path + "api/sales-products/"+ productId+"?projection=sales-product" ).then(res => {
+        axios.get(server_url + context_path + "api/sales-products/"+ productId+"?projection=sales-product")
+        .then(res => {
             console.log("toggleModal Negotations==>", res.data)
             console.log("toggleModal Negotations==>", res.data.amount)
             var product = this.props.parentObj.products.find(p => p.id === res.data.id);
             console.log("product from parent", product)
-          
-                this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
-            });
-            
-            axios.get( server_url + context_path + "api/sales-negotiation-tracking?salesProduct="+productId+"&page=0&size=1&sort=id,desc&projection=sales-negotiation-tracking").then(res => {
-                
-                //var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
-                var ngList=res.data._embedded[Object.keys(res.data._embedded)[0]];
-                console.log("negotiationTraking Data ngList==>", ngList)
-                if (ngList.length) {
-                    if(ngList[0].negotiation_stage1 === 0 ){ngList[0]['negotiation_stage1']= ''}
-                    if(ngList[0].negotiation_stage2 === 0){ngList[0]['negotiation_stage2']= ''}
-                    if(ngList[0].negotiation_stage3 === 0){ngList[0]['negotiation_stage3']= ''}
+            this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
+        });    
+        axios.get( server_url + context_path + "api/sales-negotiation-tracking?salesProduct="+productId+"&page=0&size=1&sort=id,desc&projection=sales-negotiation-tracking")
+        .then(res => {
+            //var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            var ngList=res.data._embedded[Object.keys(res.data._embedded)[0]];
+            console.log("negotiationTraking Data ngList==>", ngList)
+            if (ngList.length) {
+                if(ngList[0].negotiation_stage1 === 0 ){ngList[0]['negotiation_stage1']= ''}
+                if(ngList[0].negotiation_stage2 === 0){ngList[0]['negotiation_stage2']= ''}
+                if(ngList[0].negotiation_stage3 === 0){ngList[0]['negotiation_stage3']= ''}
 
-                    if(ngList[0].negotiation_stage1 !== '' ){ngList[0]['ns1_readOnly']= true}
-                    if(ngList[0].negotiation_stage2 !== ''){ngList[0]['ns2_readOnly']= true}
-                    if(ngList[0].negotiation_stage3 !== ''){ngList[0]['ns3_readOnly']= true}
-                    this.setState({ ngList1: ngList[0] }, () => { console.log("After Setting State==>", this.state.ngList1) });
-                } else {
-                    this.setState({
-                        ngList1: {
-                            negotiation_stage1: '',
-                            negotiation_stage2: '',
-                            negotiation_stage3: '',
-                            ns1_readOnly:false,
-                            ns2_readOnly:false,
-                            ns3_readOnly:false,
-                            remark: ''
-                        }
-                    })
-                }
-            });            
-
+                if(ngList[0].negotiation_stage1 !== '' ){ngList[0]['ns1_readOnly']= true}
+                if(ngList[0].negotiation_stage2 !== ''){ngList[0]['ns2_readOnly']= true}
+                if(ngList[0].negotiation_stage3 !== ''){ngList[0]['ns3_readOnly']= true}
+                this.setState({ ngList1: ngList[0] }, () => { console.log("After Setting State==>", this.state.ngList1) });
+            } else {
+                this.setState({
+                    ngList1: {
+                        negotiation_stage1: '',
+                        negotiation_stage2: '',
+                        negotiation_stage3: '',
+                        ns1_readOnly:false,
+                        ns2_readOnly:false,
+                        ns3_readOnly:false,
+                        remark: ''
+                    }
+                })
             }
- 
-    
-    toggleRemarkNegotiation = (productId) => {
-        axios.get( server_url + context_path + "api/sales-products/"+ productId ).then(res => {
-            console.log("toggleRemarkNegotiation==>", res.data)
-            console.log("toggleRemarkNegotiation==>", res.data)
-          
-                this.setState({ obj4: res.data, modalRemark:!this.state.modalRemark });
-            });
-
-        
+        });         
     }
-
+    toggleRemarkNegotiation = (productId) => {
+        // axios.get( server_url + context_path + "api/sales-products/"+ productId+"?projection=sales-product")
+        // .then(res => {
+        //     console.log("toggleRemarkNegotiation==>", res.data)
+            
+        // });
+        let obj4 = {};
+        obj4.productName = this.state.obj1.products.find(p=>p.id===productId).product.name;
+        obj4.productId = this.state.obj1.products.find(p=>p.id===productId).product.id;
+        obj4.saleProductId = productId
+        obj4.ns1_remark = '-No Remarks-';
+        obj4.ns2_remark = '-No Remarks-';
+        obj4.ns3_remark = '-No Remarks-';
+        obj4.status = null;
+        axios.get( server_url + context_path + "api/sales-negotiation-tracking?salesProduct="+productId+"&page=0&sort=id,desc&projection=sales-negotiation-tracking")
+        .then(remarkResp => {
+            let ngList = remarkResp.data._embedded[Object.keys(remarkResp.data._embedded)[0]];
+            console.log("sale product nego trackings",ngList);
+            if(ngList.length) {
+                obj4.productName = ngList[0].product.name;
+                obj4.productId = ngList[0].product.id;
+                obj4.saleProductId = productId;
+                let idx1 = ngList.findIndex(ng1 => ng1.negotiation_stage1 !==0 && ng1.negotiation_stage2 === 0 && ng1.negotiation_stage3 === 0);
+                let idx2 = ngList.findIndex(ng1 => ng1.negotiation_stage1 !==0 && ng1.negotiation_stage2 !== 0 && ng1.negotiation_stage3 === 0);
+                let idx3 = ngList.findIndex(ng1 => ng1.negotiation_stage1 !==0 && ng1.negotiation_stage2 !== 0 && ng1.negotiation_stage3 !== 0);
+                obj4.ns1_remark = idx1 === -1?'-No Remarks-':ngList[idx1].remark;
+                obj4.ns2_remark = idx2 === -1?'-No Remarks-':ngList[idx2].remark;
+                obj4.ns3_remark = idx3 === -1?'-No Remarks-':ngList[idx3].remark;
+                obj4.status = ngList[0].status;
+            }
+        })
+        .finally(() => {
+            this.setState({obj4: obj4, modalRemark:!this.state.modalRemark });
+        })
+    }
     toggleModalNegotation1= () => {
         this.setState({
             modalnegatation: false
          });
     }
-
     componentDidUpdate(){
         console.log("componentDidUpdate", this.state.obj2);
         console.log("Negotiation.js.. modalnegatation:- ", this.state.modalnegatation)
     }
-
-
     toggleRemark = () => {
         this.setState({
            modalRemark: false
         });
     };
-
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         // console.log('quotation component did mount');
         console.log("componentDidMount Negotiation", this.props.currentId);
@@ -336,7 +315,6 @@ class Negotiation extends Component {
     //     this.setState({obj3});
 
     // }
-
     saveRemark(e){
         console.log("saveRemark");
         var ngList1= this.state.ngList1;
@@ -344,11 +322,8 @@ class Negotiation extends Component {
         ngList1.remark=input.value;
         this.setState({ngList1})
         console.log("save Remark value===>", ngList1);
-
     }
-
     negotiation_stage1(e){
-        
         console.log("savenegotiation_stage1");
         var ngList1=this.state.ngList1;
         var input=e.target;
@@ -357,12 +332,8 @@ class Negotiation extends Component {
             ngList1
         });
         console.log("saveNgAmount==>", ngList1);
-
-
-  
-}
+    }
     
-
     negotiation_stage2(e){
         console.log("negotiation_stage2");
         var ngList1=this.state.ngList1;
@@ -410,27 +381,22 @@ class Negotiation extends Component {
                      <ModalHeader toggle={this.toggleModalNegotation1}>
                         Negotation Products : {this.state.obj2.id}
                     </ModalHeader> 
-                    <ModalBody>
-                   
+                    <ModalBody>               
                             <div className="row">
                                 <div className="col-md-12">
                                     <Table hover responsive>
                                         <tbody>
                                         {this.props.parentObj.products.map((product, i) => {
                                             return(<div>
-                                            {product.id===this.state.obj2.id &&
-                                       
-                                               
+                                            {product.id===this.state.obj2.id &&                
                                                     <tr key={i}>
                                                         <td className="va-middle">{i + 1}</td>
                                                         <td className="va-middle">
                                                             <fieldset>
                                                                 <FormControl>
-                                                                   
                                                                         <Link to={`/products/${product.product.id}`}>
                                                                             {product.product.name}
                                                                         </Link>
-                                                                    
                                                                     {!this.state.obj2.id &&
                                                                         <AutoSuggest url="products"
                                                                             name="productName"
@@ -491,8 +457,6 @@ class Negotiation extends Component {
                                                             </Button> */}
                                                         </td>
                                                     </tr>
-                                                       
-                                                    
                                             }</div>);
                                         })}
                                          
@@ -584,92 +548,49 @@ class Negotiation extends Component {
                         </div>
                     </ModalBody>
                 </Modal>
-             <Modal isOpen={this.state.modalRemark} backdrop="static" toggle={this.toggleRemark} size={'md'}>
-  
-                    
+                <Modal isOpen={this.state.modalRemark} backdrop="static" toggle={this.toggleRemark} size={'md'}>
                     <ModalHeader toggle={this.toggleRemark}>
-                    <span ><b>Remarks </b>
-                       </span>
-                       <hr style={{ width: "400px", border: "0.5px solid rgba(0, 0, 0, 0.42)" }}></hr>
-                    
-                   
-                   
-                    {this.props.parentObj.products.map((product, i) => {
-                                            return(<div>
-                    
-                                            {product.id===this.state.obj4.id && 
-                                             <td>
-                                                Product Name :  
-                                             <Link to= {`/products/${product.product.id}`}>
-                                                 {product.product.name}
-                                                 
-                                             </Link>
-                                         </td> }</div>)})}  
-                                         Product Id :    {this.state.obj4.id}
+                        <span ><b>Remarks </b></span>
+                        <hr style={{ width: "400px", border: "0.5px solid rgba(0, 0, 0, 0.42)" }}></hr>
+                        {Object.keys(this.state.obj4).length>0 &&
+                            <div>
+                                <td>Product Name :  {console.log("obj4 state is",this.state.obj4)}
+                                    <Link to= {`/products/${this.state.obj4.productId}`}>
+                                        {this.state.obj4.productName}
+                                    </Link>
+                                </td>
+                                Sale Product Id : {this.state.obj4.saleProductId}
+                            </div>
+                        }
                     </ModalHeader>
                     <ModalBody>
+                        {Object.keys(this.state.obj4).length>0 &&
                         <Table style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
+                            {console.log("obj4 state ns1 remark is",this.state.obj4.ns1_remark)}
                             <tbody>
                                 <tr style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }} >
-                                    <td style={{ width: '35px' ,border: '1px solid rgba(0, 0, 0, 0.42)'}}>Negotiation</td>
-                                    {this.props.parentObj.products.map((product, i) => {
-                                        return (
-                                            <div >
-                                                {product.id === this.state.obj4.id &&
-                                                    <td  >
-
-                                                        {!product.status && '-No Remarks-'}
-                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
-
-                                                    </td>
-                                                }
-                                            </div>
-                                        )
-                                    })}
+                                    <td style={{ width: '35px' ,border: '1px solid rgba(0, 0, 0, 0.42)'}}>Negotiation Stage 1</td>
+                                    <td style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
+                                        {this.state.obj4 ? this.state.obj4.ns1_remark: '-No Remarks-'}
+                                        {this.state.obj4.status && <span className="badge badge-success">{this.state.obj4.status}</span>}
+                                    </td>
                                 </tr>
                                 <tr style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
-                                    <td style={{ width: '35px', border: '1px solid rgba(0, 0, 0, 0.42)' }}>Negotiation
-                                    Stage 1
-                                 </td>
-                                    {this.props.parentObj.products.map((product, i) => {
-                                        return (
-                                            <div >
-                                                {product.id === this.state.obj4.id &&
-                                                    <td  >
-
-                                                        {!product.status && '-No Remarks-'}
-                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
-
-                                                    </td>
-                                                }
-                                            </div>
-                                        )
-                                    })}
+                                    <td style={{ width: '35px', border: '1px solid rgba(0, 0, 0, 0.42)' }}>Negotiation Stage 2</td>
+                                    <td style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
+                                        {this.state.obj4 ? this.state.obj4.ns2_remark: '-No Remarks-'}
+                                        {this.state.obj4.status && <span className="badge badge-success">{this.state.obj4.status}</span>}
+                                    </td>
                                 </tr>
-
                                 <tr style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }} >
-                                    <td style={{ width: '35px', border: '1px solid rgba(0, 0, 0, 0.42)' }}>Negotiation
-                                    Stage 2
-                             </td>
-                                    {this.props.parentObj.products.map((product, i) => {
-                                        return (
-                                            <div>
-                                                {product.id === this.state.obj4.id &&
-                                                    <td>
-
-                                                        {!product.status && '-No Remarks-'}
-                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
-
-                                                    </td>
-                                                }
-                                            </div>
-                                        )
-                                    })}
-
+                                    <td style={{ width: '35px', border: '1px solid rgba(0, 0, 0, 0.42)' }}>Negotiation Stage 3</td>
+                                    <td style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
+                                        {this.state.obj4 ? this.state.obj4.ns3_remark: '-No Remarks-'}
+                                        {this.state.obj4.status && <span className="badge badge-success">{this.state.obj4.status}</span>}
+                                    </td>
                                 </tr>
-
                             </tbody>
-                        </Table>
+                        </Table>}
                     </ModalBody>
                 </Modal>
                 <div className="row">
