@@ -11,11 +11,9 @@ import {  Modal,
     ModalHeader,
     ModalBody } from 'reactstrap';
 import Sorter from '../../Common/Sorter';
-
 import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter,  } from '../../Common/constants';
 import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
-
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
 // import {
@@ -23,16 +21,13 @@ import 'react-datetime/css/react-datetime.css';
 //     MuiPickersUtilsProvider,
 // } from '@material-ui/pickers';
 // import Event from '@material-ui/icons/Event';
-
 import TabPanel from '../../Common/TabPanel';
 import PageLoader from '../../Common/PageLoader';
 import Add from './Add';
 import Upload from '../Common/Upload';
 import Image from '../Common/Image';
 // import AddSub from './AddSub';
-
 // const json2csv = require('json2csv').parse;
-
 class View extends Component {
     state = {
         loading:false,
@@ -56,7 +51,6 @@ class View extends Component {
         },
         fileTypes: []
     }
-
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
@@ -64,27 +58,21 @@ class View extends Component {
             });
         }
     }
-
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if(e) {
             filters[field + 'Date'] = e.format();
         } else {
             filters[field + 'Date'] = null;
         }
-
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
-
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadSubObjs)
@@ -93,36 +81,27 @@ class View extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&company=" + this.props.currentId;
-
         if (this.state.filters.search) {
             url += "&name=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         url = defaultDateFilter(this.state, url);
-
         axios.get(url)
-            .then(res => {
-                this.setState({
-                    subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                    subPage: res.data.page
-                });
-
-                if (callBack) {
-                    callBack();
-                }
-            })
+        .then(res => {
+            this.setState({
+                subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                subPage: res.data.page
+            });
+            if (callBack) {
+                callBack();
+            }
+        })
     }
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + "?projection=company_contact_edit").then(res => {
@@ -130,57 +109,44 @@ class View extends Component {
             loading:false });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
-        console.log('view component did mount');
-        console.log(this.props.currentId);
-
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
         this.setState({loading:true})
     }
-
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
         })
     }
-
     saveSuccess(id) {
         this.setState({loading:true, editFlag: false });
         this.loadObj(id);
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
     addSubObj = () => {
         this.setState({ editSubFlag: false });
         this.toggleModal();
     }
-
     editSubObj = (i) => {
         var obj = this.state.subObjs[i].id;
         this.setState({ editSubFlag: true, subId: obj }, this.toggleModal);
     }
-
     saveObjSuccess(id) {
         this.setState({ editSubFlag: true });
         this.toggleModal();
         this.loadSubObjs();
     }
-
     render() {
         return (
             <div>
@@ -240,8 +206,7 @@ class View extends Component {
                                                 {this.state.obj.type !=='C' && <tr>
                                                     <td>
                                                         <strong>Broker</strong>
-                                                    </td>
-                                                    
+                                                    </td>                                               
                                                 </tr>}
                                                 <tr>
                                                     <td>
@@ -402,7 +367,6 @@ class View extends Component {
                                                 })}
                                             </tbody>
                                         </Table>
-
                                         <CustomPagination page={this.state.subPage} onChange={(x) => this.loadSubObjs(x)} />
                                     </div>
                                 </div>
@@ -422,12 +386,10 @@ class View extends Component {
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(View);

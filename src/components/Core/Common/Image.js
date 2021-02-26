@@ -5,15 +5,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Modal,
-
     ModalBody, ModalHeader
 } from 'reactstrap';
 import swal from 'sweetalert';
 import { context_path, server_url } from '../../Common/constants';
 import ContentWrapper from '../../Layout/ContentWrapper';
-
-
-
 class Image extends Component {
     state = {
         modal: false,
@@ -24,25 +20,20 @@ class Image extends Component {
             'jpg': 'image/jpeg',
         }
     }
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         // console.log('image component did mount');
         // console.log(this.props.currentId);
         this.props.onRef(this);
-
         this.setState({obj: this.props.parentObj});
     }
-
     fileSelected(name, e) {
         var file = e.target.files[0];
         var sizeinMb = file.size / (1024 * 1024);
@@ -53,26 +44,23 @@ class Image extends Component {
         }
         this.setState({ name: file.name });
     }
-
     updateImage() {
         axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.obj.id, {image: true})
-            .then(res => {
-                var obj = this.state.obj;
-                obj.image = true;
-                this.setState({ obj });
-            }).finally(() => {
-                this.setState({ loading: false });
-            }).catch(err => {
-                this.setState({ patchError: err.response.data.globalErrors[0] });
-                swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
-            })
+        .then(res => {
+            var obj = this.state.obj;
+            obj.image = true;
+            this.setState({ obj });
+        }).finally(() => {
+            this.setState({ loading: false });
+        }).catch(err => {
+            this.setState({ patchError: err.response.data.globalErrors[0] });
+            swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
+        })
     }
-
     uploadFiles() {
         var formData = new FormData();
         var imagefile = document.querySelector('#fileUpload');
         formData.append("file", imagefile.files[0]);
-
         axios.post(server_url + context_path + this.props.baseUrl + '-images/' + this.state.obj.id, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -80,11 +68,9 @@ class Image extends Component {
         }).then(res => {
             if (res.status === 200) {
                 this.toggleModal();
-                
                 if(!this.state.obj.image) {
                     this.updateImage();
                 }
-
                 swal("Uploaded!", "File Uploaded", "success");
             } else {
                 swal("Unable to Upload!", "Upload Failed", "error");
@@ -95,18 +81,14 @@ class Image extends Component {
             if(err.response.data.globalErrors && err.response.data.globalErrors[0]) {
                 msg = err.response.data.globalErrors[0];
             }
-
             swal("Unable to Upload!", msg, "error");
         })
     }
-
     downloadFile = (e, type) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-
         // var doc = this.state.docs[idx];
         var doc = this.state.obj.docs.find(g => g.fileType === type);
-
         axios({
             url: server_url + context_path + "docs/" + doc.id,
             method: 'GET',
@@ -114,7 +96,6 @@ class Image extends Component {
         }).then(response => {
             var fileType = doc.fileName.substr(doc.fileName.lastIndexOf('.') + 1);
             fileType = this.state.exts[fileType];
-
             const url = window.URL.createObjectURL(new Blob([response.data], { type: fileType }));
             const link = document.createElement('a');
             link.href = url;
@@ -123,7 +104,6 @@ class Image extends Component {
             link.click();
         });
     }
-
     render() {
         return (<ContentWrapper>
                         <Modal isOpen={this.state.modal} toggle={this.toggleModal} size={'md'}>
@@ -162,12 +142,10 @@ class Image extends Component {
         </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Image);

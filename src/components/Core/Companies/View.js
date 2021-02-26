@@ -5,7 +5,6 @@ import { context_path, defaultDateFilter, server_url } from '../../Common/consta
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import { connect } from 'react-redux';
-
 import Moment from 'react-moment';
 import TabPanel from '../../Common/TabPanel';
 import PageLoader from '../../Common/PageLoader';
@@ -19,15 +18,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Table } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
-
-
-
-
-
-
 // const json2csv = require('json2csv').parse;
-
-
 class View extends Component {
     state = {
         loading:false,
@@ -93,45 +84,34 @@ class View extends Component {
             { label: '90 days from date of invoice', value: 'DI-90' }
         ]
     }
-
     addSubObj = () => {
         this.setState({ editSubFlag: false });
-
         this.toggleModal();
     }
-
     editSubObj = (i) => {
         var obj = this.state.subObjs[i].id;
-
         this.setState({ editSubFlag: true, subId: obj }, this.toggleModal);
     }
-
     saveObjSuccess(id) {
         this.setState({ editSubFlag: true });
         this.toggleModal();
         this.loadSubObjs();
     }
-
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if (e) {
             filters[field + 'Date'] = e.format();
         } else {
             filters[field + 'Date'] = null;
         }
-
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
-
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadSubObjs)
@@ -221,15 +201,10 @@ class View extends Component {
             }
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
-        console.log('view component did mount');
-        console.log(this.props.currentId);
-
         this.loadObj();
         this.props.onRef(this);
         this.setState({loading:true})
@@ -280,8 +255,7 @@ class View extends Component {
                                         <div className="card-header" style={{padding: 0}}>
                                             <div className="row">
                                                 <div className="col-sm-2">
-                                                     <Image  onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}
-                                                                parentObj={this.state.newObj}></Image>
+                                                     <Image onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl} parentObj={this.state.newObj}></Image>
                                                 </div>
                                                 <div className="col-sm-9">
                                                      <h6 className="mt-3">
@@ -294,8 +268,6 @@ class View extends Component {
                                                     </div>
                                                 </div>
                                             </div>
-                                           
-                                            
                                             <div className="" style={{top: -90}}></div>
                                             {/* {/* <Image  onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}
                                                                 parentObj={this.state.newObj}></Image>

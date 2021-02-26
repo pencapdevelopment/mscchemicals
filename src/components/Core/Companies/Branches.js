@@ -17,14 +17,7 @@ import CustomPagination from '../../Common/CustomPagination';
 import Sorter from '../../Common/Sorter';
 import FormValidator from '../../Forms/FormValidator';
 import AddBranch from './AddBranch';
-
-
-
-
-
-
 // const json2csv = require('json2csv').parse;
-
 class Branches extends Component {
     state = {
         activeTab: 0,
@@ -55,67 +48,52 @@ class Branches extends Component {
             { label: 'Warehouse', value: 'WH' }
         ]
     }
-
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
     addObj = () => {
         this.setState({ editFlag: true });
     }
-
     editObj = (i) => {
         if(i !== undefined) {
             var newObj = this.state.objs[i];
             this.setState({ newObj: newObj });
         }
-
         this.setState({ editFlag: true });
     }
-
     saveObj(id) {
         this.setState({ editFlag: false});
         this.loadObjs();
     }
-
     viewObj = (i) => {
         var newObj = this.state.objs[i];
         this.setState({ newObj: newObj, viewFlag: true }, o => {
             this.getContacts();
         });
     }
-
     viewAll() {
         this.setState({ viewFlag: false });
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false});
     }
-
     searchObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if(e) {
             filters[field + 'Date'] = e.format();
         } else {
             filters[field + 'Date'] = null;
         }
-
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
-
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadObjs)
@@ -127,43 +105,31 @@ class Branches extends Component {
 
     loadObjs = (offset, callBack) => {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&company=" + this.props.currentId;
-
         if (this.state.filters.search) {
             url += "&name=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         url = defaultDateFilter(this.state, url);
-
         axios.get(url)
-            .then(res => {
-                    this.setState({
-                        objs: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                        page: res.data.page
-                    });
+        .then(res => {
+                this.setState({
+                    objs: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                    page: res.data.page
+                });
 
-                if (callBack) {
-                    callBack();
-                }
-            })
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
-        console.log('view component did mount');
-        console.log(this.props.currentId);
-
         this.loadObjs(1, o => {
             // if(this.props.location.search) {
             //     let params = queryString.parse(this.props.location.search);
@@ -178,10 +144,8 @@ class Branches extends Component {
             //     }
             // }
         });
-
         this.props.onRef(this);
     }
-
     getAddressType(type) {
         var addressType = this.state.addressTypes.find(g => g.value === type);
         if (addressType) {
@@ -190,34 +154,24 @@ class Branches extends Component {
             return "-NA-";
         }
     }
-
-
-
-
-    
     getContacts() {
         var newObj = this.state.newObj;
         axios.get(this.state.contactsUrl + "?size=100000&branch.id=" + newObj.id)
-            .then(res => {
-                newObj.contacts = res.data._embedded[Object.keys(res.data._embedded)[0]];
-                this.setState({
-                    contacts: cloneDeep(newObj.contacts),
-                    newObj: newObj
-                });
-            })
+        .then(res => {
+            newObj.contacts = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            this.setState({
+                contacts: cloneDeep(newObj.contacts),
+                newObj: newObj
+            });
+        })
     }
-
     setContactField(idx, field, e, noValidate) {
         var contacts = this.state.contacts;
-
         // var input = e.target;
-        contacts[idx][field] = e.target.value;
-        
+        contacts[idx][field] = e.target.value;   
         contacts[idx].updated = true;
-
         this.setState({ contacts });
     }
-
     openContacts = () => {
         this.setState({
             contacts: cloneDeep(this.state.newObj.contacts)
@@ -225,11 +179,9 @@ class Branches extends Component {
             if(!this.state.newObj.contacts.length) {
                 this.addContact();
             }
-    
             this.toggleModal();
         });
     }
-
     addContact = () => {
         var contacts = this.state.contacts;
         contacts.push({
@@ -237,94 +189,73 @@ class Branches extends Component {
             phone: '',
             email: ''
         })
-
         this.setState({ contacts });
     }
-
     deleteContact = (i) => {
         var contacts = this.state.contacts;
-
         if(contacts[i].id) {
             contacts[i].delete = true;
         } else {
             contacts.splice(i, 1);
         }
-
         this.setState({ contacts });
     }
-
     checkForError() {
         // const form = this.formWizardRef;
-
         const tabPane = document.getElementById('saveCForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         console.log(errors);
-
         this.setState({errors});
-
         return hasError;
     }
-
     saveDetails = () => {
         var hasError = this.checkForError();
-
         if (!hasError) {
             var contacts = this.state.contacts;
-
             if(contacts && contacts.length) {
                 this.setState({ loading: true });
-
                 contacts.forEach((con, idx) => {
                     if(con.delete) {
                         axios.delete(this.state.contactsUrl + con.id)
-                            .then(res => {
-
-                            }).catch(err => {
-                                swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
-                            })
+                        .then(res => {
+                        }).catch(err => {
+                            swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
+                        })
                     } else if(!con.id || con.updated) {
                         con.company = '/companies/' + this.props.currentId;
                         con.branch = '/branches/' + this.state.newObj.id;
-
                         var promise = undefined;
                         if (!con.id) {
                             promise = axios.post(this.state.contactsUrl, con)
                         } else {
                             promise = axios.patch(this.state.contactsUrl + con.id, con)
                         }
-
                         promise.then(res => {
                             con.id = res.data.id;
                         }).catch(err => {
                             swal("Unable to Save!", "Please resolve the errors", "error");
                         })
                     }
-
                     if(idx === contacts.length - 1) {
                         this.setState({ loading: false });
-
                         setTimeout(() => {
                             this.getContacts();
                             this.toggleModal();
-                        }, 500);
+                        }, 5000);
                     }
                 })
             } else {
                 this.toggleModal();
             }
         }
-
         return true;
     }
-
-
     render() {
         const errors = this.state.errors;
-
         return (
             <div>
-                {!this.state.editFlag &&
+                {(!this.state.editFlag && this.state.objs.length>0) &&
                     <div className="row">
                         <div className="col-md-12">
                             {!this.state.viewFlag &&
@@ -452,7 +383,6 @@ class Branches extends Component {
                                             </tr>
                                         </tbody>
                                     </table>
-
                                     <Modal isOpen={this.state.modal} toggle={this.toggleModal} size={'lg'}>
                                         <ModalHeader toggle={this.toggleModal}>
                                             <h4>
@@ -526,7 +456,6 @@ class Branches extends Component {
                                                                 })}
                                                             </tbody>
                                                         </Table>            
-
                                                         <div className="text-center">
                                                             <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save</Button>
                                                         </div>
@@ -535,7 +464,6 @@ class Branches extends Component {
                                             </Form>
                                         </ModalBody>
                                     </Modal>
-
                                     <div className="text-center mt-4">
                                         <h4>
                                             Contacts
@@ -576,12 +504,10 @@ class Branches extends Component {
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Branches);

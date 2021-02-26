@@ -51,7 +51,6 @@ class CompanyContacts extends Component {
 
     updateObj(id) {
         this.toggleTab(1);
-        console.log(id);
         this.setState({ editFlag: false }, () => {
             this.addTemplateRef.updateObj(id);
         })

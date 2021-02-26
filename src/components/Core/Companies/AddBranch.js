@@ -155,8 +155,6 @@ class AddBranch extends Component {
         formWizard.obj[field] = val;
         formWizard['selected' + field] = val;
         this.setState({ formWizard });
-
-        console.log(formWizard.selectedcountry);
     }
 
     checkForError() {
@@ -168,16 +166,12 @@ class AddBranch extends Component {
         var formWizard = this.state.formWizard;
         formWizard.errors = errors;
         this.setState({ formWizard });
-        console.log(errors);
-
         return hasError;
     }
 
     saveDetails() {
         var hasError = this.checkForError();
-
         if (!hasError) {
-
             var newObj = this.state.formWizard.obj;
             newObj.company = '/companies/' + this.props.currentId;
             var promise = undefined;
@@ -190,7 +184,6 @@ class AddBranch extends Component {
                 var formw = this.state.formWizard;
                 formw.obj.id = res.data.id;
                 formw.msg = 'successfully Saved';
-
                 this.props.onSave(res.data.id);
             }).finally(() => {
                 this.setState({ loading: false });
@@ -203,11 +196,9 @@ class AddBranch extends Component {
                         formWizard.globalErrors.push(e);
                     });
                 }
-
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
-
                         if (errors[e.field]) {
                             errors[e.field].push(e.errorMessage);
                         } else {
@@ -215,7 +206,6 @@ class AddBranch extends Component {
                             errors[e.field].push(e.errorMessage);
 
                         }
-
                     });
                 }
                 var errorMessage = "";
@@ -229,29 +219,18 @@ class AddBranch extends Component {
                 if (!errorMessage) errorMessage = "Please resolve the errors";
                 swal("Unable to Save!", errorMessage, "error");
             })
-
-
         }
         return true;
     }
-
-
     loadObj() {
-        console.log("Add branch loadobj ");
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.branchId).then(res => {
-            console.log("Add branch axiossssssAdd branch loadobj ");
             if (res.data.paymentTerms) {
-                console.log("paymentTerms ");
                 res.data.paymentTerms = this.state.terms.find(g => g.value === res.data.paymentTerms).label;
             }
-            console.log("Before ");
-
             this.setState({
                 newObj: res.data,
                 loading: false
             });
-            console.log("Add Branch After ", this.state.newObj);
-
             // if (res.data.locationType !== 'I') {
             //     if (!res.data.fssai || !res.data.drugLicense || !res.data.others) {
             //         var fileTypes1 = this.state.fileTypes1;
@@ -286,20 +265,13 @@ class AddBranch extends Component {
             // }
         });
     }
-
-
-
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.loadObj();
         this.props.onRef(this);
         this.setState({ loding: false });
-
-
         if (this.props.branchId) {
             axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.branchId)
                 .then(res => {
@@ -310,7 +282,6 @@ class AddBranch extends Component {
                 })
         } else {
             axios.get(server_url + context_path + "api/companies/" + this.props.currentId).then(res => {
-                console.log(res.data)
                 if (res.data.locationType === 'N') {
                     this.setState({
                         isLocationtype: true,
@@ -338,7 +309,6 @@ class AddBranch extends Component {
     // shouldComponentUpdate(){
     //     this.loadObj();
     // }
-
     render() {
         const errors = this.state.formWizard.errors;
         return (
@@ -466,9 +436,13 @@ class AddBranch extends Component {
                             <fieldset>
                                 <FormControl>
                                     <AutoSuggest url="countries"
-                                        name="companyName"
+                                        name="country"
                                         displayColumns="name"
                                         label="Country"
+                                        required={true}
+                                        helperText={errors?.country_auto_suggest?.length > 0 ? errors?.country_auto_suggest[0]?.msg : ""}
+                                        error={errors?.country_auto_suggest?.length > 0}
+                                        inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required","msg":"Country is required"}]' }}
                                         onRef={ref => (this.countryASRef = ref)}
                                         placeholder="Search Country by name"
                                         arrayName="countries"

@@ -313,18 +313,12 @@ class Quotation extends Component {
                                                       </div>
                                               </div>
                                      
-                                    {/* {this.props.parentObj.products.map((product, i) => {
-                                            return (
-                                                
-                                                   
-                                                     
-                                                        <Button key={i} variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
-                                                     
-                                                )
-                                            })} */}
-                                   
-                                 
-                              
+                                     {/* {this.props.parentObj.products.map((product, i) => {
+                                        return (
+                                            <Button key={i} variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>     
+                                            )
+                                        })
+                                    } */}
                                     {/* onClick={e => this.closetoggleModalProduct()} */}
                                           </div>
                                           <div className=" mt-2" style={{right: 1}}>
@@ -447,7 +441,7 @@ class Quotation extends Component {
                                                     </td>
                                                      {/* <td>
                                                         <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
-                                                    </td>  */}
+                                                    </td> */}
                                                 </tr>)
                                             })}
                                         </tbody>}

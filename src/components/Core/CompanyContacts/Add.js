@@ -84,9 +84,9 @@ class Add extends Component {
             formWizard.obj = res.data;
             formWizard.selectedcompany = formWizard.obj.company;
             formWizard.selectedbranch = formWizard.obj.branch;
-            if (formWizard.obj.company) {
-                formWizard.obj.company = formWizard.obj.company.id;
-            }
+            // if (formWizard.obj.company) {
+            //     formWizard.obj.company = formWizard.obj.company.id;
+            // }
             this.companyASRef.setInitialField(formWizard.selectedcompany);
             this.branchASRef.setInitialField(formWizard.selectedbranch);
             this.setState({ formWizard });
@@ -160,7 +160,6 @@ class Add extends Component {
         var formWizard = this.state.formWizard;
         formWizard.errors = errors;
         this.setState({ formWizard });
-        console.log(errors);
         return hasError;
     }
 
@@ -229,32 +228,23 @@ class Add extends Component {
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.props.onRef(this);
         if (this.props.company) {
             var formWizard = this.state.formWizard;
             formWizard.selectedcompany = this.props.company;
-
-            formWizard.obj.company = this.props.company.id;
-
+            // formWizard.obj.company = this.props.company.id;
             formWizard.obj.editCompany = false;
             this.companyASRef.setInitialField(this.props.company)
             this.setState({ formWizard });
         }
-
-
-
         this.setState({ loding: false })
     }
-
     render() {
         const errors = this.state.formWizard.errors;
-
         return (
             <ContentWrapper>
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
-
                     <div className="row">
                         <div className="col-md-6 offset-md-3">
                             {this.state.formWizard.obj.editCompany && <fieldset>
