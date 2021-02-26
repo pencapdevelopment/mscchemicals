@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 // import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
 import { server_url, context_path, getUniqueCode, getTodayDate } from '../../Common/constants';
 // import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-import { Button, TextField, FormControl } from '@material-ui/core';
+import { Button, TextField,Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
 import AutoSuggest from '../../Common/AutoSuggest';
 import { saveProducts } from '../Common/AddProducts1';
 import { saveUsers } from '../Common/AssignUsers';
@@ -59,6 +59,10 @@ class Add extends Component {
                 email: '',
                 phone: '',
                 source: '',
+                fob:'',
+                cif:"",
+                payment:"",
+                currency:"",
                 status: 'On going',
                 description: '',
                 quantity: '',
@@ -143,6 +147,10 @@ class Add extends Component {
                 phone:formWizard.obj.phone,
                 contactName:formWizard.obj.contactName,
                 source:formWizard.obj.source,
+                FOB :formWizard.obj.fob,
+                CIF  :formWizard.obj.cif ,
+                Payment  :formWizard.obj.payment ,
+                currency  :formWizard.obj.currency ,
                 description:formWizard.obj.description
             });
             var users = formWizard.obj.users;
@@ -242,6 +250,10 @@ class Add extends Component {
                     phone:formWizard.obj.phone,
                     contactName:formWizard.obj.contactName,
                     source:formWizard.obj.source,
+                    FOB :formWizard.obj.fob,
+                    CIF  :formWizard.obj.cif ,
+                    Payment  :formWizard.obj.payment ,
+                    currency  :formWizard.obj.currency ,
                     description:formWizard.obj.description
                 });
             }
@@ -254,6 +266,10 @@ class Add extends Component {
                     phone:formWizard.obj.phone,
                     contactName:formWizard.obj.contactName,
                     source:formWizard.obj.source,
+                    FOB :formWizard.obj.fob,
+                    CIF  :formWizard.obj.cif ,
+                    Payment  :formWizard.obj.payment ,
+                    currency  :formWizard.obj.currency ,
                     description:formWizard.obj.description
                 }
             }
@@ -263,6 +279,10 @@ class Add extends Component {
             formWizard.obj.phone = '';
             formWizard.obj.contactName = '';
             formWizard.obj.source = '';
+            formWizard.obj.fob=""; 
+            formWizard.obj.cif = '';
+            formWizard.obj.payment=""; 
+            formWizard.obj.currency="";   
             formWizard.obj.description = '';
             this.companyASRef.setInitialField({name:''});
             this.setState({formWizard,selectedCompanies});
@@ -277,6 +297,10 @@ class Add extends Component {
         formWizard.obj.phone = comp.phone;
         formWizard.obj.contactName = comp.contactName;
         formWizard.obj.source = comp.source;
+        formWizard.obj.fob = comp.fob;
+        formWizard.obj.cif = comp.cif;
+        formWizard.obj.payment = comp.payment;
+        formWizard.obj.currency = comp.currency;
         formWizard.obj.description = comp.description;
         this.companyASRef.setInitialField(comp);
         this.setState({formWizard});
@@ -427,6 +451,10 @@ class Add extends Component {
                 newObj.email = comps.email;
                 newObj.phone = comps.phone;
                 newObj.source = comps.source;
+                newObj.fob = comps.fob;
+                newObj.cif = comps.cif;
+                newObj.payment = comps.payment;
+                newObj.currency = comps.currency;
                 newObj.products = [];
                 if (this.state.formWizard.editFlag) {
                     newObj.users = [];
@@ -879,7 +907,66 @@ class Add extends Component {
                         {/*<div class="col-md-3"><Button variant="contained" color="secondary" size="small" onClick={this.toggleModalAssign}>+ Assign User</Button></div>*/}
                     </div>
                     <Divider />
-                    
+                    <div classname="row">
+                        <div classname="col-sm-12">
+                        <div className="row">    
+                        <div className="col-md-3">
+                            <fieldset>
+                                <TextField type="text" name="fob" label="Dispatch FOB" required={true} fullWidth={true}
+                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
+                                    helperText={errors?.fob?.length > 0 ? errors?.fob[0]?.msg : ""}
+                                    error={errors?.fob?.length > 0}
+                                    value={this.state.formWizard.obj.fob} onChange={e => this.setField("fob", e)} />
+                            </fieldset>
+                        </div>
+                        <div className="col-md-3   " >
+                            
+                        <fieldset>
+                                <TextField type="text" name="cif" label="Dispatch CIF" required={true} fullWidth={true}
+                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
+                                    helperText={errors?.cif?.length > 0 ? errors?.cif[0]?.msg : ""}
+                                    error={errors?.cif?.length > 0}
+                                    value={this.state.formWizard.obj.cif} onChange={e => this.setField("cif", e)} />
+                            </fieldset>
+                        </div>
+                        <div className="col-md-3  ">
+                            
+                            <fieldset>
+                                    <TextField type="text" name="payment" label="Payment terms " required={true} fullWidth={true}
+                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
+                                        helperText={errors?.payment?.length > 0 ? errors?.payment[0]?.msg : ""}
+                                        error={errors?.payment?.length > 0}
+                                        value={this.state.formWizard.obj.payment} onChange={e => this.setField("payment", e)} />
+                                </fieldset>
+                            </div>
+                            <div className="col-md-3  ">
+                            
+                            <fieldset>
+                                                <FormControl    >
+                                                        <InputLabel > Currency</InputLabel>
+                                                        <Select
+                                                              name="currency"
+                                                              helperText={errors?.Currency?.length > 0 ? errors?.Currency[0]?.msg : ""}
+                                                              error={errors?.Currency?.length > 0}
+                                                              value={this.state.formWizard.obj.Currency}
+                                                              required={true} 
+                                                              fullWidth={true}  
+                                                            >                                                        
+                                                            <MenuItem value={1}><img src="img/rupee.png"  style={{marginRight: 5}} />IND</MenuItem>                                                        
+                                                            <MenuItem value={3} > <img src="img/eur.png" style={{marginRight: 7}} />EUR</MenuItem>                                                           
+                                                            <MenuItem value={5}><img src="img/dollar.png" style={{marginRight: 5}} />DOLLAR</MenuItem>
+                                                            {/* <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem> */}
+                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                </fieldset>
+                            </div>
+                    </div>
+                 
+                         </div>
+                    </div>
                     <div className="row" >
                         <div className=" col-md-12 text-center mt-3" >
                             <Button style={{backgroundColor:"red"}} variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>

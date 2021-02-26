@@ -31,7 +31,7 @@ const items = [
     },
     {
         id: 1,
-        value: 'csv',
+        value: 'Print',
       },
     {
       id: 2,
@@ -39,7 +39,7 @@ const items = [
     },
     {
       id: 3,
-      value: 'PDF',
+      value: 'CSV',
     },
     
   ];
@@ -708,24 +708,7 @@ class Reports extends Component {
                             <div classname="card b">
                                 <div className="card-header">
                                             <div className="row">
-                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
-                                                    <FormControl    >
-                                                        {/* <InputLabel> Period</InputLabel> */}
-                                                        <Select
-                                                            
-
-                                                            >                                                        
-                                                            <MenuItem value={1}>10</MenuItem>                                                        
-                                                            <MenuItem value={3} >20</MenuItem>                                                           
-                                                            <MenuItem value={5}>30</MenuItem>
-                                                            <MenuItem value={6}>40</MenuItem>
-                                                            <MenuItem value={7}>50</MenuItem>
-                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                                            
-                                                            </Select>
-                                                     </FormControl>
-                                            
-                                                </div>
+                                              
                                                
                                                     <div className="col-sm-2">
                                                     {/* <h1 style={{ textAlign: 'center' }}>
@@ -749,6 +732,42 @@ class Reports extends Component {
                                                         <Button><img src="img/refresh.png"/></Button>                                                     
                                                     </ButtonGroup> 
                                                     </div>     
+                                                    <div className="col-sm-7" style={{marginTop: "-20px"}}>
+                                                    {/* <FormControl    >
+                                                        <InputLabel>Pages </InputLabel>
+                                                        <Select
+                                                            
+
+                                                            >                                                        
+                                                            <MenuItem value={1}>10</MenuItem>                                                        
+                                                            <MenuItem value={3} >20</MenuItem>                                                           
+                                                            <MenuItem value={5}>30</MenuItem>
+                                                            <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem>
+                                                            
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                             */}
+                                                </div>
+                                                    <div className="col-sm-2" style={{marginTop: "-20px"}}>
+                                                    <FormControl  >
+                                                        <InputLabel>Pages </InputLabel>
+                                                        <Select
+                                                            
+
+                                                            >                                                        
+                                                            <MenuItem value={1}>10</MenuItem>                                                        
+                                                            <MenuItem value={3} >20</MenuItem>                                                           
+                                                            <MenuItem value={5}>30</MenuItem>
+                                                            <MenuItem value={6}>40</MenuItem>
+                                                            <MenuItem value={7}>50</MenuItem>
+                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                            
+                                                            </Select>
+                                                     </FormControl>
+                                            
+                                                </div>
                                             </div>
                                 </div>
                                 <div className="card-body">

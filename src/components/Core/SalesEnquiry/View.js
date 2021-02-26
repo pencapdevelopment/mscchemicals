@@ -28,6 +28,8 @@ import * as Const from '../../Common/constants';
 import swal from 'sweetalert';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
@@ -629,7 +631,7 @@ class View extends Component {
                                                             </tr>
                                                              </tbody>
                                                         </table>
-                                                   
+                                                
                                                  {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
                                                             showNotes={true}
                                                             onUpdate={(id) => this.updateStatus(id)}
@@ -644,22 +646,34 @@ class View extends Component {
                                                             <span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span>
                                                         </div> */}
                                                       
-                                                            
-                                                        {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
-                                                        <Button title="Edit"  size="small" variant="contained" onClick={() => this.updateObj()}> Edit</Button>}
-                                                        {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" />:'' }
+                                                            <table>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                             {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
+                                                        
+                                                                                 <span title="Edit" fontSize="small" variant="contained" onClick={() => this.updateObj()}><Avatar   fontSize="small"> <EditIcon fontSize="small" style={{color:"#000" }} /></Avatar></span>}
+                                                                        </td>
+                                                                        <td>
+                                                                             {this.state.isQuoteExists < 1 ?<Avatar> <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" /></Avatar>:'' }
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                       
+                                                      
                                                              {/* <Fab   variant="contained"  aria-label="edit" size='small'>
                                                         {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
                                                        
                                                             <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
                                                             </Fab> */}
                                                       
-                                                         {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+                                                         {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
                                                             <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
                                                                 <Button title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Convert Order</span></Button>
-                                                            </Link>} 
+                                                            </Link>}  */}
                                                     </div>
                                                     <h4 className="my-2">
                                                         <span>{this.state.obj.name}</span>
@@ -704,7 +718,7 @@ class View extends Component {
                                                             
                                                                     { this.props.user.role === 'ROLE_ADMIN' &&
                                                                    
-                                                                        <Button  title="Assigned To" variant="contained"   size="small" onClick={this.toggleModalAssign}> + Add </Button>}
+                                                                        <Button  title="Assigned To" variant="contained"   size="small" onClick={this.toggleModalAssign}> <AddIcon  fontSize="small" />Add </Button>}
                                                            
                                                                 </td>
                                                             </tr>

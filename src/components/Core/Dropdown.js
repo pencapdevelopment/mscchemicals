@@ -42,18 +42,24 @@ function Dropdown({ title, items, multiSelect = false }) {
         {/* <div className="dd-header__title">
           <p className="dd-header__title--bold">{title}</p>
         </div> */}
-        <div className="dd-header__action">
+        <div className="row">
+        <div className="dd-header__action col-sm-2" >
            <ButtonGroup size="small" aria-label="small outlined button group" >
-                            <Button>Export </Button>                                                                                   
+                            <Button>Export </Button>     
+                                                                                                          
             </ButtonGroup>
         </div>
-        
+        {/* <div className="col-sm-2">
+        <Button ><img src="img/refresh.png"/></Button>
+        </div> */}
+        </div>
+       
       </div>
       {open && (
-        <ul className="list-unstyled" style={{}}>
+        <ul className="list-unstyled" >
           {items.map(item => (
             <li className="" key={item.id}>
-              <Button  size="large" onClick={() => handleOnClick(item)}>
+              <Button varient="contained" size="large" onClick={() => handleOnClick(item)}>
                 <span>{item.value}</span>
                 <span>{isItemInSelection(item) }</span>
               </Button>

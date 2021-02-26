@@ -836,6 +836,7 @@ class Add extends Component {
                                                                 {!prod.id &&
                                                                     <AutoSuggest url="products"
                                                                         name={"productName"+i}
+                                                                        required={true}
                                                                         fullWidth={true}
                                                                         displayColumns="name"
                                                                         label="Product"
