@@ -450,7 +450,7 @@ class View extends Component {
                                                         </td>
                                                         <td>
                                                             <fieldset>
-                                                                <UOM required={true} value={this.state.obj.products[i].uom} onChange={e => this.setProductField(i, "uom", e, true)} />
+                                                                <UOM required={true} isReadOnly={false} value={this.state.obj.products[i].uom} onChange={e => this.setProductField(i, "uom", e, true)} />
                                                             </fieldset>
                                                         </td>
                                                         <td>

@@ -538,7 +538,7 @@ class Add extends Component {
                                                     <td>
                                                        
 
-                                                            <UOM   required={true} 
+                                                            <UOM required={true} isReadOnly={false}
                                                                 value={prod.uom} onChange={e => this.setProductField(i, "uom", e,true)} />
                                                        
                                                     </td>

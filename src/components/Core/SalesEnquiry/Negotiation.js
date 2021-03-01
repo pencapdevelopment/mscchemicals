@@ -435,7 +435,7 @@ class Negotiation extends Component {
                                                             <fieldset>
 
                                                                 <UOM required={true}
-                                                                    value={this.state.obj2.uom} onChange={(e)=>this.saveUom(e)}
+                                                                    value={this.state.obj2.uom} onChange={(e)=>this.saveUom(e)} isReadOnly={true}
                                                                     //onChange={e => this.setProductField(i, "uom", e, true)}
                                                                      />
                                                             </fieldset>

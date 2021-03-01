@@ -817,7 +817,7 @@ class Add extends Component {
                                                     </td>
                                                     <td>
                                                         <fieldset>
-                                                            <UOM required={true} value={this.state.formWizard.obj.products[i].uom} onChange={e => this.setProductField(i, "uom", e, true)} />
+                                                            <UOM required={true} isReadOnly={false} value={this.state.formWizard.obj.products[i].uom} onChange={e => this.setProductField(i, "uom", e, true)} />
                                                         </fieldset>
                                                     </td>
                                                     <td>

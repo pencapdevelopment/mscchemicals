@@ -316,7 +316,7 @@ class ProspectiveBuyerView extends Component {
                                                         <td>
                                                             <fieldset>
 
-                                                                <UOM required={true}
+                                                                <UOM required={true} isReadOnly={false}
                                                                     value={this.state.obj.products[i].uom} onChange={e => this.setProductField(i, "uom", e, true)} />
                                                             </fieldset>
                                                         </td>

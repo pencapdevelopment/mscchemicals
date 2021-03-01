@@ -621,7 +621,7 @@ class Add extends Component {
 
                                     value={this.state.formWizard.obj.packagingType} onChange={e => this.setField("packagingType", e)} />
                             </fieldset>
-                            <UOM  onRef={ref => (this.uomRef = ref)} required={true}  value={this.state.formWizard.obj.uom} onChange={e => this.setField("uom", e,true)} />*/}
+                            <UOM  onRef={ref => (this.uomRef = ref)} required={true} isReadOnly={false} value={this.state.formWizard.obj.uom} onChange={e => this.setField("uom", e,true)} />*/}
                             <div className="text-center mt-4">
                                 <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
                                 <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save</Button>

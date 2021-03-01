@@ -66,6 +66,7 @@ class UOM extends Component {
                 value={this.state.selected}
                 onChange={e => this.setSelectField( e)}
                 required={true} 
+                readOnly = {this.props.isReadOnly}
             >
 
                 {this.state.vals.map((e, keyIndex) => {

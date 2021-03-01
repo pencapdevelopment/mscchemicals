@@ -92,12 +92,14 @@ class Add extends Component {
             formWizard.obj.contactName = res.data.name;
             if (res.data.products) {
                 res.data.products.forEach(p => {
-                    formWizard.obj.products = [];
-                    formWizard.selectedProducts = [];
+                    // formWizard.obj.products = [];
+                    // formWizard.selectedProducts = [];
                     var products = formWizard.obj.products;
                     //var idx = products.length;
-                    products.push({ quantity: '', amount: '' })
-                    formWizard.selectedProducts.push(p.product);
+                    if(products.findIndex(pd => pd.product.id === p.product.id) === -1){
+                        products.push({ quantity: '', amount: '',uom: '', product:p.product});
+                        formWizard.selectedProducts.push(p.product);
+                    }
                 })
             }
 
@@ -231,7 +233,7 @@ class Add extends Component {
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
-        console.log("form errors are ",errors);
+        console.log("form errors from add company are ",errors);
         formWizard.errors = errors;
         this.setState({ formWizard });
         return hasError;
@@ -389,12 +391,14 @@ class Add extends Component {
     addProduct = () => {
         var formWizard = this.state.formWizard;
         var products = formWizard.obj.products;
-        var idx = products.length;
-        products.push({ quantity: '', amount: '',product:this.state.assignProduct })
-        formWizard.selectedProducts.push(this.state.assignProduct);
-        this.setState({ formWizard }, o => {
-            this.productASRef[idx].setInitialField(formWizard.selectedProducts[idx]);
-        });
+        if(products.findIndex(pd => pd.product.id === this.state.assignProduct.id) === -1){
+            var idx = products.length;
+            products.push({ quantity: '', amount: '',product:this.state.assignProduct })
+            formWizard.selectedProducts.push(this.state.assignProduct);
+            this.setState({ formWizard }, o => {
+                this.productASRef[idx].setInitialField(formWizard.selectedProducts[idx]);
+            });
+        }
         // this.setProductAutoSuggest(idx, this.state.assignProduct.id);
     }
 
@@ -446,7 +450,10 @@ class Add extends Component {
                 swal("Unable to Save!", "Please add atleast one product", "error");
                 return;
             }            
-            var selectedCompanies = this.state.selectedCompanies; 
+            var selectedCompanies = this.state.selectedCompanies;
+            if(selectedCompanies.length === 0){
+                this.addCompany();
+            }
             this.setState({ loading: true });        
             selectedCompanies.forEach((comps,idx) => {
                 var newObj = {...this.state.formWizard.obj};
@@ -487,6 +494,7 @@ class Add extends Component {
                 }).catch(err => {
                     // this.toggleTab(0);
                     //this.setState({ addError: err.response.data.globalErrors[0] });
+                    console.log(err);
                     var formWizard = this.state.formWizard;
                     formWizard.globalErrors = [];
                     if (err.response.data.globalErrors) {   
@@ -870,7 +878,7 @@ class Add extends Component {
                                                     </td>
                                                     <td>
                                                         <fieldset>
-                                                            <UOM required={true} value={this.state.formWizard.obj.products[i].uom} onChange={e => this.setProductField(i, "uom", e, true)} />
+                                                            <UOM required={true} isReadOnly={false} value={this.state.formWizard.obj.products[i].uom} onChange={e => this.setProductField(i, "uom", e, true)} />
                                                         </fieldset>
                                                     </td>
                                                     <td>
