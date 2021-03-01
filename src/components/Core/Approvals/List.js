@@ -9,6 +9,12 @@ import { Table } from 'reactstrap';
 // import PageLoader from '../../Common/PageLoader';
 import Sorter from '../../Common/Sorter';
 import FileDownload from '../../Common/FileDownload';
+// import {
+//     Modal,
+
+//     ModalBody, ModalHeader,
+// } from 'reactstrap';
+// import EditIcon from '@material-ui/icons/Edit';
 
 import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
@@ -33,6 +39,7 @@ class List extends Component {
         loading: true,
         objects: [],
         all: [],
+        // modalEdit : false,
         page: {
             number: 0,
             size: 20,
@@ -196,8 +203,29 @@ class List extends Component {
         });
     }
 
+
+//     toggleEditclick = () => {
+       
+//         this.setState({ modalEdit:!this.state.modalEdit })
+// }
+// toggleEdit = () => {
+//     this.setState({
+//        modalEdit: false
+//     });
+// };
+
+
     render() {
         return (<ContentWrapper>
+                                        {/* <Modal isOpen={this.state.modalEdit} backdrop="static" toggle={this.toggleEdit} size={'md'}>
+                    <ModalHeader toggle={this.toggleEdit}>
+                   
+                        
+                    </ModalHeader>
+                    <ModalBody>
+  
+                    </ModalBody>
+                </Modal> */}
            {/* <div className="row">
                 <div className="col-md-2">
                     <h4 className="float-right">Filters : </h4>
@@ -320,6 +348,9 @@ class List extends Component {
                                  
                                 <td>
                                     { obj.status==='A'?'Approved':obj.status==='A'?'Rejected':'New'}
+                                    {/* { this.props.user.role === 'ROLE_ADMIN' &&
+                                    <EditIcon onClick={()=>this.toggleEditclick()}  style={{color: "#000" ,cursor :"pointer" ,position:"relative" ,left:"6px" }} size="small"  fontSize="small" />
+                                    } */}
                                 </td>
                                 
                                 <td>

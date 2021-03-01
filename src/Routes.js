@@ -39,6 +39,9 @@ const Subscribers = lazy(() => import('./components/Website/Subscribers'));
 
 const Categories = lazy(() => import('./components/Core/Categories'));
 const Notifications = lazy(() => import('./components/Core/Notifications'));
+const SalesNotifications = lazy(() => import('./components/Core/SalesNotifications'));
+const PurchaseNotifications = lazy(() => import('./components/Core/PurchaseNotifications'));
+
 
 
 // Core Features
@@ -57,6 +60,7 @@ const Tracking = lazy(() => import('./components/Core/Tracking/Tracking'));
 const Order = lazy(() => import('./components/Core/Orders/Order'));
 const Event = lazy(() => import('./components/Core/Events/Event'));
 const CostAccount = lazy(() => import('./components/Core/CostAccount'));
+const Approvals = lazy(() => import('./components/Core/Approvals/Approval'));
 
 const Invoices = lazy(() => import('./components/Core/Invoices'));
 
@@ -171,7 +175,9 @@ const Routes = ({ location }) => {
                                     <PrivateRoute path="/prospectivevendor/:objId" component={waitFor(ProspectiveVendor)} />
                                     <PrivateRoute path="/prospectivevendor" component={waitFor(ProspectiveVendor)} />
                                     {/* <PrivateRoute path="/sales1" component={waitFor(Sales1)} /> */}
-
+                                    <PrivateRoute path="/sales-approval-alerts" component={waitFor(SalesNotifications)} />
+                                    <PrivateRoute path="/purchases-approval-alerts" component={waitFor(PurchaseNotifications)} />
+                                    <PrivateRoute path="/approvals" component={waitFor(Approvals)} />
 
                                     <PrivateRoute path="/trackings/:objId" component={waitFor(Tracking)} />
                                     <PrivateRoute path="/trackings" component={waitFor(Tracking)} />

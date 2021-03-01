@@ -327,7 +327,11 @@ class View extends Component {
 
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
-            this.setState({ obj: res.data, users:res.data.users, loading: false});
+            this.setState({ obj: res.data, users:res.data.users, loading: false},()=>{
+                    if(this.props?.location?.search && this.props?.location?.search?.indexOf('approval')){
+                        this.toggleTab(4);
+                    }
+                 });
         });
     }
 

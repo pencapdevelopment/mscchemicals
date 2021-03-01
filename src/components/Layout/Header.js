@@ -199,6 +199,16 @@ class Header extends Component {
                                                 <span className="text-sm">More notifications</span>
                                             </Link>
                                         </ListGroupItem>
+                                        <ListGroupItem action tag="a" href="sales-approval-alerts" onClick={e => e.preventDefault()}>
+                                        <Link className="text-center" to="/sales-approval-alerts">
+                                                <span className="text-sm">Sales Approval Alert</span>
+                                            </Link>
+                                        </ListGroupItem>
+                                        <ListGroupItem action tag="a" href="purchases-approval-alerts" onClick={e => e.preventDefault()}>
+                                        <Link className="text-center" to="/purchases-approval-alerts">
+                                                <span className="text-sm">Purchases Approval Alert</span>
+                                            </Link>
+                                        </ListGroupItem>
                                     </ListGroup>
                                     { /* END list group */}
                                 </DropdownItem>

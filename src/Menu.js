@@ -164,6 +164,17 @@ const Menu = [
         icon: 'fa fa-bell'
     },
     {
+        name: 'Sales Approvals',
+        path: '/sales-approval-alerts',
+        icon: 'fa fa-bell'
+    },
+    {
+        name: 'Purchases Approvals',
+        path: '/purchases-approval-alerts',
+        icon: 'fa fa-bell'
+    },
+    
+    {
         name: 'Profile',
         path: '/profile',
         icon: 'fa fa-user'
