@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Event from '@material-ui/icons/Event';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import {
     DatePicker,
     MuiPickersUtilsProvider
@@ -1543,16 +1544,18 @@ class Add extends Component {
                                                                 helperText={errors?.gstin?.length > 0 ? errors?.gstin[0]?.msg : ""}
                                                                 error={errors?.gstin?.length > 0}
                                                                 value={this.state.formWizard.obj.gstin}
-                                                                className="col-md-11"
+                                                                className="col-md-9"
                                                                 onChange={e => this.setField('gstin', e)} />
-                                                            {/* <Button
-                                                                // variant="contained"
-                                                                // color="primary"
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                size="small"
                                                                 onClick={e => this.toggleModal('GST')}
-                                                                className={this.state.classes.button + " col-md-2 p-2"}
-                                                            > */}
-                                                            <img onClick={e => this.toggleModal('GST')} className="col-sm-1 p-2"  src="img/upload.png" />
-                                                                {/*  </Button> */}
+                                                                className={this.state.classes.button + " col-md-3 p-2"}
+                                                                startIcon={<CloudUploadIcon />}
+                                                            >Upload
+                                                            {/* <img onClick={e => this.toggleModal('GST')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
+                                                                 </Button>
                                                         </div> :
                                                             null}
                                                     </fieldset>
@@ -1566,17 +1569,18 @@ class Add extends Component {
                                                             inputProps={{ minLength: 10, maxLength: 10, "data-validate": '[{ "key":"pan"},{ "key":"maxlen","param":"10"}]' }}
                                                             helperText={errors?.pan?.length > 0 ? errors?.pan[0]?.msg : ""}
                                                             error={errors?.pan?.length > 0}
-                                                            className="col-md-11"
+                                                            className="col-md-9"
                                                             value={this.state.formWizard.obj.pan}
                                                             onChange={e => this.setField('pan', e)} /> 
-                                                             {/* <Button
+                                                             <Button
                                                                 variant="contained"
                                                                 color="primary"
                                                                 onClick={e => this.toggleModal('PAN')}
-                                                                className={this.state.classes.button + " col-md-4 p-2"}
+                                                                className={this.state.classes.button + " col-md-3 p-2"}
+                                                                startIcon={<CloudUploadIcon />}
                                                             >
-                                                                Upload </Button> */}
-                                                                  <img onClick={e => this.toggleModal('PAN')} className="col-sm-1 p-2"  src="img/upload.png" />
+                                                                Upload </Button>
+                                                                  {/* <img onClick={e => this.toggleModal('PAN')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
                                                         </div> : null}
                                                     </fieldset>
                                                     <fieldset>
@@ -1591,17 +1595,18 @@ class Add extends Component {
                                                                 helperText={errors?.fssai?.length > 0 ? errors?.fssai[0]?.msg : ''}
                                                                 error={errors?.fssai?.length > 0}
                                                                 value={this.state.formWizard.obj.fssai}
-                                                                className="col-md-11"
+                                                                className="col-md-9"
                                                                 onBlur={e => this.optionalValidator('fssai', e)}
                                                                 onChange={e => this.setField('fssai', e)} /> 
-                                                                {/* <Button
+                                                                <Button
                                                                     variant="contained"
                                                                     color="primary"
                                                                     onClick={e => this.toggleModal('Fssai')}
-                                                                    className={this.state.classes.button + " col-md-4 p-2"}
+                                                                    className={this.state.classes.button + " col-md-3 p-2"}
+                                                                    startIcon={<CloudUploadIcon />}
                                                                 >
-                                                                Upload </Button> */}
-                                                                  <img onClick={e => this.toggleModal('Fssai')} className="col-sm-1 p-2" src="img/upload.png" />
+                                                                Upload </Button>
+                                                                  {/* <img onClick={e => this.toggleModal('Fssai')} className="col-sm-1 p-2" src="img/upload.png" /> */}
                                                         </div> :
                                                             null}
                                                     </fieldset>
@@ -1616,18 +1621,19 @@ class Add extends Component {
                                                                 inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License is required"}]' }}
                                                                 helperText={errors?.drugLicense?.length > 0 ? errors?.drugLicense[0]?.msg : ''}
                                                                 error={errors?.drugLicense?.length > 0}
-                                                                className="col-md-11"
+                                                                className="col-md-9"
                                                                 value={this.state.formWizard.obj.drugLicense}
                                                                 onBlur={e => this.optionalValidator('drugLicense', e)}
                                                                 onChange={e => this.setField('drugLicense', e)} />
-                                                            {/* <Button
+                                                            <Button
                                                                 variant="contained"
                                                                 color="primary"
                                                                 onClick={e => this.toggleModal('Drug License')}
-                                                                className={this.state.classes.button + " col-md-4 p-0"}
+                                                                className={this.state.classes.button + " col-md-3 p-0"}
+                                                                startIcon={<CloudUploadIcon />}
                                                             >
-                                                                Upload </Button> */}
-                                                                  <img onClick={e => this.toggleModal('Drug License')} className="col-sm-1 p-2"  src="img/upload.png" />
+                                                                Upload </Button>
+                                                                  {/* <img onClick={e => this.toggleModal('Drug License')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
                                                         </div>
                                                     </fieldset>
                                                     <fieldset>
@@ -1642,18 +1648,19 @@ class Add extends Component {
                                                                 inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License or Customer Declaration is required"}]' }}
                                                                 helperText={errors?.customerDeclaration?.length > 0 ? errors?.customerDeclaration[0]?.msg : ''}
                                                                 error={errors?.customerDeclaration?.length > 0}
-                                                                className="col-md-11"
+                                                                className="col-md-9"
                                                                 value={this.state.formWizard.obj.customerDeclaration}
                                                                 onBlur={e => this.optionalValidator('customerDeclaration', e)}
                                                                 onChange={e => this.setField('customerDeclaration', e)} />
-                                                            {/* <Button
+                                                            <Button
                                                                 variant="contained"
                                                                 color="primary"
                                                                 onClick={e => this.toggleModal('Customer Declaration')}
-                                                                className={this.state.classes.button + " col-md-4 p-2"}
+                                                                className={this.state.classes.button + " col-md-3 p-2"}
+                                                                startIcon={<CloudUploadIcon />}
                                                             >
-                                                                Upload </Button> */}
-                                                                  <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" />
+                                                                Upload </Button>
+                                                                  {/* <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
                                                         </div> : null}
                                                     </fieldset>
                                                     {/* <fieldset>  

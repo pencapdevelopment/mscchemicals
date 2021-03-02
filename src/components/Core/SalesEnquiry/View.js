@@ -656,10 +656,10 @@ class View extends Component {
                                                                         <td>
                                                                              {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
                                                         
-                                                                                 <span title="Edit" fontSize="small" variant="contained" onClick={() => this.updateObj()}><Avatar   fontSize="small"> <EditIcon fontSize="small" style={{color:"#000" }} /></Avatar></span>}
+                                                                                 <Button title="Edit" fontSize="small" variant="contained" onClick={() => this.updateObj()}> <EditIcon fontSize="small" style={{color:"#000" }} /></Button>}
                                                                         </td>
                                                                         <td>
-                                                                             {this.state.isQuoteExists < 1 ?<Avatar> <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" /></Avatar>:'' }
+                                                                             {this.state.isQuoteExists < 1 ?<Button> <img title="Generate Quotation" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" /></Button>:'' }
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>

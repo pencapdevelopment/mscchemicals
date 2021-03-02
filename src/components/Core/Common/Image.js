@@ -8,6 +8,7 @@ import {
     ModalBody, ModalHeader
 } from 'reactstrap';
 import swal from 'sweetalert';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { context_path, server_url } from '../../Common/constants';
 import ContentWrapper from '../../Layout/ContentWrapper';
 class Image extends Component {
@@ -128,11 +129,12 @@ class Image extends Component {
                             </ModalBody>
                         </Modal>
                         {!this.state.obj.image && 
-                            <Button  style={{marginTop: -8,marginLeft: 0}} onClick={this.toggleModal}>
-                                <img style={{width: 70, height: 50, marginBottom: -5}} src="img/company-logo4.png" />
+                            <Button  style={{marginTop: -8,marginLeft: 0}} size="small" onClick={this.toggleModal} variant="contained" color="primary" startIcon={<CloudUploadIcon />}>Upload
+                             </Button>
+                            //    <img style={{width: 70, height: 50, marginBottom: -5}} src="img/company-logo4.png" /> 
                                 
-                                                            {/* <Avatar className="avatar" size="small"  alt={this.state.obj.name} src="img/dummy.png" /> */}
-                            </Button>
+                            //                                 {/* <Avatar className="avatar" size="small"  alt={this.state.obj.name} src="img/dummy.png" /> 
+                           
                         }
                         {this.state.obj.image && 
                             <Button onClick={this.toggleModal}>

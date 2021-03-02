@@ -19,7 +19,7 @@ import swal from 'sweetalert';
 import { context_path, server_url } from '../../Common/constants';
 import Sorter from '../../Common/Sorter';
 import ContentWrapper from '../../Layout/ContentWrapper';
-
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 
 
@@ -354,8 +354,9 @@ class Upload extends Component {
                                             <tr key={obj.label} className={obj.noshow ? 'd-none' : ''}>
                                                 <td>{obj.label}</td>
                                                 <td>
-                                                    {/* <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)}>  </Button> */}
-                                                    <img onClick={() => this.editSubObj(i)}  src="img/upload.png" /> 
+
+                                                    <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)} startIcon={<CloudUploadIcon />}>Upload  </Button>
+                                                    {/* <img onClick={() => this.editSubObj(i)}  src="img/upload.png" />  */}
                                                 </td>
                                                 <td>
                                                     {this.getFileName(obj.label)}
