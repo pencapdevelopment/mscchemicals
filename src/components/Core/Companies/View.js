@@ -47,7 +47,7 @@ class View extends Component {
             { label: 'Drug License', noshow: false, expiryDate: true },
             { label: 'Customer Declaration', noshow: true, expiryDate: true },
             { label: 'Manufacture License', expiryDate: true },
-            { label: 'MSME ', expiryDate: true },
+            { label: 'MSME', expiryDate: true },
             { label: 'Others ', expiryDate: true },
         ],
         fileTypes2: [
@@ -120,7 +120,6 @@ class View extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
         var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
@@ -150,51 +149,40 @@ class View extends Component {
             });
         }
     }
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
     loadObj() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
             if (res.data.paymentTerms) {
                 res.data.paymentTerms = this.state.terms.find(g => g.value === res.data.paymentTerms).label;
             }
-
             this.setState({ newObj: res.data,
-            loading:false
+                loading:false
             });
-
             if (res.data.locationType !== 'I') {
                 if (!res.data.fssai || !res.data.drugLicense || !res.data.others) {
                     var fileTypes1 = this.state.fileTypes1;
-
                     if (!res.data.fssai) {
                         fileTypes1[2].noshow = true;
                     }
                     if (!res.data.drugLicense) {
                         fileTypes1[3].noshow = true;
                     }
-
                     if (!res.data.fssai && !res.data.drugLicense) {
                         fileTypes1[4].noshow = false;
                     }
-
                     if (!res.data.others) {
                         fileTypes1[5].noshow = true;
                     }
-
                     this.setState({ fileTypes1 });
                 }
             }
-
             // this.loadSubObjs();
-
             if (this.props.location.search) {
                 let params = queryString.parse(this.props.location.search);
-
                 if (params.branch) {
                     this.toggleTab(1);
                 }
@@ -528,12 +516,10 @@ class View extends Component {
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(View);

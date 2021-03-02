@@ -167,7 +167,6 @@ class Add extends Component {
             { label: 'Food grade', value: 'Food grade' }
         ],
         make: [
-
         ],
         subObjs: [],
         addressTypes: [
@@ -206,7 +205,6 @@ class Add extends Component {
             { label: 'Trader', value: 'Trader' },
             { label: 'Agent', value: 'Agent' },
             { label: 'Marketing co', value: 'Marketing co' },
-
             { label: 'Own / contract / export', value: 'Own' }
         ],
         categoriesInterested: [
@@ -897,7 +895,8 @@ class Add extends Component {
             var promise = undefined;
             promise = axios.post(server_url + context_path + "api/products", newObj)
             promise.then(res => {
-                this.setState({ loading: false });
+                let product = res.data;
+                this.setState({ loading: false },this.setProducts('products', {id:product.id,name:product.name}));
             }).finally(() => {
                 this.loadproducts();
                 this.setState({ loading: false });
@@ -914,7 +913,6 @@ class Add extends Component {
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
-
                         if (errors[e.field]) {
                             errors[e.field].push(e.errorMessage);
                         } else {
@@ -1550,7 +1548,7 @@ class Add extends Component {
                                                                 variant="contained"
                                                                 color="primary"
                                                                 size="small"
-                                                                onClick={e => this.toggleModal('GST')}
+                                                                onClick={e => this.toggleModal('GSTIN')}
                                                                 className={this.state.classes.button + " col-md-3 p-2"}
                                                                 startIcon={<CloudUploadIcon />}
                                                             >Upload
@@ -1601,7 +1599,7 @@ class Add extends Component {
                                                                 <Button
                                                                     variant="contained"
                                                                     color="primary"
-                                                                    onClick={e => this.toggleModal('Fssai')}
+                                                                    onClick={e => this.toggleModal('FSSAI NO')}
                                                                     className={this.state.classes.button + " col-md-3 p-2"}
                                                                     startIcon={<CloudUploadIcon />}
                                                                 >
@@ -1618,7 +1616,8 @@ class Add extends Component {
                                                                 label="Drug license no"
                                                                 // required={true}
                                                                 fullWidth={true}
-                                                                inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License is required"}]' }}
+                                                                inputProps={(this.state.formWizard.obj.locationType === 'N') ? {"data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License is required"}]'}:
+                                                                {"data-validate": '[{ "key":"required","msg":"Drug License is required"}]'}}
                                                                 helperText={errors?.drugLicense?.length > 0 ? errors?.drugLicense[0]?.msg : ''}
                                                                 error={errors?.drugLicense?.length > 0}
                                                                 className="col-md-9"
@@ -1642,7 +1641,7 @@ class Add extends Component {
                                                             <TextField
                                                                 name="customerDeclaration"
                                                                 type="text"
-                                                                label="Customer Declaration"
+                                                                label="Customer Declaration no"
                                                                 // required={true}
                                                                 fullWidth={true}
                                                                 inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License or Customer Declaration is required"}]' }}
@@ -1729,7 +1728,7 @@ class Add extends Component {
                                                                 inputProps={{ minLength: 0, maxLength: 35 }}
                                                                 value={this.state.formWizard.obj.msmeId}
                                                                 onChange={e => this.setField('msmeId', e)} />
-                                                          <img onClick={e => this.toggleModal('Msme ')} className="col-sm-1 p-2"   src="img/upload.png" />
+                                                          <img onClick={e => this.toggleModal('MSME')} className="col-sm-1 p-2"   src="img/upload.png" />
                                                         </div>
                                                     </fieldset>}
                                                 </div>

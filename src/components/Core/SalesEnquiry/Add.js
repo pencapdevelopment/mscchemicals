@@ -41,9 +41,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import UOM from '../Common/UOM';
 import PageLoader from '../../Common/PageLoader';
 // const json2csv = require('json2csv').parse;
-
 class Add extends Component {
-
     state = {
         formWizard: {
             editFlag: false,
@@ -82,7 +80,6 @@ class Add extends Component {
             { label: 'Converted', value: 'Converted' },
         ],
     }
-
     loadCompany(companyId) {
         axios.get(server_url + context_path + "api/companies/" + companyId + '?projection=company_auto_suggest_product')
         .then(res => {
@@ -102,7 +99,6 @@ class Add extends Component {
                     }
                 })
             }
-
             this.setState({ formWizard }, o => {
                 if (res.data.products) {
                     res.data.products.forEach((p, idx) => {
@@ -112,7 +108,6 @@ class Add extends Component {
                     });
                 }
             });
-
             axios.get(server_url + context_path + "api/company-contact?sort=id,asc&projection=company_contact_name&page=0&size=1&company=" + companyId)
             .then(res => {
                 if (res.data._embedded['company-contact'] && res.data._embedded['company-contact'].length) {
@@ -123,7 +118,6 @@ class Add extends Component {
             });
         });
     }
-
     loadData() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=sales_edit')
         .then(res => {
@@ -151,14 +145,12 @@ class Add extends Component {
             this.setState({ formWizard , selectedCompanies,users});
         });
     }
-
     updateObj(id) {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
         formWizard.editFlag = true;
         this.setState({ formWizard }, this.loadData);
     }
-
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
         var input = e.target;
@@ -172,11 +164,9 @@ class Add extends Component {
             });
         }
     }
-
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
-
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
         if (e) {
@@ -186,7 +176,6 @@ class Add extends Component {
         }
         this.setState({ formWizard });
     }
-
     setAutoSuggestAssignProduct(field, val) {
         var assignProduct=this.state.assignProduct;
         assignProduct=val;
@@ -199,7 +188,6 @@ class Add extends Component {
             //     this.loadCompany(val)
         // }
     }
-
     setAutoSuggestAssignUser(field, val) {
         var assignUser=this.state.assignUser;
         assignUser=val;
@@ -212,7 +200,6 @@ class Add extends Component {
             //     this.loadCompany(val)
         // }
     }
-
     setAutoSuggest(field, val) {
         var formWizard = this.state.formWizard;
         formWizard.obj[field] = val;
@@ -222,11 +209,9 @@ class Add extends Component {
             this.loadCompany(val)
         }
     }
-
     setAutoSuggest1(field, val) {
         this.setState({ user: val });
     }
-
     checkForAddCompError() {
         // const form = this.formWizardRef;
         const tabPane = document.getElementById('companyvalidatorDiv');
@@ -238,7 +223,6 @@ class Add extends Component {
         this.setState({ formWizard });
         return hasError;
     }
-
     addCompany = () => {
         var hasError = this.checkForAddCompError();
         if (!hasError) {
@@ -285,7 +269,6 @@ class Add extends Component {
             }
         }
     }
-
     onSelectCompChip = (comp) => {
         var formWizard = this.state.formWizard;
         formWizard.selectedcompany = comp.companyId;
@@ -298,7 +281,6 @@ class Add extends Component {
         this.companyASRef.setInitialField(comp);
         this.setState({formWizard});
     }
-
     removeCompany = (i) => {
         swal({
             title: "Are you sure?",
@@ -318,7 +300,6 @@ class Add extends Component {
             }
         });
     }
-
     toggleModalAssign = () => {
         var users = this.state.users;
         if(Object.keys(this.state.assignUser).length !== 0 && users.findIndex(u => u.user.id === this.state.assignUser.id) === -1){
@@ -328,13 +309,11 @@ class Add extends Component {
         assignUser='';
         this.setState({ users,assignUser});
     }
-
     saveUser() {
         var users = this.state.users;
         users.push({user:this.state.user});
         this.setState({ users, modalassign: !this.state.modalassign });
     }
-
     handleDelete = (i) => {
         swal({
             title: "Are you sure?",
@@ -354,7 +333,6 @@ class Add extends Component {
             }
         });
     }
-
     setProductField(i, field, e, noValidate) {
         var formWizard = this.state.formWizard;
         var input = e.target;
@@ -366,7 +344,6 @@ class Add extends Component {
             this.setState({formWizard});
         }
     }
-
     setProductAutoSuggest(idx, val) {
         var formWizard = this.state.formWizard;
         var products = formWizard.obj.products;
@@ -376,7 +353,6 @@ class Add extends Component {
         products[idx].updated = true;
         this.setState({ formWizard });
     }
-
     // addProduct = () => {
     //     var formWizard = this.state.formWizard;
     //     var products = formWizard.obj.products;
@@ -387,7 +363,6 @@ class Add extends Component {
     //         this.productASRef[idx].setInitialField(formWizard.selectedProducts[idx]);
     //     });
     // }
-
     addProduct = () => {
         var formWizard = this.state.formWizard;
         var products = formWizard.obj.products;
@@ -401,7 +376,6 @@ class Add extends Component {
         }
         // this.setProductAutoSuggest(idx, this.state.assignProduct.id);
     }
-
     deleteProduct = (i) => {
         var formWizard = this.state.formWizard;
         var products = formWizard.obj.products;
@@ -442,7 +416,6 @@ class Add extends Component {
         }
         return hserr;
     }
-
     saveDetails() {
         var hasError = this.checkForError();
         if (!hasError) {
@@ -528,17 +501,14 @@ class Add extends Component {
         }
         return true;
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.productASRef = [];
         this.props.onRef(this);
         this.setState({ loding: false });
     }
-
     render() {
         const errors = this.state.formWizard.errors;
         return (
@@ -653,7 +623,6 @@ class Add extends Component {
                                             />
                                         </RadioGroup>
                                     </FormControl>
-                                
                                 </fieldset>
                             </div>
                         </div>
@@ -978,12 +947,10 @@ class Add extends Component {
         )
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Add);

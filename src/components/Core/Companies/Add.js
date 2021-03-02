@@ -123,9 +123,7 @@ class Add extends Component {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id)
             .then(res => {
                 var formWizard = this.state.formWizard;
-                console.log(res.data);
                 var newobj = res.data;
-
                 if (newobj['categories']) {
                     newobj.selectedCategories = newobj['categories'].split(",");
                 } else {
@@ -136,19 +134,16 @@ class Add extends Component {
                 } else {
                     newobj.selectedCustomerTypes = [];//
                 }
-
                 if (newobj['categoriesInterested']) {
                     newobj.selectedInterests = newobj['categoriesInterested'].split(",");
                 } else {
                     newobj.selectedInterests = [];
                 }
-
                 if (newobj['organizations']) {
                     newobj.selectedorganizations = newobj['organizations'].split(",");
                 } else {
                     newobj.selectedorganizations = [];
                 }
-
                 formWizard.obj = newobj;
                 this.setState({ formWizard });
             });
@@ -223,7 +218,6 @@ class Add extends Component {
 
     checkForError() {
         // const form = this.formWizardRef;
-
         const tabPane = document.getElementById('saveForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
@@ -231,7 +225,6 @@ class Add extends Component {
         formWizard.errors = errors;
         this.setState({ formWizard });
         console.log(errors);
-
         return hasError;
     }
 
