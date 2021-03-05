@@ -45,7 +45,7 @@ const ActivityStream = ({ title, stream }) => {
   return (
     <div className={classes.stream} style={{marginTop: -16}}>
       <div className={classes.card}>
-      <Button  className="mt-2" title="Convert to order"  style={{marginLeft: 38,  backgroundColor:"yellow"}}  size="small"><span style={{  textTransform: 'none', fontWeight: 'normal', }}> {title}</span></Button>
+      <Button  className="mt-2" title="Convert to order"  style={{marginLeft: 35,  backgroundColor:"yellow"}}  size="small"><span style={{  textTransform: 'none', fontWeight: 'normal', }}> {title}</span></Button>
                                                           
         {/* <Button  style={{textTransform: 'none',fontWeight: 'normal'}} variant="contained" color="">
           {title}

@@ -185,7 +185,7 @@ class ProspectiveVendorAdd extends Component {
         var hasError = this.checkForError();
         if (!hasError) {
         var newObj = this.state.formWizard.obj;
-        newObj['categories'] = "";
+        // newObj['categories'] = "";
         var promise = undefined;
 
         if (!this.state.editFlag) {
@@ -249,7 +249,7 @@ class ProspectiveVendorAdd extends Component {
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
 
                     <div className="row">
-                        <div className="col-md-6 offset-md-3">
+                        <div className="col-md-4   offset-md-1 ">
 
                             <fieldset>
                                 <TextField
@@ -311,7 +311,7 @@ class ProspectiveVendorAdd extends Component {
                                     value={this.state.formWizard.obj.contactName}
                                     onChange={e => this.setField('contactName', e)} />
                             </fieldset> */}
-                            <fieldset>
+                            {/* <fieldset>
                                 <TextField
                                     type="text"
                                     name="Phonenumber"
@@ -334,8 +334,23 @@ class ProspectiveVendorAdd extends Component {
                                     error={errors?.email?.length > 0}
                                     value={this.state.formWizard.obj.email}
                                     onChange={e => this.setField('email', e)} />
-                            </fieldset>
-                            <fieldset>
+                            </fieldset> */}
+                   <fieldset>
+                                        <TextField
+                                            name="remarks"
+                                            type="text"
+                                            label="Remarks"
+                                             
+                                            fullWidth={true}
+                                            inputProps={{ minLength: 0, maxLength: 300 }}
+                                            value={this.state.formWizard.obj.other}
+                                            onChange={e => this.setField('other', e)} />
+                                    </fieldset>
+
+                           
+                        </div>
+                   <div className="col-md-4">
+                   <fieldset>
                                     <TextField
                                         name="country"
                                         type="text"
@@ -397,24 +412,13 @@ class ProspectiveVendorAdd extends Component {
                                 </fieldset>
 
 
-                            <fieldset>
-                                        <TextField
-                                            name="remarks"
-                                            type="text"
-                                            label="Remarks"
-                                             
-                                            fullWidth={true}
-                                            inputProps={{ minLength: 0, maxLength: 300 }}
-                                            value={this.state.formWizard.obj.other}
-                                            onChange={e => this.setField('other', e)} />
-                                    </fieldset>
-
-                            <div className="text-center">
+                           
+                   </div>
+                    </div>
+                    <div className="text-center">
                                 <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
                                 <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save & Continue</Button>
                             </div>
-                        </div>
-                    </div>
                 </Form>
             </ContentWrapper>)
     }

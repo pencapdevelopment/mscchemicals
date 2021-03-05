@@ -270,6 +270,7 @@ class View extends Component {
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=purchases_edit').then(res => {
             this.setState({ obj: res.data, users:res.data.users, loading: false});
+          
         });
     }
     loadAssignedUsers(id){
@@ -621,7 +622,7 @@ class View extends Component {
                                                             
                                                                     { this.props.user.role === 'ROLE_ADMIN' &&
                                                                    
-                                                                        <Button   style={{marginRight: -50}} title="Assigned To" color=""  variant="contained" fontSize="small"  size="small" onClick={this.toggleModalAssign}> + Add </Button>}
+                                                                        <Button   style={{marginRight: -30}} title="Assigned To" color=""  variant="contained" fontSize="small"  size="small" onClick={this.toggleModalAssign}> + Add </Button>}
                                                            
                                                                 </td>
                                                             </tr>
@@ -673,16 +674,46 @@ class View extends Component {
                                                             </tr>
                                                             <tr>
                                                                 <td>
+                                                                    <strong>Dispatch</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.dispatch}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>port OfLanding</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.portOfLanding}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>FOB</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.fob}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>CIF</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.cif}</td>
+                                                            </tr>                                               
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Currency</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.currency}</td>
+                                                            </tr>
+                                                            {/* <tr>
+                                                                <td>
                                                                     <strong>Enquiry Status</strong>
                                                                 </td>
                                                                 <td><span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span></td>
-                                                            </tr>
-                                                            <tr>
+                                                            </tr> */}
+                                                            {/* <tr>
                                                                 <td>
                                                                     <strong>Status Notes</strong>
                                                                 </td>
                                                                 <td>{this.state.obj.statusNotes}</td>
-                                                            </tr>
+                                                            </tr> */}
                                                             <tr>
                                                                 <td>
                                                                     <strong>Description</strong>

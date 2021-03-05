@@ -28,9 +28,10 @@ import * as Const from '../../Common/constants';
 import swal from 'sweetalert';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+
 import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
@@ -659,7 +660,7 @@ class View extends Component {
                                                                                  <Button title="Edit" fontSize="small" variant="contained" onClick={() => this.updateObj()}> <EditIcon fontSize="small" style={{color:"#000" }} /></Button>}
                                                                         </td>
                                                                         <td>
-                                                                             {this.state.isQuoteExists < 1 ?<Button> <img title="Generate Quotation" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" /></Button>:'' }
+                                                                             {this.state.isQuoteExists < 1 ?  <Button style={{right: -10}} Size="small" variant="contained" title=" Generate Quotation" onClick={() => this.handleGenerateQuote()} > <img style={{width: "20px", height: "20px"}} src="img/quotei.png" /></Button>:'' }
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>

@@ -212,9 +212,7 @@ class ProspectiveVendorView extends Component {
                                         <div className="float-right mt-2">
                                             <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
                                         </div>
-                                        <h4 className="my-2">
-                                            <span>{this.state.obj.name}</span>
-                                        </h4>
+                                      
                                     </div>
 
                                     <div className="card-body bb bt">
@@ -222,7 +220,7 @@ class ProspectiveVendorView extends Component {
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <strong>Code</strong>
+                                                        <strong>Name</strong>
                                                     </td>
                                                     <td>{this.state.obj.name}</td>
                                                 </tr>

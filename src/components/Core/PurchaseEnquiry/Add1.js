@@ -52,7 +52,7 @@ class Add extends Component {
             errors: {},
             modalassign: false,
             obj: {
-                code: getUniqueCode('SE'),
+                code: getUniqueCode('PR'),
                 enquiryDate: getTodayDate(),
                 company: '',
                 contactName: '',
@@ -210,26 +210,14 @@ class Add extends Component {
         var assignProduct=this.state.assignProduct;
         assignProduct=val;
         this.setState({assignProduct})
-        // var formWizard = this.state.formWizard;
-        // formWizard.obj[field] = val;
-        // formWizard['selected' + field] = val;
-        // this.setState({ formWizard });
-        // if (field === 'company') {
-            //     this.loadCompany(val)
-        // }
+    
     }
 
     setAutoSuggestAssignUser(field, val) {
         var assignUser=this.state.assignUser;
         assignUser=val;
         this.setState({assignUser})
-        // var formWizard = this.state.formWizard;
-        // formWizard.obj[field] = val;
-        // formWizard['selected' + field] = val;
-        // this.setState({ formWizard });
-        // if (field === 'company') {
-            //     this.loadCompany(val)
-        // }
+     
     }
 
     setAutoSuggest(field, val) {
@@ -406,17 +394,7 @@ class Add extends Component {
         this.setState({ formWizard });
     }
 
-    // addProduct = () => {
-    //     var formWizard = this.state.formWizard;
-    //     var products = formWizard.obj.products;
-    //     var idx = products.length;
-    //     products.push({ quantity: '', amount: '' })
-    //     formWizard.selectedProducts.push('');
-    //     this.setState({ formWizard }, o => {
-    //         this.productASRef[idx].setInitialField(formWizard.selectedProducts[idx]);
-    //     });
-    // }
-
+  
     addProduct = () => {
         var formWizard = this.state.formWizard;
         var products = formWizard.obj.products;
@@ -488,7 +466,7 @@ class Add extends Component {
                 var newObj = {...this.state.formWizard.obj};
                 newObj.company = '/companies/' + comps.companyId;
                 if(!this.state.formWizard.editFlag){
-                    newObj.code = getUniqueCode('SE');
+                    newObj.code = getUniqueCode('PR');
                     newObj.adminApproval = 'N';
                 }
                 newObj.contactName = comps.contactName;
@@ -576,7 +554,7 @@ class Add extends Component {
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="purchaseEnquiryForm">
                     <div className="row" style={{fontSize:"15px"}}>
                         <div className="col-md-6">
-                            Sales_ID<p>{this.state.formWizard.obj.code}</p>
+                            Purchases_ID<p>{this.state.formWizard.obj.code}</p>
                         </div>
                         <div class="col-md-1"></div>
                         <div className="col-md-5 " >

@@ -21,7 +21,6 @@ import Approval from '../Approvals/Approval';
 // import CustomPagination from '../../Common/CustomPagination';
 import EditIcon from '@material-ui/icons/Edit';
 import * as Const from '../../Common/constants';
-import Avatar from '@material-ui/core/Avatar';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
 import { Button,  Tab, Tabs, AppBar,FormControl,TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';
@@ -73,7 +72,6 @@ class ProspectiveBuyerView extends Component {
         },
         fileTypes: []
     }
-
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
@@ -97,7 +95,6 @@ class ProspectiveBuyerView extends Component {
 
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if(e) {
             filters[field + 'Date'] = e.format();
         } else {
@@ -170,10 +167,7 @@ class ProspectiveBuyerView extends Component {
     }
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
@@ -202,19 +196,17 @@ class ProspectiveBuyerView extends Component {
 
 
     loadObj(id) {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=template_edit').then(res => {
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id+ '?projection=prospectve_buyer_edit' )
+        .then(res => {
             this.setState({ obj: res.data });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         console.log('view component did mount');
         console.log(this.props.currentId);
-
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
     }
@@ -261,7 +253,7 @@ class ProspectiveBuyerView extends Component {
     render() {
         return (
             <div>
-                              <Modal isOpen={this.state.modalnegatation} backdrop="static" toggle={this.toggleModalNegotation} size={'lg'}>
+                <Modal isOpen={this.state.modalnegatation} backdrop="static" toggle={this.toggleModalNegotation} size={'lg'}>
                     <ModalHeader toggle={this.toggleModalNegotation}>
                         Negotation Products
                     </ModalHeader>
@@ -380,26 +372,19 @@ class ProspectiveBuyerView extends Component {
                                                 <div className="card-header">
                                                       <div className="row">
                                                           <div className="col-sm-10">
-                                                          <Button title="" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Status</span></Button>
+                                                          <Button Size="small" variant="contained" title=" " style={{backgroundColor: "#fff"}} > <span style={{fontSize: 11, textTransform : "none"}}>Status</span></Button>
                                                           </div>
-                                                          <div className="col-sm-1" style={{left: 70}}>
+                                                          <div className="col-sm-1" >
                                                           {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
-                                                        <span title="Edit" fontSize="small" variant="contained" onClick={() => this.updateObj()}><Avatar   fontSize="small"> <EditIcon fontSize="small" style={{color:"#000" }} /></Avatar></span>}
+                                                        <Button title="Edit" Size="small" variant="contained" style={{backgroundColor: "#fff"}} onClick={() => this.updateObj()}><EditIcon fontSize="small" style={{color:"#000" }} /></Button>}
                                                       
                                                               </div>
-                                                              <div className="col-sm-1" style={{left: 30}}>
+                                                              <div className="col-sm-1" >
                                                                 {/* {this.state.isQuoteExists < 1 ? */}
-                                                        <Avatar> <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} src="img/quotei.png" /></Avatar>
+                                                        <Button Size="small" variant="contained" title=" Generate Quotation" style={{backgroundColor: "#fff"}} onClick={() => this.handleGenerateQuote()} > <img style={{width: "20px", height: "20px"}} src="img/quotei.png" /></Button>
                                                          {/* :'' } */}
                                                               </div>
                                                       </div>
-                                                            
-                                                       
-                                                        
-                                           
-                                                    <h4 className="my-2">
-                                                        <span>{this.state.obj.name}</span>
-                                                    </h4>
                                                 </div>
                                             </div>
                                         </div>
@@ -414,12 +399,6 @@ class ProspectiveBuyerView extends Component {
                                               <tbody>
                                                   <tr>
                                                       <td>
-                                                          <strong>Code</strong>
-                                                      </td>
-                                                      <td>{this.state.obj.name}</td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
                                                           <strong>Name</strong>
                                                       </td>
                                                       <td>{this.state.obj.name}</td>
@@ -428,13 +407,13 @@ class ProspectiveBuyerView extends Component {
                                                       <td>
                                                           <strong>Company Name</strong>
                                                       </td>
-                                                      <td>{this.state.obj.companyname}</td>
+                                                      <td>{this.state.obj.companyName}</td>
                                                   </tr>
                                                   <tr>
                                                       <td>
                                                           <strong>Types of Company</strong>
                                                       </td>
-                                                      <td>{this.state.obj.typesofcompany}</td>
+                                                      <td>{this.state.obj.typeOfCompany}</td>
                                                   </tr>
                                                   <tr>
                                                       <td>
@@ -450,12 +429,6 @@ class ProspectiveBuyerView extends Component {
                                                   </tr>
                                                   <tr>
                                                       <td>
-                                                          <strong>Contact name</strong>
-                                                      </td>
-                                                      <td>{this.state.obj.contactName}</td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
                                                           <strong>State</strong>
                                                       </td>
                                                       <td>{this.state.obj.state}</td>
@@ -468,12 +441,6 @@ class ProspectiveBuyerView extends Component {
                                                   </tr>
                                                   <tr>
                                                       <td>
-                                                          <strong>Contact name</strong>
-                                                      </td>
-                                                      <td>{this.state.obj.contactName}</td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
                                                           <strong>Email</strong>
                                                       </td>
                                                       <td>{this.state.obj.email}</td>
@@ -483,6 +450,12 @@ class ProspectiveBuyerView extends Component {
                                                           <strong>Phone</strong>
                                                       </td>
                                                       <td>{this.state.obj.phone}</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td>
+                                                          <strong>Products Interested</strong>
+                                                      </td>
+                                                      <td>{this.state.obj.products}</td>
                                                   </tr>
                                                   <tr>
                                                       <td>
@@ -502,21 +475,17 @@ class ProspectiveBuyerView extends Component {
                                                 <th>Name</th>
                                                 <th>Quantity</th>
                                                 <th>Amount</th>
-                                             
                                             </tr>
                                         </thead>
                                       <tbody>
-                                      {
-                                                                
-                                                                    <tr>
-                                                                        <td className="va-middle"></td>
-                                                                        <td>
-                                                                           
-                                                                        </td>
-                                                                        <td></td>
-                                                                        <td></td>
-                                                                        <td><Button variant="contained" color="warning" size="xs" onClick={() => this.editInventory()}>Inventory & Docs</Button> </td>
-                                                                    </tr>
+                                      {                    
+                                            <tr>
+                                                <td className="va-middle"></td>
+                                                <td>             </td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><Button variant="contained" color="warning" size="xs" onClick={() => this.editInventory()}>Inventory & Docs</Button> </td>
+                                            </tr>
                                                             }
                                       </tbody>
                                     </Table>

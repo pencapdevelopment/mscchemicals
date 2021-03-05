@@ -29,18 +29,12 @@ import { context_path, getUniqueCode, server_url, defaultDateFilter } from '../.
 import FormValidator from '../../Forms/FormValidator';
 import ContentWrapper from '../../Layout/ContentWrapper';
 import AutoSuggest from '../../Common/AutoSuggest';
-import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
 import PageLoader from '../../Common/PageLoader';
-import { allcats } from '../Products/subcat';
-import Upload from '../Common/Upload';
-// import { TramRounded } from '@material-ui/icons';
-// import Typography from '@material-ui/core/Typography';
 function getSteps() {
     return ['Basic Details', 'Branches', 'Contacts'];
 }
@@ -891,7 +885,7 @@ class Add extends Component {
     addProduct() {
         if(this.productASRef.state.searchParam !== ""){
             this.setState({ loading: true });
-            var newObj = {code: getUniqueCode('PD'),name: this.productASRef.state.searchParam,specification:'',make:'',type:'Food grade',category:''};
+            var newObj = {code: getUniqueCode('CM'),name: this.productASRef.state.searchParam,specification:'',make:'',type:'Food grade',category:''};
             var promise = undefined;
             promise = axios.post(server_url + context_path + "api/products", newObj)
             promise.then(res => {
@@ -1961,7 +1955,7 @@ class Add extends Component {
                                                 label="Email"
                                                 required={true}
                                                 fullWidth={true}
-                                                inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required"}, { "key":"email"}]' }}
+                                                inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required"}{ "key":"required"}, { "key":"email"}]' }}
                                                 helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ''}
                                                 error={errors?.email?.length > 0}
                                                 value={this.state.formWizard.tempcontact.email}
@@ -1974,7 +1968,7 @@ class Add extends Component {
                                                 label="Phone"
                                                 required={true}
                                                 fullWidth={true}
-                                                inputProps={{ maxLength: 13, "data-validate": '[ { "key":"required"}]' }}
+                                                inputProps={{ maxLength: 13, "data-validate": '[ { "key":"phone"}]' }}
                                                 helperText={errors?.phone?.length > 0 ? errors?.phone[0]?.msg : ''}
                                                 error={errors?.phone?.length > 0}
                                                 value={this.state.formWizard.tempcontact.phone}

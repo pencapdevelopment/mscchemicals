@@ -355,7 +355,7 @@ class Upload extends Component {
                                                 <td>{obj.label}</td>
                                                 <td>
 
-                                                    <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)} startIcon={<CloudUploadIcon />}>Upload  </Button>
+                                                    <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)} color="primary" startIcon={<CloudUploadIcon />}>Upload  </Button>
                                                     {/* <img onClick={() => this.editSubObj(i)}  src="img/upload.png" />  */}
                                                 </td>
                                                 <td>

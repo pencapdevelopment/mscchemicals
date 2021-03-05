@@ -5,10 +5,11 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 // import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
-import { Table } from 'reactstrap';
-import Jumbotron from 'react-bootstrap/Jumbotron'
+
 // import PageLoader from '../../Common/PageLoader';
 import Chip from '@material-ui/core/Chip';
+import Box from '@material-ui/core/Box';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import {
      Modal,
     ModalHeader,
@@ -18,8 +19,8 @@ import {
 import SalesInventory from './SalesInventory';
 // import Sorter from '../../Common/Sorter';
 // import CustomPagination from '../../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter,  getStatusBadge } from '../../Common/constants';
-import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
+import { server_url, context_path, defaultDateFilter,  } from '../../Common/constants';
+import { Button,  Tab, Tabs, AppBar,  TextField  } from '@material-ui/core';
 // import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
@@ -32,7 +33,7 @@ import TabPanel from '../../Common/TabPanel';
 import PageLoader from '../../Common/PageLoader';
 import AddInventory from './AddInventory';
 import Add from './Add';
-import EditIcon from '@material-ui/icons/Edit';
+
 import Upload from '../Common/Upload';
 // import Status from '../Common/Status';
 import Followups from '../Followups/Followups';
@@ -212,7 +213,7 @@ class View extends Component {
             console.log("order user response",res);
             this.setState({
                 users:res?.data?._embedded[Object.keys(res?.data?._embedded)[0]],
-                loading:true
+                loading:false
              },()=>{console.log("after setting state is",this.state)});
 
         });
@@ -355,9 +356,12 @@ class View extends Component {
                             </ModalBody>
                         </Modal>
                 {!this.state.editFlag &&
+                 
                     <div className="row">
                         <div className="col-md-12">
                             <AppBar position="static">
+                                  {(this.props.user.role !== 'ROLE_ACCOUNTS'&& this.props.user.role !== 'ROLE_INVENTORY'&& 
+                                    <div>     
                                 <Tabs
                                     className="bg-white"
                                     indicatorColor="primary"
@@ -367,17 +371,21 @@ class View extends Component {
                                     aria-label="scrollable auto tabs example"
                                     value={this.state.activeTab}
                                     onChange={(e, i) => this.toggleTab(i)} >
-                                    <Tab  label="Details"   />
-                                    <Tab label="Shipment Details" />
-                                    {/* <Tab label="Inventory" /> */}
-                                    <Tab label="Accounts" />
-                                    <Tab label="Followups" />
-                                    <Tab label="Shipping Documents" />
-                                     
-                                    <Tab label="Banking Documents" />
-                                    <Tab label="Approvals" />
+                                       
+                                            <Tab  label="Details"   />
+                                            <Tab label="Shipment Details" />
+                                            {/* <Tab label="Inventory" /> */}
+                                            <Tab label="Accounts" />
+                                            <Tab label="Followups" />
+                                            <Tab label="Shipping Documents" />
+                                            
+                                            <Tab label="Banking Documents" />
+                                            <Tab label="Approvals" />   
+                                            </Tabs>
+                                        </div>)}
                                    
-                                </Tabs>
+                                   
+                                
                             </AppBar>
                             </div>
                     </div>}
@@ -393,10 +401,11 @@ class View extends Component {
                                        
                                         <div className="col-sm-2"><Button title="status" size="small" variant="contained">Status</Button></div>
                                             <div className="col-sm-7"></div>
-                                            <div className="col-sm-1" style={{left: 110}} > <Avatar   >   <EditIcon style={{color: "#000"}} fontSize="small" /></Avatar> </div>
-                                         
-                                            <div className="col-sm-1" style={{left: 70}}><Avatar > <img style={{width: 25, height: 27, float: 'center', }} title="downlaod invoice" src="img/download.png"/></Avatar></div>
-                                            <div className="col-sm-1" style={{left: 30}}><Avatar  ><img  title="cancel order" src="img/cancel.png"/></Avatar></div>
+                                            <div className="col-sm-1"  >  </div>
+                                            {(this.props.user.role !== 'ROLE_ACCOUNTS'&& this.props.user.role !== 'ROLE_INVENTORY' &&
+                                   <div className="col-sm-2" ><Button variant="contained" size="small">cancel</Button></div>
+                                   )}
+                                           
 
                                         {/* {this.state.obj.type === 'Sales' && <Button variant="contained" color="warning" size="xs" onClick={() => this.downloadInvoice()}>Download Invoice</Button> }
                                               */}
@@ -416,144 +425,444 @@ class View extends Component {
                                      </div>
                                 </div>
                                 <div className="row">
-                            <div className="col-sm-8">
+                            <div className={(this.props.user.role === 'ROLE_ACCOUNTS' || this.props.user.role === 'ROLE_INVENTORY')?"col-sm-10": "col-sm-8 "}>
                                 <div className="card b">
-                                   
-                                
-                                        <div className="card-body bb bt">
-                                        <table className="table">
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Code</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.code}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Type</strong>
-                                                    </td>
-                                                    <td>
-                                                        <Link to={`/${this.state.obj.type === 'Sales' ? 'sales' : 'purchases'}/${this.state.obj.enquiryId}`}>
-                                                            {this.state.obj.type}
-                                                        </Link>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Company</strong>
-                                                    </td>
-                                                    <td>
-                                                      
-                                                        <Link to={`/companies/${this.state.obj.company.id}`}>
-                                                            {this.state.obj.company.name}
-                                                        </Link>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>PO Number</strong>
-                                                    </td>
-                                                    <td>
-                                                        
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>PO Date</strong>
-                                                    </td>
-                                                    <td>
-                                                      
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Contact Name</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.contactName}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Email</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.email}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Phone</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.phone}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Order Status</strong>
-                                                    </td>
-                                                    <td><span className={getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Description</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.description}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Instructons</strong>
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Terms</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.terms}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Billing Address</strong>
-                                                    </td>
-                                                    <td>{this.state.obj.billingAddress}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Assigned User</strong>
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Credit Limit</strong>
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Bills Overdue</strong>
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>Total O/S</strong>
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                                
+                                   <div className="card-header">
+                                   {(this.props.user.role === 'ROLE_ACCOUNTS'&&<div>
+                                   <table>
+                                           <thead>
+                                               <tr >
+                                                    <th  >Sales rep :</th>
+                                                    <th >
+                                                    {this.state.users.map((obj, i) => {
+                                                                        return (
+                                                                            <Chip
+                                                                               style={{color: "#000",backgroundColor: "#eee342", marginLeft: "5px"}}
 
-                                            </tbody>
-                                        </table>
-                                        <div className="row" style={{marginTop: 10, marginLeft: 2}}>
+                                                                                avatar={
+                                                                                    // <Avatar>
+                                                                                        {/* <AssignmentIndIcon /> */}
+                                                                                    // </Avatar>
+                                                                                }
+                                                                                label={ <Link to={`/users/${ obj.user.id}`}>
+                                                                                { obj.user.name}
+                                                                            </Link>}                                                             
+                                                                            />
+                                                                        )
+                                                                    })} 
+                                                     </th>
+                                                   <th><Button variant="contained" color="primary" size="small">Credit Limit</Button></th>
+                                                   <th><Button variant="contained" color="primary" size="small"> Bills Overdue</Button></th>
+                                                   <th><Button variant="contained" color="primary" size="small">Total O/S</Button></th>
+                                                  
+                                               </tr>
+                                           </thead>
+                                       </table>
+                                   </div>)}
+                                       
+                                   </div>                               
+                                           <div className="card-body bb bt" style={{fontSize: 14,}}>
                                    
-                                   <div className="col-sm-3"><Button variant="contained" color="warning" size="xs" >Approve</Button></div>
-                                   <div className="col-sm-3"></div>
-                                   <div className="col-sm-3"></div>
-                                   <div className="col-sm-3"><Button variant="contained" color="warning" size="xs" >Hold</Button></div>
+                                        <div className="row" >
+                                            <div className="col-sm-2" style={{marginTop: 15}}>
+                                                
+                                            Company
+                                            </div>
+                                            <div className="col-sm-10">
+                                    
+                                            <Box width="100%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6"  >
+                                            <Link to={`/companies/${this.state.obj.company.id}`}>
+                                                                    {this.state.obj.company.name}
+                                                                </Link>
+                                            </Box>
+                                            
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-sm-2" style={{marginTop: 15}}>
+                                                
+                                            Products
+                                            </div>
+                                            <div className="col-sm-10">     
+                                            <Box width="100%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6" >
+                                            <Chip size="small" label="product"  bgcolor="#fff"/>
+                                                        </Box>                                     
+                                               
+                                            </div>
+                                        </div>
+                                         <div className="row"  >
+                                             <div className="col-sm-5">
+                                                <div className="row">
+                                                    <div className="col-sm-5"style={{marginTop: 15}} >                                                
+                                                      Po Number
+                                                    </div> 
+                                                    <div className="col-sm-6" style={{marginLeft: -5}}>                                                                                                           
+                                                        <Box width="150%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6" >
+                                                        123345
+                                                        </Box>
+                                                    </div> 
+                                                </div>
+                                             </div>
+                                             <div className="col-sm-1"></div>
+                                             <div className="col-sm-6">
+                                                <div className="row">
+                                                    <div className="col-sm-5" style={{marginTop: 15}}>                                                
+                                                   <span style={{marginLeft: 41}}>Po Date</span>  
+                                                    </div> 
+                                                    <div className="col-sm-7" >                                                                                                           
+                                                        <Box  width="100%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6"  >
+                                                             02-03-2021
+                                                        </Box>
+                                                    </div> 
+                                                </div>
+                                             </div>
+                                   
+                                         </div>
+                                         <div className="row">
+                                             <div className="col-sm-6">
+                                                <div className="row">
+                                                    <div className="col-sm-4" style={{marginTop: 15}}>                                                
+                                                    Quantity
+                                                    </div> 
+                                                    <div className="col-sm-6">                                                                                                           
+                                                        <Box width="120%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6"  >
+                                                        th
+                                                        </Box>
+                                                    </div> 
+                                                </div>
+                                             </div>
+                                             <div className="col-sm-6">
+                                                <div className="row">
+                                                    <div className="col-sm-5" style={{marginTop: 15}}>                                                
+                                                    <span style={{marginLeft: 41}}>Price</span>  
+                                                    </div> 
+                                                    <div className="col-sm-7">                                                                                                           
+                                                        <Box width="100%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6" >
+                                                        4
+                                                        </Box>
+                                                    </div> 
+                                                </div>
+                                             </div>
+                                   
+                                         </div>
+                                         <div className="row">
+                                             <div className="col-sm-6">
+                                                <div className="row">
+                                                    <div className="col-sm-4" style={{marginTop: 15}}>                                                
+                                                        Payterms
+                                                    </div> 
+                                                    <div className="col-sm-6">                                                                                                           
+                                                        <Box width="120%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6"  >
+                                                        5990
+                                                        </Box>
+                                                    </div> 
+                                                </div>
+                                             </div>
+                                             <div className="col-sm-6">
+                                                <div className="row">
+                                                    <div className="col-sm-5" style={{marginTop: 15}}>                                                
+                                                    <span style={{marginLeft: 41}}>Freight</span> 
+                                                    </div> 
+                                                    <div className="col-sm-7">                                                                                                           
+                                                        <Box width="100%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6"  >
+                                                         444
+                                                        </Box>
+                                                    </div> 
+                                                </div>
+                                             </div>
+                                   
+                                         </div>
+                                         <div className="row">
+                                             <div className="col-sm-6">
+                                                <div className="row">
+                                                    <div className="col-sm-4" style={{marginTop: 15}}>                                                
+                                                    Transports
+                                                    </div> 
+                                                    <div className="col-sm-6">                                                                                                           
+                                                        <Box width="120%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6"  >
+                                                        sddd   Transports
+                                                        </Box>
+                                                    </div> 
+                                                </div>
+                                             </div>
+                                             <div className="col-sm-6">
+                                                <div className="row">
+                                                    <div className="col-sm-5" style={{marginTop: 15}} >                                                
+                                                    <span style={{marginLeft: 41}}>Instruction</span> 
+                                                    </div> 
+                                                    <div className="col-sm-7">                                                                                                           
+                                                        <Box width="100%" bgcolor="" p={1} my={0.5} border="0.5px solid #dee2e6" >
+                                                        intruction
+                                                        </Box>
+                                                    </div> 
+                                                </div>
+                                             </div>
+                                   
+                                         </div>
+                                        
+                                             
+<span  style={{fontSize: 14, margin: "40px"}}></span>
+                                  
+
+{(this.props.user.role === 'ROLE_ACCOUNTS'&&<div>
+                                    <Divider />
+                                        <div className="row" style={{marginTop: 10, marginLeft: 2}}>
+                                        <div className="col-sm-3"><Button variant="contained" color="primary" size="xs" >Approve</Button></div>
+                                        <div className="col-sm-3"></div>
+                                        <div className="col-sm-3"></div>
+                                        <div className="col-sm-3"><Button variant="contained" color="primary" size="xs" >Hold</Button></div>
+                                        </div>
+                                        </div>)}
+                                  
                           
-                           </div>
-                           <Divider 
-                           style={{marginTop: 5}}
-                           />
-                                        <div className=" mt-4">
+                           
+
+                                     {(this.props.user.role === 'ROLE_INVENTORY'&& 
+                                     <div>
+
+<Divider />
+                         
+                   
+                                            <div className="row" style={{marginTop: "8px"}}>
+                                    <div className="col-sm-12">
+                                                 <h4 style={{fontSize: "16px"}}>Invoice Details</h4>                                
+                                    </div>
+                                </div> 
+                                <Divider />
+                                <div className="row">
+                                    <div className="col-sm-4">
+                                        <fieldset>
+                                            <TextField type="text" name="invoiceNo" label="Invoice No" required={true} fullWidth={true}
+                                                inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                // error={errors?.quantity?.length > 0}
+                                               />
+                                        </fieldset>
+                                     </div>
+                                     <div className="col-sm-4">
+                                        <fieldset>
+                                                <TextField type="text" name="invoiceDate" label="Invoice Date" required={true} fullWidth={true}
+                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                    // error={errors?.quantity?.length > 0}
+                                                    />
+                                            </fieldset>
+                                     </div>
+                                     <div className="col-sm-4">
+                                        <fieldset>
+                                                <TextField type="text" name="billQuantity" label="Bill Quantity" required={true} fullWidth={true}
+                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                    // error={errors?.quantity?.length > 0}
+                                                     />
+                                            </fieldset>
+                                     </div>
+                                   
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-4">
+                                        <fieldset>
+                                            <TextField type="text" name="balanceQuantity" label="Balance Quantity" required={true} fullWidth={true}
+                                                inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                // error={errors?.quantity?.length > 0}
+                                               />
+                                        </fieldset>
+                                     </div>
+                                     <div className="col-sm-4">
+                                        <fieldset>
+                                                <TextField type="text" name="taxable" label="Taxable Value" required={true} fullWidth={true}
+                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                    // error={errors?.quantity?.length > 0}
+                                                    />
+                                            </fieldset>
+                                     </div>
+                                     <div className="col-sm-4">
+                                        <fieldset>
+                                                <TextField type="text" name="frightCharges" label="Fright Charges" required={true} fullWidth={true}
+                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                    // error={errors?.quantity?.length > 0}
+                                                     />
+                                            </fieldset>
+                                     </div>
+                                   
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-4">
+                                        <fieldset>
+                                            <TextField type="text" name="gst" label="GST" required={true} fullWidth={true}
+                                                inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                // error={errors?.quantity?.length > 0}
+                                               />
+                                        </fieldset>
+                                     </div>
+                                     <div className="col-sm-4">
+                                        <fieldset>
+                                                <TextField type="text" name="delivery" label="Delivery" required={true} fullWidth={true}
+                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                    // error={errors?.quantity?.length > 0}
+                                                    />
+                                            </fieldset>
+                                     </div>
+                                     <div className="col-sm-4">
+                                        <fieldset>
+                                                <TextField type="text" name="total" label="Total" required={true} fullWidth={true}
+                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                    // error={errors?.quantity?.length > 0}
+                                                     />
+                                            </fieldset>
+                                     </div>
+                                   
+                                </div>
+                                <span  style={{fontSize: 14, margin: "40px"}}></span>
+                                <Divider />
+                                <div className="row"  style={{marginTop: "8px"}}>
+                                    <div className="col-sm-12">
+                                        <h4 style={{fontSize: "16px"}}>Dispatch</h4>
+                                    </div>
+                                </div>
+                                <Divider />
+                                <div className="row">
+                                    <div className="col-sm-4">
+                                        <fieldset>
+                                            <TextField type="text" name="lrnumber" label="LR Number" required={true} fullWidth={true}
+                                                inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                // error={errors?.quantity?.length > 0}
+                                               />
+                                        </fieldset>
+                                     </div>
+                                     <div className="col-sm-4">
+                                        <fieldset>
+                                                <TextField type="text" name="date" label="Date" required={true} fullWidth={true}
+                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                    // error={errors?.quantity?.length > 0}
+                                                    />
+                                            </fieldset>
+                                     </div>
+                                     <div className="col-sm-4">
+                                        <fieldset>
+                                                <TextField type="text" name="transporter" label="Transporter" required={true} fullWidth={true}
+                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                    // error={errors?.quantity?.length > 0}
+                                                     />
+                                            </fieldset>
+                                     </div>
+                                   
+                                </div>
+                               
+                                <div className="row">
+                                    <div className="col-sm-4">
+                                        <fieldset>
+                                            <TextField type="text" name="numberOfBox" label="Boxes Count " required={true} fullWidth={true}
+                                                inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                // error={errors?.quantity?.length > 0}
+                                               />
+                                        </fieldset>
+                                     </div>
+                                    
+                                </div>
+                                <div>
+                                <span  style={{fontSize: 14, margin: "40px"}}></span>
+                                  <Divider />
+
+                                                <div className="row"  style={{marginTop: "8px"}}>
+                                                    <div className="col-sm-12">
+                                                                <h4 style={{fontSize: "16px"}}>Upload Documents</h4>                                
+                                                    </div>
+                                                </div> 
+                                                <Divider />
+
+                                                     <div className="row m-0 p-2">
+                                                            <TextField
+                                                                name="customerDeclaration"
+                                                                type="text"
+                                                                label="LR"
+                                                                // required={true}
+                                                                // fullWidth={true}
+                                                                // inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License or Customer Declaration is required"}]' }}
+                                                                // helperText={errors?.customerDeclaration?.length > 0 ? errors?.customerDeclaration[0]?.msg : ''}
+                                                                // error={errors?.customerDeclaration?.length > 0}
+                                                                className="col-md-3"
+                                                                // value={this.state.formWizard.obj.customerDeclaration}
+                                                                // onBlur={e => this.optionalValidator('customerDeclaration', e)}
+                                                                // onChange={e => this.setField('customerDeclaration', e)}
+                                                                 />
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                // onClick={e => this.toggleModal('Customer Declaration')}
+                                                                className= "col-md-2 p-2"
+                                                                startIcon={<CloudUploadIcon />}
+                                                            >
+                                                                Upload </Button>
+                                                                  {/* <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
+                                                        </div>
+                                                        <div className="row m-0 p-2">
+                                                            <TextField
+                                                                name="customerDeclaration"
+                                                                type="text"
+                                                                label="Invoice"
+                                                                // required={true}
+                                                                // fullWidth={true}
+                                                                // inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License or Customer Declaration is required"}]' }}
+                                                                // helperText={errors?.customerDeclaration?.length > 0 ? errors?.customerDeclaration[0]?.msg : ''}
+                                                                // error={errors?.customerDeclaration?.length > 0}
+                                                                className="col-md-3"
+                                                                // value={this.state.formWizard.obj.customerDeclaration}
+                                                                // onBlur={e => this.optionalValidator('customerDeclaration', e)}
+                                                                // onChange={e => this.setField('customerDeclaration', e)}
+                                                                 />
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                // onClick={e => this.toggleModal('Customer Declaration')}
+                                                                className= "col-md-2 p-2"
+                                                                startIcon={<CloudUploadIcon />}
+                                                            >
+                                                                Upload </Button>
+                                                                  {/* <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
+                                                        </div>
+                                                        <div className="row m-0 p-2">
+                                                            <TextField
+                                                                name="customerDeclaration"
+                                                                type="text"
+                                                                label="EWAY Bill"
+                                                                // required={true}
+                                                                // fullWidth={true}
+                                                                // inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License or Customer Declaration is required"}]' }}
+                                                                // helperText={errors?.customerDeclaration?.length > 0 ? errors?.customerDeclaration[0]?.msg : ''}
+                                                                // error={errors?.customerDeclaration?.length > 0}
+                                                                className="col-md-3"
+                                                                // value={this.state.formWizard.obj.customerDeclaration}
+                                                                // onBlur={e => this.optionalValidator('customerDeclaration', e)}
+                                                                // onChange={e => this.setField('customerDeclaration', e)}
+                                                                 />
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                // onClick={e => this.toggleModal('Customer Declaration')}
+                                                                className= "col-md-2 p-2"
+                                                                startIcon={<CloudUploadIcon />}
+                                                            >
+                                                                Upload </Button>
+                                                                  {/* <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
+                                                        </div>
+                                </div>
+                                     </div>
+                                     
+                                     
+                                     )}
+                             
+                                        {/* <div className=" mt-4">
                                             <h4 style={{fontSize: 14}}>Products</h4>
                                         </div>
                                         <Table hover responsive>
@@ -578,7 +887,7 @@ class View extends Component {
                                                         <td>{product.quantity} {product.uom}</td>
                                                         <td>{product.amount}</td>
                                                        
-                                                         <td><Button variant="contained" color="warning" size="xs" onClick={() => this.editInventory(i)}>Inventory</Button> </td>
+                                                         <td><Button variant="contained" color="primary" size="xs" onClick={() => this.editInventory(i)}>Inventory</Button> </td>
                                                         
                                                         {this.state.obj.type !== 'Sales' && <td><Button variant="contained" color="warning" size="xs" onClick={() => this.editDocuments(i)}>Documents</Button> </td>
                                                           }
@@ -586,18 +895,20 @@ class View extends Component {
                                                 })}
                                             </tbody>
                                         </Table>
+                                    */}
                                     </div>
                                 </div>
                               
                                         </div>
 
                                         {
-                                            // this.props.user.role === 'ROLE_ADMIN' &&
+                                          (this.props.user.role !== 'ROLE_ACCOUNTS' && this.props.user.role !== 'ROLE_INVENTORY') &&
                                             <div className="col-md-4" >
                                                 <div className="row">
+                                                    
                                                     <div className="col-sm-12">
                                                
-                                                    <Card style={{backgroundColor: "#eeeae5"}}>
+                                                    <Card style={{backgroundColor: "#fff", marginLeft: 41}}>
                                                  
                                                     <CardActionArea>
                                                         
@@ -607,29 +918,19 @@ class View extends Component {
                                                                 <Avatar />
                                                              
                                                                 </div>
-                                                                <div className="col-sm-10 "  style={{fontSize: 18, marginTop: 13 }}>                                                             
-                                                                    <span  ></span>Assign User
-                                                                </div>
-                                                            </div>
-                                                                {/* <tr >
-                                                                    <td>  <Avatar /> </td>   
-                                                                    <td><span>Assign User</span></td>
-                                                          
-                                                                </tr>  */}
-                                                                <Divider/>
-                                                               <div className="row">
-                                                                   <div className="col-sm-12" >
-                                                                   {this.state.users.map((obj, i) => {
+                                                                <div className="col-sm-10 "  style={{fontSize: 18, marginTop: 2 }}>                                                             
+                                                                {this.state.users.map((obj, i) => {
                                                                         return (
                                                                             <Chip
-                                                                               style={{color: "#000",backgroundColor: "#eee342"}}
+
+                                                                               style={{color: "#000",backgroundColor: "#e8cd0b", margin: "3px"}}
 
                                                                                 avatar={
                                                                                     // <Avatar>
                                                                                         {/* <AssignmentIndIcon /> */}
                                                                                     // </Avatar>
                                                                                 }
-                                                                                label={ <Link to={`/users/${ obj.user.id}`}>
+                                                                                label={ <Link style={{color: "#000"}} to={`/users/${ obj.user.id}`}>
                                                                                 { obj.user.name}
                                                                             </Link>}
                                                                                
@@ -639,9 +940,15 @@ class View extends Component {
                                                                             />
                                                                         )
                                                                     })} 
-                                                                   </div>
-                                                               </div>
-                                                              
+                                                                </div>
+                                                            </div>
+                                                                {/* <tr >
+                                                                    <td>  <Avatar /> </td>   
+                                                                    <td><span>Assign User</span></td>
+                                                          
+                                                                </tr>  */}
+                                                           
+                                                            
                                                       
                                                         </Typography>
                                                         {/* <CardMedia
@@ -652,29 +959,29 @@ class View extends Component {
                                                         title="Contemplative Reptile"
                                                         /> */}
                                                         <CardContent>
-                                                       
-                                                        <Typography variant="body2" color="textSecondary" component="p">
+                                                    
+                                                       {/*   <Typography variant="body2" color="textSecondary" component="p"> */}
                                                             {/* Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
                                                             across all continents except Antarctica */}
-                                                        </Typography>
+                                                        {/* </Typography> */}
                                                         </CardContent>
                                                        
                                                       
                                                     </CardActionArea>
-                                                    <CardActions>
-                                                        {/* <Button size="small" color="primary">
+                                                    {/* <CardActions>
+                                                        <Button size="small" color="primary">
                                                             Share
                                                         </Button>
                                                         <Button size="small" color="primary">
                                                            Read More
-                                                        </Button> */}
-                                                    </CardActions>
+                                                        </Button> 
+                                                    </CardActions> */}
                                                    
                                                 </Card>
                                         
                                                     </div>
                                                 </div>
-                                                <div className="row">
+                                                <div className="row" style={{marginTop: 5}}>
                                                     <div className="col-sm-12">
                                                     <ActivityStream
                                                     title="Activity"

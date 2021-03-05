@@ -30,7 +30,7 @@ class ProspectiveBuyer extends Component {
     state = {
         activeTab: 0,
         loading: true,
-        baseUrl: 'ProspectiveBuyer',
+        baseUrl: 'prospective-buyer',
         editFlag: false,
         currentId: 0
     }
@@ -88,7 +88,6 @@ class ProspectiveBuyer extends Component {
                             onClick={() => this.toggleTab(1)} > + Add Prospective Buyers</Button>
                     </div>
                      </div>
-                   
                     <div className="row">
                         <div className="col-md-12">
                             <AppBar position="static">
@@ -101,9 +100,9 @@ class ProspectiveBuyer extends Component {
                                     aria-label="scrollable auto tabs example"
                                     value={this.state.activeTab}
                                     onChange={(e, i) => this.toggleTab(i)} >
-                                    {/*<Tab label="List" />
-                                    <Tab label="Add Lead" hidden={this.state.editFlag} />*/}
-                                    <Tab label="View Lead" hidden={!this.state.editFlag} />
+                                   {/* <Tab label="List" />
+                                  <Tab label="Add Lead" hidden={this.state.editFlag} />*/}
+                                   {/*  <Tab label="View Lead" hidden={!this.state.editFlag} /> */}
                                 </Tabs>
                             </AppBar>
                             <TabPanel value={this.state.activeTab} index={0}>

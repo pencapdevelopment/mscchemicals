@@ -129,9 +129,9 @@ class Image extends Component {
                             </ModalBody>
                         </Modal>
                         {!this.state.obj.image && 
-                            <Button  style={{marginTop: -8,marginLeft: 0}} size="small" onClick={this.toggleModal} variant="contained" color="primary" startIcon={<CloudUploadIcon />}>Upload
-                             </Button>
-                            //    <img style={{width: 70, height: 50, marginBottom: -5}} src="img/company-logo4.png" /> 
+                            // <Button  style={{marginTop: -8,marginLeft: 0}} size="small" onClick={this.toggleModal} variant="contained" color="primary" startIcon={<CloudUploadIcon />}>Upload
+                            //  </Button>
+                               <img onClick={this.toggleModal}  style={{width: 70, height: 50, marginBottom: -5}} src="img/logo4.png" /> 
                                 
                             //                                 {/* <Avatar className="avatar" size="small"  alt={this.state.obj.name} src="img/dummy.png" /> 
                            

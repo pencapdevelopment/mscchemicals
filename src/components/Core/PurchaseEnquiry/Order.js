@@ -264,7 +264,7 @@ class Order extends Component {
                         {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
                         <fieldset>
                                 <FormControl>
-                                    <TextField id="Po Number" name="PO Number" label="Po Number" type="text"
+                                    <TextField id="Po Number" name="PO Number" label="PO Number" type="text"
                                         inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
                                         // helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
                                         // error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
