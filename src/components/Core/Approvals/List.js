@@ -9,12 +9,17 @@ import { Table } from 'reactstrap';
 // import PageLoader from '../../Common/PageLoader';
 import Sorter from '../../Common/Sorter';
 import FileDownload from '../../Common/FileDownload';
-// import {
-//     Modal,
+import {
+    Modal,
 
-//     ModalBody, ModalHeader,
-// } from 'reactstrap';
-// import EditIcon from '@material-ui/icons/Edit';
+    ModalBody, ModalHeader,
+} from 'reactstrap';
+import EditIcon from '@material-ui/icons/Edit';
+import AutoSuggest from '../../Common/AutoSuggest';
+import UOM from '../Common/UOM';
+import {FormControl, TextField } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
@@ -39,7 +44,7 @@ class List extends Component {
         loading: true,
         objects: [],
         all: [],
-        // modalEdit : false,
+        modalEdit : false,
         page: {
             number: 0,
             size: 20,
@@ -96,10 +101,14 @@ class List extends Component {
         }
     }
 
+
+
+
     loadObjects(offset, all, callBack) {
         if (!offset) offset = 1;
 
-        var url = server_url + context_path + "api/" + this.props.baseUrl + "?projection=followup_details&page=" + (offset - 1);
+        var url = server_url + context_path + "api/" + this.props.baseUrl + "?projection=approvals";
+        
 
 
         if (this.state.orderBy) {
@@ -137,12 +146,12 @@ class List extends Component {
                 if (all) {
                     this.setState({
                         all: res.data._embedded[Object.keys(res.data._embedded)[0]]
-                    });
+                    },()=> console.log("data",this.state.all));
                 } else {
                     this.setState({
                         objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
                         page: res.data.page
-                    });
+                    },()=> console.log("approvalslist",this.state.objects));
                 }
 
                 if (callBack) {
@@ -203,29 +212,191 @@ class List extends Component {
         });
     }
 
-
-//     toggleEditclick = () => {
-       
-//         this.setState({ modalEdit:!this.state.modalEdit })
-// }
-// toggleEdit = () => {
-//     this.setState({
-//        modalEdit: false
-//     });
-// };
-
+    toggleEditclick = () => {
+        //    axios.get( server_url + context_path + "api/sales-negotiation-tracking?projection=sales-product&salesProduct= "+ productId + "")
+        //     .then(res => {
+        //         this.setState({ toggleRes: res.data ,modalEdit:!this.state.modalEdit },() => {
+        //             console.log("resData",this.state.toggleRes)
+        //    toggleRes: res.data
+        //         })
+        //     })
+        this.setState({ modalEdit:!this.state.modalEdit })
+            
+    }
+    toggleEdit = () => {
+        this.setState({
+           modalEdit: false
+        });
+    };
 
     render() {
         return (<ContentWrapper>
-                                        {/* <Modal isOpen={this.state.modalEdit} backdrop="static" toggle={this.toggleEdit} size={'md'}>
+                                                    <Modal isOpen={this.state.modalEdit} backdrop="static" toggle={this.toggleEdit} size={'lg'}>
                     <ModalHeader toggle={this.toggleEdit}>
-                   
+                    <h4>Sales Product Approval</h4>
                         
                     </ModalHeader>
                     <ModalBody>
-  
+                        <div>
+                            
+                    <div className="row">
+                                <div className="col-md-12">
+                                    <Table hover responsive>
+                                        <tbody>
+                                        <div>
+                                                         
+                                                    <tr >
+                                                        <td className="va-middle"></td>
+                                                        <td className="va-middle">
+                                                            <fieldset>
+                                                                <FormControl>
+                                                                        <Link to={`/products/`}>
+                                                                           
+                                                                        </Link>
+                                                                  
+                                                                        <AutoSuggest url="products"
+                                                                            name="productName"
+                                                                            fullWidth={true}
+                                                                            displayColumns="name"
+                                                                            label="Product"
+                                                                            placeholder="Search product by name"
+                                                                            arrayName="products"
+                                                                            // helperText={errors?.productName_auto_suggest?.length > 0 ? errors?.productName_auto_suggest[i]?.msg : ""}
+                                                                            // error={errors?.productName_auto_suggest?.length > 0}
+                                                                            inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                                           // onRef={ref => (this.productASRef[i] = ref)}
+
+                                                                            projection="product_auto_suggest"
+                                                                            //value={this.state.formWizard.selectedProducts[i]}
+                                                                            //onSelect={e => this.setProductAutoSuggest(i, e?.id)}
+                                                                            queryString="&name" ></AutoSuggest>
+                                                                </FormControl>
+                                                            </fieldset>
+                                                        </td>
+                                                        <td>
+                                                            <fieldset>
+
+                                                                <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
+                                                                    //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    inputProps={{ readOnly: true }}
+                                                                    // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                                                    // error={errors?.quantity?.length > 0}
+                                                                    value={''} 
+                                                                    onChange={(e)=>this.saveQuantity(e)}
+                                                                    //onChange={e => this.setProductField(i, "quantity", e)}
+                                                                     />
+                                                            </fieldset>
+                                                        </td>
+                                                        <td>
+                                                            <fieldset>
+
+                                                                <UOM required={true}
+                                                                    value={''} onChange={(e)=>this.saveUom(e)} isReadOnly={true}
+                                                                    //onChange={e => this.setProductField(i, "uom", e, true)}
+                                                                     />
+                                                            </fieldset>
+                                                        </td>
+                                                        <td>
+                                                            <fieldset>
+
+                                                                <TextField type="number" name="amount" label="Amount" required={true}
+                                                                    inputProps={{ readOnly: true }}
+                                                                    //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
+                                                                    // error={errors?.amount?.length > 0}
+                                                                    value={''} onChange={(e)=>this.saveProduct(e)} />
+                                                            </fieldset>
+                                                        </td>
+                                                     <td className="va-middle">
+                                                            {/* <Button variant="outlined" color="secondary" size="sm" onClick={e => this.deleteProduct(i)} title="Delete Product">
+                                                                <em className="fas fa-trash"></em>
+                                                            </Button> */}
+                                                        </td>
+                                                    </tr>
+                                            </div>
+                                      
+                                         
+                                      
+                                        </tbody>
+                                    </Table>
+                                </div>
+                            </div>
+
+                        </div>
+     {/* Negotiation stages */}
+     <div>              
+                           <div>     
+                            <div className="row">  
+                                <div className="col-md-4">
+                                    <strong>Negotiation Stage1 :</strong>
+                                </div>
+                              <div className="col-md-5">  
+                              {/* {!this.state.ngList1.ns1_readOnly ? */}
+                                      <TextField type="number" name="negotiation_stage1" label="Amount" required={true} 
+                                    //   value={this.state.ngList1.negotiation_stage1} 
+                                      onChange={(e) => this.negotiation_stage1(e)}/>
+                                      {/* : */}
+                                     {/* <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  inputProps={{ readOnly: true }}
+                                    //   value={this.state.ngList1.negotiation_stage1} 
+                                      onChange={(e) => this.negotiation_stage1(e)}/> */}
+                                      {/* } */}
+                             </div>
+                            </div>
+                            {/* {this.state.ngList1.ns1_readOnly && */}
+                            <div className="row">
+                                <div className="col-md-4">
+                                    <strong>Negotiation Stage2 :</strong>
+                                </div>
+                              <div className="col-md-5">
+                              {/* {!this.state.ngList1.ns2_readOnly ?     */}
+                                      <TextField type="number" name="negotiation_stage2" label="Amount" required={true} 
+                                    //   value={this.state.ngList1.negotiation_stage2} 
+                                      onChange={(e) => this.negotiation_stage2(e)}/>
+                                      {/* : */}
+                                      {/* <TextField type="number" name="negotiation_stage2" label="Amount" required={true}  inputProps={{ readOnly: true }}
+                                    //   value={this.state.ngList1.negotiation_stage2}
+                                       onChange={(e) => this.negotiation_stage2(e)}/> */}
+                                       {/* } */}
+                             </div>
+                            </div>
+                            {/* } */}
+
+                            {/* {(this.state.ngList1.ns1_readOnly && this.state.ngList1.ns2_readOnly) && */}
+                            <div className="row">
+                                <div className="col-md-4">
+                                    <strong>Negotiation Stage3 :</strong>
+                                </div>
+                              <div className="col-md-5"> 
+                              {/* {!this.state.ngList1.ns3_readOnly ?     */}
+                                      <TextField type="number" name="negotiation_stage3" label="Amount" required={true} 
+                                    //   value={this.state.ngList1.negotiation_stage3} 
+                                      onChange={(e) => this.negotiation_stage3(e)}/>
+                                      {/* :   */}
+                                      {/* <TextField type="number" name="negotiation_stage2" label="Amount" required={true}  inputProps={{ readOnly: true }}
+                                    //   value={this.state.ngList1.negotiation_stage3} 
+                                      onChange={(e) => this.negotiation_stage3(e)}/> */}
+                                      {/* } */}
+                             </div>
+                            </div>
+                            {/* } */}
+                            </div>
+                    </div>
+                            <br/><br/><br/>    
+                            <div className="col-md-5  offset-md-3 " style={{marginTop:"-30px",marginBottom:"-3px"}}>
+                            <fieldset>
+                                <TextareaAutosize placeholder="Remark" fullWidth={true} rowsMin={3} name="remark"
+                                   style={{padding: 10}}
+                                //    inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
+                                //     helperText={errors?.description?.length > 0 ? errors?.description[0]?.msg : ""}
+                                //     error={errors?.description?.length > 0}
+                                    // value={this.state.ngList1.remark} 
+                                    onChange={(e) => this.saveRemark(e)}
+                                    />
+                            </fieldset>
+                            </div>
+
                     </ModalBody>
-                </Modal> */}
+                </Modal>
            {/* <div className="row">
                 <div className="col-md-2">
                     <h4 className="float-right">Filters : </h4>
@@ -321,48 +492,57 @@ class List extends Component {
                 </div>
                                         </div>*/}
             <Table hover responsive>
-                <thead>
+                    <thead>
                     <Sorter columns={[
-                        { name: '#', sortable: false },
-                        { name: 'Description', sortable: false, param: 'description'  },
-                        
-                        { name: 'Creation', sortable: true, param: 'creationDate' },
-                        { name: 'Status', sortable: false, param: 'status'  },
-                        { name: 'Response Date', sortable: false, param: 'responseDate'  },
-                        { name: 'Action', sortable: false }]}
+                                       { name: '#', sortable: false },
+                                       { name: 'Product', sortable: false, param: 'product'  },
+                                       
+                                       { name: 'Creation', sortable: true, param: 'creationDate' },
+                                       { name: 'Status', sortable: false, param: 'status'  },
+                                       { name: 'Response Date', sortable: false, param: 'responseDate'  },
+                                       // { name: 'Action', sortable: false }
+                    ]}
                         onSort={this.onSort.bind(this)} />
                 </thead>
                 <tbody>
-                    {this.state.objects.map((obj, i) => {
+                    {this.state.objects.map((obj,i) => {
+                        // let aprrovals = this.state.objects.find(ap => {ap.reference === obj.});
                         return (
                             <tr key={obj.id}>
                                 <td>{i + 1}</td>
+
                                 <td>
                                     <a href="#s" className="btn-link" onClick={() => this.viewObj(i)}>
-                                        {obj.description}
+                                        {obj.salesNegotiationTracking.product.name}
                                     </a>
                                 </td>
+
                                 <td>
+                                    {console.log("obj.creationDate",obj.creationDate)}
+                                    {console.log("creationDate obj",obj)}
+
                                     <Moment format="DD MMM YY">{obj.creationDate}</Moment>
                                 </td>
                                  
                                 <td>
                                     { obj.status==='A'?'Approved':obj.status==='A'?'Rejected':'New'}
-                                    {/* { this.props.user.role === 'ROLE_ADMIN' &&
+                                    { this.props.user.role === 'ROLE_ADMIN' &&
                                     <EditIcon onClick={()=>this.toggleEditclick()}  style={{color: "#000" ,cursor :"pointer" ,position:"relative" ,left:"6px" }} size="small"  fontSize="small" />
-                                    } */}
+                                    }
                                 </td>
-                                
+                              
                                 <td>
                                     <Moment format="DD MMM YY">{obj.responseDate}</Moment>
                                 </td>
-                                <td>
+                    
+                                {/* <td>
                                 { !this.props.readOnly && <Button variant="contained" color="warning" size="xs" onClick={() => this.editObj(i)}>Edit</Button>}
-                                </td>
+                                </td> */}
                             </tr>
                         )
                     })}
                 </tbody>
+                
             </Table>
 
             <CustomPagination page={this.state.page} onChange={(x) => this.loadObjects(x)} />

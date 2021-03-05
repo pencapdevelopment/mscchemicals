@@ -112,25 +112,48 @@ class Negotiation extends Component {
         obj2.negotiation_stage1=this.state.ngList1.negotiation_stage1;
         obj2.negotiation_stage2=this.state.ngList1.negotiation_stage2;
         obj2.negotiation_stage3=this.state.ngList1.negotiation_stage3;
+        console.log("before Data==>>", obj2)
         if(!(this.state.ngList1.ns1_readOnly && this.state.ngList1.ns2_readOnly && this.state.ngList1.ns3_readOnly)){
             axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2)
             .then(res => {
-                this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true });
+                this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true }, ()=>console.log("After Setting Data==>>", this.state.obj2));
+                console.log("xyz");
+                this.saleApprovalData();
                 this.loadObj1(this.props.currentId);
+                console.log("xyz");
                 this.negotiationTraking();
-            }); 
+            })
+            .catch(err=>console.log("saveNegotiation Error==>", err)) ;
         }else{
             this.setState({ modalnegatation:false});
-        }
+}
     }
+    saleApprovalData(){
+        var obj2=this.state.obj2;
+        obj2.salesNegotiationTracking="/sales-negotiation-tracking/"+obj2.id;
+        obj2.repository=this.props.baseUrl;
+        obj2.reference = this.state.obj1.id;
+        obj2.remark=obj2.remark;
+        console.log()
+        axios.post( server_url + context_path + "api/approvals/", {"salesNegotiationTracking":obj2.salesNegotiationTracking,"repository":obj2.repository,"reference":obj2.reference,"remark":obj2.remark})
+            .then(res => {
+                console.log("saleApprovalData()==>>", res.data);
+                //this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true }, ()=>console.log("After Setting Data==>>", this.state.obj2));
+               
+            })
+            .catch(err=> console.log("saleApprovalData Error==>", err));
+
+    }
+
+
     toggleModalNegotation = (productId) => {
         // axios.get( server_url + context_path + "api/sales-products/"+ productId ).then(res => {
         //         this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
         //     });
         axios.get(server_url + context_path + "api/sales-products/"+ productId+"?projection=sales-product")
         .then(res => {
-            var product = this.props.parentObj.products.find(p => p.id === res.data.id);
-            this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation });
+           // var product = this.props.parentObj.products.find(p => p.id === res.data.id);
+            this.setState({ obj2: res.data, modalnegatation:!this.state.modalnegatation }, ()=>console.log("toggleModalNegotation obj2 data==>", this.state.obj2));
         });    
         axios.get( server_url + context_path + "api/sales-negotiation-tracking?salesProduct="+productId+"&page=0&size=1&sort=id,desc&projection=sales-negotiation-tracking")
         .then(res => {
