@@ -3,7 +3,6 @@ import axios from 'axios';
 import queryString from 'query-string';
 import { context_path, defaultDateFilter, server_url } from '../../Common/constants';
 import { makeStyles } from '@material-ui/core/styles';
-
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import React, { Component } from 'react';
@@ -15,7 +14,6 @@ import Status from '../Common/Status';
 import { Table } from 'reactstrap';
 import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
-
 import AddQuotation from './AddQuotation';
 import Fab from '@material-ui/core/Fab';
 import EditIcon from '@material-ui/icons/Edit';
@@ -29,7 +27,6 @@ import {
 } from 'reactstrap';
 import { green, pink } from '@material-ui/core/colors';
 import Avatar from '@material-ui/core/Avatar';
-
 const useStyles = makeStyles((theme) => ({
     root: {
       display: 'flex',
@@ -46,14 +43,8 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: green[500],
     },
   }));
-
-
-
-
 // const json2csv = require('json2csv').parse;
-
 class Quotation extends Component {
-    
     state = {
         activeTab: 0,
         editFlag: false,
@@ -72,29 +63,24 @@ class Quotation extends Component {
             { label: 'Rejected', value: 'Rejected', badge: 'danger' },
            
         ]
-        
     }
     loadObj() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
             if (res.data.paymentTerms) {
                 res.data.paymentTerms = this.state.terms.find(g => g.value === res.data.paymentTerms).label;
             }
-
             this.setState({ newObj: res.data,
             loading:false
             });
-
             if (res.data.locationType !== 'I') {
                 if (!res.data.fssai || !res.data.drugLicense || !res.data.others) {
                     var fileTypes1 = this.state.fileTypes1;
-
                     if (!res.data.fssai) {
                         fileTypes1[2].noshow = true;
                     }
                     if (!res.data.drugLicense) {
                         fileTypes1[3].noshow = true;
                     }
-
                     if (!res.data.fssai && !res.data.drugLicense) {
                         fileTypes1[4].noshow = false;
                     }
@@ -102,24 +88,18 @@ class Quotation extends Component {
                     if (!res.data.others) {
                         fileTypes1[5].noshow = true;
                     }
-
                     this.setState({ fileTypes1 });
                 }
             }
-
             // this.loadSubObjs();
-
             if (this.props.location.search) {
                 let params = queryString.parse(this.props.location.search);
-
                 if (params.branch) {
                     this.toggleTab(1);
                 }
             }
         });
     }
-
-    
     closetoggleModal = () => {
         this.setState({
             modal: !this.state.modal
@@ -141,13 +121,11 @@ class Quotation extends Component {
         obj.status = status;
         this.setState({ obj });
     }
-
     updateStatus = (status) => {
         var obj = this.state.obj;
         obj.status = status;
         this.setState({ obj });
     }
-
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
@@ -158,37 +136,28 @@ class Quotation extends Component {
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
             console.log("Quotation.js", list)
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
-
             console.log("Quotation.js", list)
-
             if(list.length) {
                 this.setState({ obj: list[0], currentId: list[0].id });
                 console.log("setState")
             }
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.props.onRef(this);
-
         this.setState({
             selectedStatus: this.props.status,
             statusNotes: this.props.statusNotes
         })
         // console.log('quotation component did mount');
         console.log("componentDidMount", this.props.currentId);
-
-       
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
     }
-
     updateObj() {
-
         console.log("updateObj in Quotation.js")
         if(this.state.obj) {
             this.setState({ editFlag: true }, () => {
@@ -198,45 +167,36 @@ class Quotation extends Component {
             this.setState({ editFlag: true });
         }
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: false });
         this.loadObj(this.props.currentId);
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
-    sendEmail = (i) => {
+    sendEmail = () => {
         var obj = this.state.obj;
-        var prod = this.props.parentObj.products[i];
-
-        axios.patch(Const.server_url + Const.context_path + "quotations/" + obj.id + "/products/" + prod.id)
-            .then(res => {
-                prod.status = 'Email Sent';
-                this.setState({ obj });
-                swal("Sent Quotation!", 'Succesfully sent quotation mail.', "success");
-            }).finally(() => {
-                this.setState({ loading: false });
-            }).catch(err => {
-                swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
-            })
+        // var prod = this.props.parentObj.products[i];
+        axios.patch(Const.server_url + Const.context_path + "quotations/" + obj.id)
+        .then(res => {
+            // prod.status = 'Email Sent';
+            this.setState({ obj });
+            swal("Sent Quotation!", 'Succesfully sent quotation mail.', "success");
+        }).finally(() => {
+            this.setState({ loading: false });
+        }).catch(err => {
+            swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
+        })
     }
-
-    render() {
-        
+    render() {   
         return (
-            <div>
-                
+            <div>  
                <Modal isOpen={this.state.modalproduct} backdrop="static" toggle={this.closetoggleModalProduct} size={'md'}>
                     <ModalHeader toggle={this.closetoggleModalProduct}>
                         Convert To Order
                     </ModalHeader>
                     <ModalBody>
-
                         <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
-
                             <div className="row">
                                 <div className="col-md-12 ">
                                     <div className="row" >
@@ -254,18 +214,13 @@ class Quotation extends Component {
                                         <div className="col-md-6">
                                         <FormControl    >
                                             <InputLabel> Status</InputLabel>
-                                        <Select
-                                            
-
-                                               >
+                                            <Select>
                                                 <MenuItem value={0} >Open</MenuItem>
-                                               <MenuItem value={10}>Pending</MenuItem>
-                                               <MenuItem value={20}>Accepted</MenuItem>
-                                               <MenuItem value={30}>Rejected</MenuItem>
-                                              
+                                                <MenuItem value={10}>Pending</MenuItem>
+                                                <MenuItem value={20}>Accepted</MenuItem>
+                                                <MenuItem value={30}>Rejected</MenuItem>
                                             </Select>
-                                            </FormControl>
-                                        
+                                        </FormControl>
                                         </div>
                                     </div>
                                 </div>
@@ -282,48 +237,39 @@ class Quotation extends Component {
                         <div className="col-md-12">
                             {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
                             currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
- 
-                                 
                             {this.state.obj &&
                             <div className="card b">
                                 <div className="card-header">
                                     <div className="">
-                                              <div className="row">
-                                                  <div className="col-sm-9">
-                                                     <Button title="Status" variant="contained" style={{textTransform: "none"}} color=""  size="small" onClick={() => this.updateObj()}> Status</Button>
-                                    
-                                                  </div>
-                                                  <div className="col-sm-1">
-                                                        <span title="Edit"  onClick={() => this.updateObj()}>
-                                                                <Avatar style={{left: 100}}
-                                                                    size='extrasmall'
-                                                                    fontSize="small"
-                                                                >
-                                                                <EditIcon style={{color: "#000",  }} size="extrasmall"  fontSize="small" />
-                                                                </Avatar>    
-                                                        </span>
-                                                    </div>
-                                                      <div className="col-sm-1" style={{left: 60}}>                   
-                                                        <span  title=" SendEmail " onClick={() => this.sendEmail()}> 
-                                                        <Avatar fontSize="small">  <EmailIcon style={{ color: '#000' }} color="primary" size="small" fontSize="small" /> </Avatar>
-                                                        </span>
-                                                      </div>
-                                                      <div className="col-sm-1">
-                                                        <span title="Convert order"  color="#3f51b5"  > <Avatar  style={{left: 20}} fontSize="small"> <AssignmentSharpIcon style={{ color: '#000', }} size="small"  fontSize="small" /> </Avatar></span>                        
-                                                      </div>
-                                              </div>
-                                     
-                                     {/* {this.props.parentObj.products.map((product, i) => {
-                                        return (
-                                            <Button key={i} variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>     
-                                            )
-                                        })
-                                    } */}
+                                        <div className="row">
+                                            <div className="col-sm-9">
+                                                <Button title="Status" variant="contained" style={{textTransform: "none"}} color=""  size="small" onClick={() => this.updateObj()}> Status</Button>
+                                            </div>
+                                            <div className="col-sm-1">
+                                                <span title="Edit"  onClick={() => this.updateObj()}>
+                                                    <Avatar style={{left: 100}} size='extrasmall' fontSize="small">
+                                                        <EditIcon style={{color: "#000",  }} size="extrasmall"  fontSize="small" />
+                                                    </Avatar>    
+                                                </span>
+                                            </div>
+                                                <div className="col-sm-1" style={{left: 60}}>                   
+                                                <span  title=" SendEmail " onClick={() => this.sendEmail()}> 
+                                                <Avatar fontSize="small">  <EmailIcon style={{ color: '#000' }} color="primary" size="small" fontSize="small" /> </Avatar>
+                                                </span>
+                                                </div>
+                                                <div className="col-sm-1">
+                                                <span title="Convert order"  color="#3f51b5"  > <Avatar  style={{left: 20}} fontSize="small"> <AssignmentSharpIcon style={{ color: '#000', }} size="small"  fontSize="small" /> </Avatar></span>                        
+                                                </div>
+                                        </div>
+                                        {/* {this.props.parentObj.products.map((product, i) => {
+                                            return (
+                                                <Button key={i} variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>     
+                                                )
+                                            })
+                                        }  */}
                                     {/* onClick={e => this.closetoggleModalProduct()} */}
                                           </div>
-                                          <div className=" mt-2" style={{right: 1}}>
-                                          
-                                          </div>
+                                          <div className=" mt-2" style={{right: 1}}></div>
                                     <h4 className="my-2">
                                         <span>{this.state.obj.name}</span>
                                     </h4>
@@ -332,15 +278,11 @@ class Quotation extends Component {
                                     <table className="col-sm-7 table">
                                         <tbody>
                                             <tr>
-                                                <td>
-                                                    <strong>Code</strong>
-                                                </td>
+                                                <td><strong>Code</strong></td>
                                                 <td>{this.state.obj.code}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Company</strong>
-                                                </td>
+                                                <td><strong>Company</strong></td>
                                                 <td>
                                                     <Link to={`/companies/${this.state.obj.company.id}`}>
                                                         {this.state.obj.company.name}
@@ -348,52 +290,35 @@ class Quotation extends Component {
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Specification</strong>
-                                                </td>
+                                                <td><strong>Specification</strong></td>
                                                 <td>{this.state.obj.specification}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Makes</strong>
-                                                </td>
+                                                <td><strong>Makes</strong></td>
                                                 <td>{this.state.obj.make}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Payment Terms</strong>
-                                                </td>
+                                                <td><strong>Payment Terms</strong></td>
                                                 <td>{this.state.obj.terms}</td>
                                             </tr>
                                            {/* <tr>
-                                                <td>
-                                                    <strong>Transportation Charger</strong>
-                                                </td>
+                                                <td><strong>Transportation Charger</strong></td>
                                                 <td>{this.state.obj.transportationCharges}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Packing</strong>
-                                                </td>
+                                                <td><strong>Packing</strong></td>
                                                 <td>{this.state.obj.packing}</td>
                                             </tr>
-                                       
                                             <tr>
-                                                <td>
-                                                    <strong>Delivery Period</strong>
-                                                </td>
+                                                <td><strong>Delivery Period</strong></td>
                                                 <td>{this.state.obj.deliveryPeriod} days</td>
                                             </tr>*/}
                                              <tr>
-                                                <td>
-                                                    <strong>GST</strong>
-                                                </td>
+                                                <td><strong>GST</strong></td>
                                                 <td>{this.state.obj.gst}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Valid Till</strong>
-                                                </td>
+                                                <td><strong>Valid Till</strong></td>
                                                 <td><Moment format="DD MMM YY">{this.state.obj.valiTill}</Moment></td>
                                             </tr>
                                         </tbody>
@@ -402,50 +327,48 @@ class Quotation extends Component {
                                     <Divider />
                                     <div className=" row text-left mt-4">
                                         <div className="col-sm-12" >
-                                        <h4 style={{fontSize: 18,flexDirection: 'row',marginLeft: 12}}>Products </h4>
-                                   
+                                            <h4 style={{fontSize: 18,flexDirection: 'row',marginLeft: 12}}>Products </h4>
                                         </div>
-                                        
                                     </div>
                                     <Divider />
                                     <Divider />
                                     <div className="row">
                                         <div className="col-sm-12">
-                                    <Table  hover responsive>
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Quantity</th>
-                                                <th>Amount</th>
-                                                <th>Status</th>
-                                                {/* <th>Actions</th> */}
-                                            </tr>
-                                        </thead>
-                                        {this.state.obj.products &&
-                                        <tbody>
-                                        {this.props.parentObj.products.map((product, i) => {
-                                            return (
-                                                <tr key={i}>
-                                                    <td className="va-middle">{i + 1}</td>
-                                                    <td>
-                                                        <Link to={`/products/${product.product.id}`}>
-                                                            {product.product.name}
-                                                        </Link>
-                                                    </td>
-                                                    <td>{product.quantity}</td>
-                                                    <td>{product.amount}</td>
-                                                    <td>
-                                                        {!product.status && '-NA-'}
-                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
-                                                    </td>
-                                                     {/* <td>
-                                                        <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
-                                                    </td> */}
-                                                </tr>)
-                                            })}
-                                        </tbody>}
-                                    </Table>
+                                        <Table  hover responsive>
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                    {/* <th>Actions</th> */}
+                                                </tr>
+                                            </thead>
+                                            {this.state.obj.products &&
+                                            <tbody>
+                                            {this.props.parentObj.products.map((product, i) => {
+                                                return (
+                                                    <tr key={i}>
+                                                        <td className="va-middle">{i + 1}</td>
+                                                        <td>
+                                                            <Link to={`/products/${product.product.id}`}>
+                                                                {product.product.name}
+                                                            </Link>
+                                                        </td>
+                                                        <td>{product.quantity}</td>
+                                                        <td>{product.amount}</td>
+                                                        <td>
+                                                            {!product.status && '-NA-'}
+                                                            {product.status && <span className="badge badge-success">{product.status}</span>}
+                                                        </td>
+                                                        {/* <td>
+                                                            <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
+                                                        </td> */}
+                                                    </tr>)
+                                                })}
+                                            </tbody>}
+                                        </Table>
                                     </div>
                                 </div>
                             </div>}
@@ -465,12 +388,10 @@ class Quotation extends Component {
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Quotation);
