@@ -51,6 +51,7 @@ class View extends Component {
         modalnegatation: false,
         isQuoteExists:0,
         obj: '',
+        activityData:[],
         subObjs: [],
         newSubObj: {},
         orderBy: 'id,desc',
@@ -326,13 +327,31 @@ class View extends Component {
             })
     }
 
+    loadActivity(id){
+        axios.get(Const.server_url + Const.context_path + "api/activity-log/?parentId="+id+"&type=sales")
+        .then(res => {
+            let resData = res.data._embedded.activityLogs;
+            let activityData = [];
+            resData.map((act,i)=>{
+                activityData.push({
+                    title:act.name,
+                    subtitle:<Moment format="DD MMM YY">{act.creationDate}</Moment>,
+                    avatar:<Avatar alt="" src={`${process.env.PUBLIC_URL}/static/images/face1.jpg`}/>,
+                    body:act.description
+                })
+            });
+            this.setState({activityData});
+        });
+    }
+
     loadObj(id) {
-        axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
+        axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit')
+        .then(res => {
             this.setState({ obj: res.data, users:res.data.users, loading: false},()=>{
-                    if(this.props?.location?.search && this.props?.location?.search?.indexOf('approval')){
-                        this.toggleTab(4);
-                    }
-                 });
+            if(this.props?.location?.search && this.props?.location?.search?.indexOf('approval')){
+                this.toggleTab(4);
+            }
+            });
         });
     }
 
@@ -359,6 +378,7 @@ class View extends Component {
     }
 
     componentDidMount() {
+        this.loadActivity(this.props.currentId);
         this.loadObj(this.props.currentId);
         this.QuotationsCount(this.props.currentId);
         // this.loadSubObjs();
@@ -827,7 +847,7 @@ class View extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                        {
+                                        {this.state.activityData.length &&
                                             // this.props.user.role === 'ROLE_ADMIN' &&
                                             <div className="col-md-4" >
                                                 {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
@@ -839,9 +859,7 @@ class View extends Component {
                                                 <ActivityStream
                                                     style={{marginLeft: 400,}}
                                                     title="Activity"
-                                                    stream={mockActivity}
-                                             
-                                                   
+                                                    stream={this.state.activityData}
                                                 />
                                             </div>}
                                     </div>
