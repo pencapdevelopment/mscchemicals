@@ -146,11 +146,13 @@ class Negotiation extends Component {
         obj2.negotiation_stage1=this.state.ngList1.negotiation_stage1;
         obj2.negotiation_stage2=this.state.ngList1.negotiation_stage2;
         obj2.negotiation_stage3=this.state.ngList1.negotiation_stage3;
+        obj2.status=null;
         console.log("before Data==>>", obj2)
         if(!(this.state.ngList1.ns1_readOnly && this.state.ngList1.ns2_readOnly && this.state.ngList1.ns3_readOnly)){
             axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2)
             .then(res => {
-                this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true }, ()=>console.log("After Setting Data==>>", this.state.obj2));
+                axios.patch(server_url + context_path + "api/sales-products/"+obj2.id,{id:obj2.id,status:null});
+                this.setState({obj2: res.data, modalnegatation:false, loading: false}, ()=>console.log("After Setting Data==>>", this.state.obj2));
                 console.log("xyz");
                 this.saleApprovalData();
                 this.loadObj1(this.props.currentId);
@@ -628,29 +630,20 @@ class Negotiation extends Component {
                                                     <td>
                                                     <Button color='primary' size='small' disabled={product.status==='Approved'} onClick={()=>this.toggleModalNegotation(product.id)} variant="contained">Negotiation</Button>
                                                     </td>
-                                                    {this.state.ngTracking.map((ngData) => {
-                                                return (<div>
-                                                    {ngData.product.id===product.product.id &&
-                                                    <td>
-                                                        {ngData.status === null ? <div>
-                                                        <span className="badge badge-secondary">Pending</span></div> :<div>
-                                                            {ngData.status === 'Rejected' ? <div>
-                                                            <span className="badge badge-danger">{ngData.status}</span></div>:<div>
-                                                            <span className="badge badge-success">{ngData.status}</span></div>
-
-                                                                 }
-                                                        </div>
-                                                        }
-                                                         {/* { this.findStatus(ngData.product.id,"ng1")}
-                                                         { this.findStatus(ngData.product.id,"ng2")}
-                                                         { this.findStatus(ngData.product.id,"ng3")} */}
                                                     
-                                                    </td>
-                                                    }
-                                                    </div>)})}
                                                     {/* <td>
                                                         <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                     </td> */}
+                                                    <td>
+                                                    {product.status===null ? <div>
+                                                        <span className="badge badge-secondary">Pending</span></div> :<div>
+                                                            {product.status === 'Rejected' ? <div>
+                                                            <span className="badge badge-danger">{product.status}</span></div>:<div>
+                                                            <span className="badge badge-success">{product.status}</span></div>
+                                                    }
+                                                    </div>
+                                                }
+                                                    </td>
                                                 </tr>
                                             )
                                             })}

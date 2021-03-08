@@ -145,34 +145,7 @@ class Quotation extends Component {
         });
     }
 
-    negotiationTraking(){
-        axios.get( server_url + context_path + "api/sales-negotiation-tracking?reference.id="+this.props.currentId+"&sort=id,desc&projection=sales-negotiation-tracking").then(res => {
-            let ngList1 = res.data._embedded[Object.keys(res.data._embedded)[0]];
-            
-            let ngList =  [];
-            ngList1.map((ngt1,idx1)=>{
-                if(idx1===0){
-                    ngList.push(ngt1);
-                }
-                else{
-                    if(ngList.findIndex(nt=> nt.product.id === ngt1.product.id)===-1){
-                        ngList.push(ngt1);
-                    }
-                }
-            });
-            if(ngList.length>0){
-              this.setState({
-                ngTracking:ngList, 
-                trackingData:ngList1,
-                page:''
-            }, ()=>console.log("negotiationTraking second if setstate data", this.state.ngTracking, "current id", this.props.currentId));
-            }else{
-                
-                
-            }
-        });   
-    }
-
+    
 
 
 
@@ -189,7 +162,7 @@ class Quotation extends Component {
         console.log("componentDidMount", this.props.currentId);
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
-        this.negotiationTraking();
+        
     }
     updateObj() {
         console.log("updateObj in Quotation.js")
@@ -392,26 +365,16 @@ class Quotation extends Component {
                                                         </td>
                                                         <td>{product.quantity}</td>
                                                         <td>{product.amount}</td>
-                                                        {this.state.ngTracking.map((ngData) => {
-                                                return (<div>
-                                                    {ngData.product.id===product.product.id &&
-                                                    <td>
-                                                        {ngData.status === null ? <div>
+                                                        <td>
+                                                    {product.status===null ? <div>
                                                         <span className="badge badge-secondary">Pending</span></div> :<div>
-                                                            {ngData.status === 'Rejected' ? <div>
-                                                            <span className="badge badge-danger">{ngData.status}</span></div>:<div>
-                                                            <span className="badge badge-success">{ngData.status}</span></div>
-
-                                                                 }
-                                                        </div>
-                                                        }
-                                                         {/* { this.findStatus(ngData.product.id,"ng1")}
-                                                         { this.findStatus(ngData.product.id,"ng2")}
-                                                         { this.findStatus(ngData.product.id,"ng3")} */}
-                                                    
-                                                    </td>
+                                                            {product.status === 'Rejected' ? <div>
+                                                            <span className="badge badge-danger">{product.status}</span></div>:<div>
+                                                            <span className="badge badge-success">{product.status}</span></div>
                                                     }
-                                                    </div>)})}
+                                                    </div>
+                                                }
+                                                    </td>
                                                         {/* <td>
                                                             <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                         </td> */}
