@@ -48,6 +48,7 @@ class Negotiation extends Component {
         currentId: '',
         modalnegatation: false,
         modalRemark : false,
+        status:'',
         ngList1:{
                 negotiation_stage1:'',
                 negotiation_stage2:'',
@@ -56,7 +57,8 @@ class Negotiation extends Component {
                 ns2_readOnly:false,
                 ns3_readOnly:false,
                 remark:''
-        }
+        },
+        trackingData:[]
     }
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
@@ -69,6 +71,7 @@ class Negotiation extends Component {
     negotiationTraking(){
         axios.get( server_url + context_path + "api/sales-negotiation-tracking?reference.id="+this.props.currentId+"&sort=id,desc&projection=sales-negotiation-tracking").then(res => {
             let ngList1 = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            
             let ngList =  [];
             ngList1.map((ngt1,idx1)=>{
                 if(idx1===0){
@@ -83,8 +86,9 @@ class Negotiation extends Component {
             if(ngList.length>0){
               this.setState({
                 ngTracking:ngList, 
+                trackingData:ngList1,
                 page:''
-            });
+            }, ()=>console.log("negotiationTraking second if setstate data", this.state.ngTracking, "current id", this.props.currentId));
             }else{
                 this.setState({
                    page:  <Span2>No Records Found</Span2>  
@@ -92,9 +96,39 @@ class Negotiation extends Component {
             }
         });   
     }
+
+    findStatus(prodId,stage){
+        let trackingData=this.state.trackingData;
+        let indx=-1;
+        if(stage==='ng1'){
+            indx=trackingData.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 === 0 && el.negotiation_stage3 === 0)
+        }
+        if(stage==='ng2'){
+            indx=trackingData.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 !== 0 && el.negotiation_stage3 === 0)
+        }
+        if(stage==='ng3'){
+            indx=trackingData.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 !== 0 && el.negotiation_stage3 !== 0)
+        }
+        if(indx!==-1)
+        {
+            if(trackingData[indx].status === null){
+                return <div className="badge badge-secondary">pending</div>;
+            }
+            else if(trackingData[indx].status === "Approved"){
+                return <div className="badge badge-success">{trackingData[indx].status}</div>;
+            }else{
+                return <div className="badge badge-danger">{trackingData[indx].status}</div>;
+            }
+
+                
+        }else{
+            return null;
+        }
+    }
+
     loadObj1(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
-            this.setState({ obj1: res.data });
+            this.setState({ obj1: res.data }, ()=> console.log("loadObj1 sales data obj1 data==>", this.state.obj1));
         });  
     }
     // loadObj2(id) {
@@ -592,12 +626,28 @@ class Negotiation extends Component {
                                                     <button className="btn btn-primary"  onClick={()=>this.toggleRemarkNegotiation(product.id)}  >< VisibilityRoundedIcon  size="medium" style={{marginLeft: 20}} color="primary" aria-label=" VisibilityRoundedIcon" /></button>
                                                     </td>
                                                     <td>
-                                                    <Button color='primary' size='small'  onClick={()=>this.toggleModalNegotation(product.id)} variant="contained">Negotiation</Button>
+                                                    <Button color='primary' size='small' disabled={product.status==='Approved'} onClick={()=>this.toggleModalNegotation(product.id)} variant="contained">Negotiation</Button>
                                                     </td>
+                                                    {this.state.ngTracking.map((ngData) => {
+                                                return (<div>
+                                                    {ngData.product.id===product.product.id &&
                                                     <td>
-                                                        {!product.status && '-NA-'}
-                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
+                                                        {ngData.status === null ? <div>
+                                                        <span className="badge badge-secondary">Pending</span></div> :<div>
+                                                            {ngData.status === 'Rejected' ? <div>
+                                                            <span className="badge badge-danger">{ngData.status}</span></div>:<div>
+                                                            <span className="badge badge-success">{ngData.status}</span></div>
+
+                                                                 }
+                                                        </div>
+                                                        }
+                                                         {/* { this.findStatus(ngData.product.id,"ng1")}
+                                                         { this.findStatus(ngData.product.id,"ng2")}
+                                                         { this.findStatus(ngData.product.id,"ng3")} */}
+                                                    
                                                     </td>
+                                                    }
+                                                    </div>)})}
                                                     {/* <td>
                                                         <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                     </td> */}
@@ -640,9 +690,18 @@ class Negotiation extends Component {
                                                             </td>
                                                         <td>{product.quantity}</td>
                                                         <td>{product.amount}</td>
-                                                        <td>{product.negotiation_stage1}</td>
-                                                        <td>{product.negotiation_stage2}</td>
-                                                        <td>{product.negotiation_stage3}</td>
+                                                        <td>{product.negotiation_stage1} <br/>
+                                                       { this.findStatus(product.product.id,"ng1")}
+                                        
+                                                        </td>
+                                                        <td>{product.negotiation_stage2}
+                                                        <br/>
+                                                        { this.findStatus(product.product.id,"ng2")}
+                                                     </td>
+                                                        
+                                                        <td>{product.negotiation_stage3} <br/>
+                                                        { this.findStatus(product.product.id,"ng3")}
+                                                        </td>
                                                     </tr>
                                                 )
                                                 })}
