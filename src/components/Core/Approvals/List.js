@@ -106,7 +106,10 @@ class List extends Component {
             var direction = col.status === 1 ? 'desc' : 'asc';
             this.setState({ orderBy: col.param + ',' + direction }, this.loadObjects);
         }
+        
     }
+
+
     loadObjects(offset, all, callBack) {
         if (!offset) offset = 1;
         var url = server_url + context_path + "api/" + this.props.baseUrl + "?projection=approvals";
@@ -194,7 +197,74 @@ class List extends Component {
         });
     }
     toggleEditclick = (idx) => {
-        this.setState({ toggleres:idx, modalEdit:!this.state.modalEdit }, () => console.log("toggleEditclick index",idx));
+        console.log("check data",this.state.objects);
+        console.log("check idx",idx);
+        axios.get( server_url + context_path + "api/sales-negotiation-tracking?salesProduct="+this.state.objects[idx].salesNegotiationTracking.salesProduct.id+"&page=0&sort=id,desc&projection=sales-negotiation-tracking")
+        .then(res => {
+            //var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            let stage1Status = null;
+            let stage2Status = null;
+            let stage3Status = null; 
+            let prodId = this.state.objects[idx].salesNegotiationTracking.product.id;
+            var ngList=res.data._embedded[Object.keys(res.data._embedded)[0]];
+            if (ngList.length) {
+                let stage1Index = ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 === 0 && el.negotiation_stage3 === 0)
+                stage1Status = stage1Index > -1 ?ngList[stage1Index].status:null;
+
+                let stage2Index=ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 !== 0 && el.negotiation_stage3 === 0)
+                stage2Status = stage2Index > -1 ?ngList[stage2Index].status:null;
+
+                let stage3Index=ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 !== 0 && el.negotiation_stage3 !== 0)
+                stage3Status = stage3Index > -1 ?ngList[stage3Index].status:null;
+            }
+            let objects = this.state.objects;
+            objects[idx].stage1Status = stage1Status;
+            objects[idx].stage2Status = stage2Status;
+            objects[idx].stage3Status = stage3Status;
+            this.setState({ toggleres:idx,objects, modalEdit:!this.state.modalEdit }, () => console.log("toggleEditclick index",idx));
+        });  
+    }
+    getStatus(stage,idx,readOnly,errors){
+        let status = null;
+        if(stage === 'stg1'){
+            status = this.state.objects[idx].stage1Status;
+        }
+        if(stage === 'stg2'){
+            status = this.state.objects[idx].stage2Status;
+        }
+        if(stage === 'stg3'){
+            status = this.state.objects[idx].stage3Status;
+        }
+        if(status === null){
+            return (<div>
+                {(this.props.user.role === 'ROLE_ADMIN' || readOnly || (this.props.user.permissions.indexOf("MG_AC")>=0) ) &&  
+                    <FormControl>
+                        <InputLabel>Status*</InputLabel>
+                        <Select name="status" label="Status" value={this.state.formWizard.obj.status}
+                            disabled={readOnly}
+                            helperText={errors?.status?.length > 0 ? errors?.status[0]?.msg : ""}
+                            error={errors?.status?.length > 0}
+                            onChange={e => this.setSelectField('status', e)}> {this.state.status.map((e, keyIndex) => {
+                                return (
+                                    <MenuItem key={keyIndex} value={e.value}>{e.label}</MenuItem>
+                                );
+                            })}
+                        </Select>
+                    </FormControl>
+                    }
+                </div>);
+        }
+        else{
+            if(status===null){
+                return <div><span className="badge badge-secondary">Pending</span></div>;
+            }
+            else if(status === 'Rejected'){
+                return <div><span className="badge badge-danger">{status}</span></div>;
+            }
+            else{
+                return <div><span className="badge badge-success">{status}</span></div>;
+            }
+        }
     }
     giveApproval = () => {
         let approvalObj = this.state.objects[this.state.toggleres];
@@ -207,6 +277,11 @@ class List extends Component {
             axios.patch(server_url + context_path + "api/sales-negotiation-tracking/" + approvalObj.salesNegotiationTracking.id,{id:approvalObj.salesNegotiationTracking.id,status:ngtStatus});
             axios.patch(server_url + context_path + "api/sales-products/" + approvalObj.salesNegotiationTracking.salesProduct.id,{id:approvalObj.salesNegotiationTracking.salesProduct.id,status:ngtStatus});
         }); 
+        this.setState({
+            modalEdit: false
+         });
+
+     
     }
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
@@ -224,11 +299,7 @@ class List extends Component {
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
-    toggleEdit = () => {
-        this.setState({
-           modalEdit: false
-        });
-    };
+
     render() {
         const errors = this.state.formWizard.errors;
         const readOnly=this.state.readOnly;
@@ -301,21 +372,7 @@ class List extends Component {
                                         value={this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage1}  inputProps={{ readOnly: true }} />
                             </div>
                             <div className="col-md-4">  
-                                {(this.props.user.role === 'ROLE_ADMIN' || readOnly || (this.props.user.permissions.indexOf("MG_AC")>=0) ) &&  
-		                        <FormControl>
-		                            <InputLabel>Status*</InputLabel>
-		                            <Select name="status" label="Status" value={this.state.formWizard.obj.status}
-		                                disabled={readOnly}
-		                                helperText={errors?.status?.length > 0 ? errors?.status[0]?.msg : ""}
-		                                error={errors?.status?.length > 0}
-		                                onChange={e => this.setSelectField('status', e)}> {this.state.status.map((e, keyIndex) => {
-		                                    return (
-		                                        <MenuItem key={keyIndex} value={e.value}>{e.label}</MenuItem>
-		                                    );
-		                                })}
-		                            </Select>
-		                        </FormControl>
-                                }  
+                                {this.getStatus('stg1',this.state.toggleres,readOnly,errors)} 
                             </div>
                         </div>
                         {(this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage2 !==0 && 
@@ -328,7 +385,10 @@ class List extends Component {
                             <div className="col-md-4">  
                                 <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
                                 value={this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage2}  inputProps={{ readOnly: true }} />
-                            </div>       
+                            </div>  
+                            <div className="col-md-4">  
+                                {this.getStatus('stg2',this.state.toggleres,readOnly,errors)} 
+                            </div>     
                         </div>}
                         {((this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage2 !==0 && 
                         this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage3 !==0) &&
@@ -338,9 +398,13 @@ class List extends Component {
                             <div className="col-md-4">
                                 <strong>Negotiation Stage3 :</strong>
                             </div>
+                            
                             <div className="col-md-4">  
                                  <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
                                  value={this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage3}  inputProps={{ readOnly: true }} />
+                            </div>
+                            <div className="col-md-4">  
+                                {this.getStatus('stg3',this.state.toggleres,readOnly,errors)} 
                             </div>
                         </div>}
                         <div className="col-md-5  offset-md-3 " style={{marginTop:"30px",marginBottom:"3px"}}>
@@ -358,20 +422,18 @@ class List extends Component {
                 </ModalBody>
             </Modal>
             <Table hover responsive>
-                    <thead>
-                    <Sorter columns={[
-                                       { name: '#', sortable: false },
-                                       { name: 'Product', sortable: false, param: 'product'  },
-                                       
-                                       { name: 'Creation', sortable: true, param: 'creationDate' },
-                                       { name: 'Status', sortable: false, param: 'status'  },
-                                       { name: 'Response Date', sortable: false, param: 'responseDate'  },
-                                       // { name: 'Action', sortable: false }
-                    ]}
-                        onSort={this.onSort.bind(this)} />
-                </thead>
-                <tbody>
-                    {this.state.objects.map((obj,i) => {
+            <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Creation</th>
+                        <th>status</th>
+                        <th>Response Date</th>
+                    </tr>
+                </thead>  
+                <tbody>   
+                {this.state.objects.map((obj,i) => {
+                        console.log("objects",this.state.objects)
                         // let aprrovals = this.state.objects.find(ap => {ap.reference === obj.});
                         if(obj.status === null){
                             return (
@@ -392,12 +454,13 @@ class List extends Component {
                                         }
                                     </td>
                                     <td>
-                                        <Moment format="DD MMM YY">{obj.responseDate}</Moment>
+                                        
+                                        <Moment format="DD MMM YY">{obj.updationDate}</Moment>
+
+                                        {/* {console.log("obj.responseDate",obj.responseDate)} */}
                                     </td>
                         
-                                    {/* <td>
-                                    { !this.props.readOnly && <Button variant="contained" color="warning" size="xs" onClick={() => this.editObj(i)}>Edit</Button>}
-                                    </td> */}
+                                  
                                 </tr>
                             )
                         }
