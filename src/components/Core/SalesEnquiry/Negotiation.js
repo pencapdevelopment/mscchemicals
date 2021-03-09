@@ -634,8 +634,12 @@ class Negotiation extends Component {
                                                     {/* <td>
                                                         <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                     </td> */}
-                                                    <td>
-                                                    {product.status===null ? <div>
+
+                                                    {this.state.ngTracking.map((ng) => {
+                                                        return (<div>
+                                                            {product.product.id===ng.product.id && <div>
+                                                   <td>
+                                                    {ng.status===null ? <div>
                                                         <span className="badge badge-secondary">Pending</span></div> :<div>
                                                             {product.status === 'Rejected' ? <div>
                                                             <span className="badge badge-danger">{product.status}</span></div>:<div>
@@ -644,6 +648,8 @@ class Negotiation extends Component {
                                                     </div>
                                                 }
                                                     </td>
+                                                </div>
+                                                    }</div>)})}    
                                                 </tr>
                                             )
                                             })}
