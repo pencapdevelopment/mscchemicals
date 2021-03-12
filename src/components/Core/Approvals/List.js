@@ -69,6 +69,7 @@ class List extends Component {
             readOnly:false,
             obj: {
                 status:'',
+                remark:''
             }
         },
         status: [
@@ -269,9 +270,8 @@ class List extends Component {
     giveApproval = () => {
         let approvalObj = this.state.objects[this.state.toggleres];
         let status = this.state.formWizard.obj.status;
-        console.log("approval obj is",approvalObj);
-        console.log("current status is",status);
-        axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + approvalObj.id,{id:approvalObj.id,status:status})
+        let remark = this.state.formWizard.obj.remark;
+        axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + approvalObj.id,{id:approvalObj.id,status:status,remark:remark})
         .then(apprRes =>{
             let ngtStatus = status === 'A'?'Approved':'Rejected';
             axios.patch(server_url + context_path + "api/sales-negotiation-tracking/" + approvalObj.salesNegotiationTracking.id,{id:approvalObj.salesNegotiationTracking.id,status:ngtStatus});
@@ -279,9 +279,7 @@ class List extends Component {
         }); 
         this.setState({
             modalEdit: false
-         });
-
-     
+         });     
     }
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
@@ -299,16 +297,16 @@ class List extends Component {
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
-
+    toggleEdit= () => {
+        this.setState({modalEdit: false});
+    }
     render() {
         const errors = this.state.formWizard.errors;
         const readOnly=this.state.readOnly;
         return (<ContentWrapper>
-
             <Modal isOpen={this.state.modalEdit} backdrop="static" toggle={this.toggleEdit} size={'lg'}>
                 <ModalHeader toggle={this.toggleEdit}>
                     <h4>Sales Product Approval</h4>
-
                 </ModalHeader>
                 <ModalBody>
                     {this.state.toggleres > -1 &&
@@ -410,9 +408,8 @@ class List extends Component {
                         <div className="col-md-5  offset-md-3 " style={{marginTop:"30px",marginBottom:"3px"}}>
                             <fieldset>
                                 <TextareaAutosize placeholder="Response" fullWidth={true} rowsMin={3} name="response"
-                                   style={{padding: 10}}
-                                    value={this.state.objects[this.state.toggleres].salesNegotiationTracking.remark} onChange={(e) => this.saveRemark(e)}
-                                    />
+                                   style={{padding: 10}} value={this.state.formWizard.obj.remark} onChange={e => this.setField('remark', e, true)}
+                                />
                             </fieldset>
                         </div>
                         <div className="text-center">

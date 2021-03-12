@@ -54,12 +54,12 @@ const ActivityStream = ({ title, stream }) => {
 
       {stream.map((item, index) => (
         <Card key={index} >
+          <p style={{fontSize: 14, marginTop: 5, float:"right"}}>{item.stage}</p>
           <CardHeader
-          
             avatar={item.avatar}
             title={item.title}
             subheader={item.subtitle}
-            style={{fontSize: 18, fontWeight: 'normal'}}
+            style={{fontSize: 18, fontWeight: 'normal',}}
           />
           <CardContent   className={classes.content}>
             <Typography  style={{fontSize: 12, fontWeight: 'normal'}}component="p">{item.body}</Typography>

@@ -60,9 +60,10 @@ class Quotation extends Component {
         selectedStatus: '',
         statusNotes:'',
         status: [
-            { label: 'Accepted', value: 'On going', badge: 'info' },
-            { label: 'Rejected', value: 'Rejected', badge: 'danger' },
-           
+            { label: 'Approved', value: 'Approved', badge: 'success'},
+            { label: 'Rejected', value: 'Rejected', badge: 'danger'},
+            { label: 'Pending', value: 'Pending', badge: 'secondary'},
+            { label: 'Email Sent', value: 'Email Sent', badge: 'info'}
         ]
     }
     loadObj() {
@@ -173,11 +174,6 @@ class Quotation extends Component {
             }
         });
     }
-
-    
-
-
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
@@ -212,18 +208,23 @@ class Quotation extends Component {
         this.setState({ editFlag: false });
     }
     sendEmail = () => {
-        var obj = this.state.obj;
-        // var prod = this.props.parentObj.products[i];
-        axios.patch(Const.server_url + Const.context_path + "quotations/" + obj.id)
-        .then(res => {
-            // prod.status = 'Email Sent';
-            this.setState({ obj });
-            swal("Sent Quotation!", 'Succesfully sent quotation mail.', "success");
-        }).finally(() => {
-            this.setState({ loading: false });
-        }).catch(err => {
-            swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
-        })
+        if(this.state.ngTracking.findIndex(ngt => ngt.salesProduct.status === 'Approved')===-1){
+            swal("Products not Approved!", 'Please get admin approval', "error");
+        }
+        else{
+            var obj = this.state.obj;
+            // var prod = this.props.parentObj.products[i];
+            axios.patch(Const.server_url + Const.context_path + "quotations/" + obj.id)
+            .then(res => {
+                // prod.status = 'Email Sent';
+                this.setState({ obj });
+                swal("Sent Quotation!", 'Succesfully sent quotation mail.', "success");
+            }).finally(() => {
+                this.setState({ loading: false });
+            }).catch(err => {
+                swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
+            })
+        }
     }
     render() {   
         return (
@@ -280,7 +281,7 @@ class Quotation extends Component {
                                     <div className="">
                                         <div className="row">
                                             <div className="col-sm-9">
-                                                <Button title="Status" variant="contained" style={{textTransform: "none"}} color=""  size="small" onClick={() => this.updateObj()}> Status</Button>
+                                                <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span>
                                             </div>
                                             <div className="col-sm-1">
                                                 <span title="Edit"  onClick={() => this.updateObj()}>
@@ -407,7 +408,7 @@ class Quotation extends Component {
                                                             <span className="badge badge-success">{product.status}</span></div>
                                                     }
                                                     </div>
-                                                }                                                  
+                                                    }                                                  
                                                     </td>
                                                     </div>}</div>)})}
                                                         {/* <td>

@@ -18,6 +18,7 @@ const styles = {
 export default [
   {
     title: "Vestibulum Fusce Purus",
+    stage: "Sale Enquiry",
     subtitle: moment().subtract(1, 'days').calendar(),
     avatar: <Avatar style={{ ...styles.pinkAvatar }}>H</Avatar>,
     body:
@@ -25,6 +26,7 @@ export default [
   },
   {
     title: "Magna Consectetur Ipsum",
+    stage: "Quotation",
     subtitle: new Date().toDateString(),
     avatar: (
       <Avatar style={{ ...styles.greenAvatar }}>
@@ -36,6 +38,7 @@ export default [
   },
   {
     title: "Parturient Justo Fringilla Nibh",
+    stage: "Fallowup",
     subtitle: "Ullamcorper Parturient Ridiculus",
     avatar: (
       <Avatar
@@ -48,6 +51,7 @@ export default [
   },
   {
     title: "Fermentum Pharetra",
+    stage: "Negotiation",
     subtitle: "Fringilla Pellentesque Risus Tristique",
     avatar: (
       <Avatar
@@ -60,6 +64,7 @@ export default [
   },
   {
     title: "Lorem Aenean Fermentum",
+    stage: "Followup",
     subtitle: "Inceptos Vulputate",
     avatar: (
       <Avatar

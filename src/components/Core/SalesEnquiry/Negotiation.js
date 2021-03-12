@@ -578,8 +578,9 @@ class Negotiation extends Component {
                         <tbody className="card-body bb bt" hover responsive>
                             <tr>
                                 <td>{this.state.obj.code}</td>
-                                <td></td>
-                                <td>{this.state.obj.creationDate}</td>
+                                <td>{this.state.obj.mailSetnDate}</td>
+                                {/* <td>{this.state.obj.mailSetnDate?<Moment format="DD MMM YY">`{this.state.obj.mailSetnDate}`</Moment>:'-NA-'}</td> */}
+                                <td><Moment format="DD MMM YY">{this.state.obj.creationDate}</Moment></td>
                             </tr>      
                         </tbody>
                     </Table>

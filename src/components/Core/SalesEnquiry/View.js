@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
     Modal,
-
     ModalBody, ModalHeader, Table
 } from 'reactstrap';
 import Moment from 'react-moment';
@@ -17,7 +16,6 @@ import 'react-datetime/css/react-datetime.css';
 // import Assign from '../Common/Assign';
 import Followups from '../Followups/Followups';
 import { createOrder } from '../Orders/Create';
-
 import Add from './Add';
 import AddInventory from './AddInventory';
 import Quotation from './Quotation';
@@ -31,13 +29,11 @@ import Chip from '@material-ui/core/Chip';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
-
 import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
 import AutoSuggest from '../../Common/AutoSuggest';
 // const json2csv = require('json2csv').parse;
-
 class View extends Component {
     state = {
         loading: false,
@@ -134,8 +130,6 @@ class View extends Component {
         },
         user: '',
         selectedUser: '',
-        
-
     }
     setProductField(i, field, e, noValidate) {
         var obj = this.state.obj;
@@ -143,7 +137,6 @@ class View extends Component {
         // var input = e.target;
         obj.products[i][field] = e.target.value;
         this.setState({ obj });
-
         // if (!noValidate) {
         //     const result = FormValidator.validate(input);
         //     formWizard.errors[input.name] = result;
@@ -154,28 +147,27 @@ class View extends Component {
     }
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
-            this.setState({
-                activeTab: tab
-            });
+            this.setState({activeTab: tab},()=>{if(tab ===0){this.loadActivity(this.props.currentId);}});
         }
     }
     handleDelete = (i) => 
     {
-        console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
-        var user = this.state.users[i];
-        swal({
-            title: "Are you sure?",
-            text: "You will not be able to recover this user assignment!",
-            icon: "warning",
-            dangerMode: true,
-            button: {
-                text: "Yes, delete it!",
-                closeModal: true,
-            }
-        })
-        .then(willDelete => {
-            if (willDelete) {
-                axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
+        if(this.props.user.role === 'ROLE_ADMIN'){
+            console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
+            var user = this.state.users[i];
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this user assignment!",
+                icon: "warning",
+                dangerMode: true,
+                button: {
+                    text: "Yes, delete it!",
+                    closeModal: true,
+                }
+            })
+            .then(willDelete => {
+                if (willDelete) {
+                    axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
                     .then(res => {
                         var users = this.state.users;
                         users.splice(i, 1);
@@ -185,11 +177,11 @@ class View extends Component {
                     }).catch(err => {
                         this.setState({ deleteError: err.response.data.globalErrors[0] });
                         swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
-                    })
-            }
-        });
+                    });
+                }
+            });
+        }
     }
-
     handleGenerateQuote(){
         swal({
             title: "Are you sure?",
@@ -204,7 +196,6 @@ class View extends Component {
             if(generate){
                 this.setState({ loading: true });
                 axios.get(Const.server_url+Const.context_path+'api/companies/'+this.state.obj.company.id).then(compRes => {
-                    console.log("company response",compRes);
                         var newObj = {
                         code: Const.getUniqueCode('SQ'),
                         company: "/companies/"+compRes.data.id,
@@ -242,33 +233,31 @@ class View extends Component {
             }
         }) 
     }
-
     saveUser() {
         var user = {
             active: true,
             user: '/users/' + this.state.user,
             reference: "/" + this.props.baseUrl + "/" + this.props.currentId
         };
-
         this.setState({ loading: true });
         axios.post(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user", user)
-            .then(res => {
-                this.loadAssignedUsers(this.props.currentId);
-            }).finally(() => {
-                this.setState({ loading: false });
-                this.toggleModalAssign();
-            }).catch(err => {
-                // this.setState({ patchError: err.response.data.globalErrors[0] });
-                // swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
-            })
+        .then(res => {
+            this.loadAssignedUsers(this.props.currentId);
+        }).finally(() => {
+            this.setState({ loading: false });
+            this.toggleModalAssign();
+        }).catch(err => {
+            // this.setState({ patchError: err.response.data.globalErrors[0] });
+            // swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
+        })
     }
     setAutoSuggest(field, val) {
         this.setState({ user: val });
     }
     handleClick = (i) => {
-        console.log('You clicked the Chip.', i); // eslint-disable-line no-alert
-        window.location.href = '/users/' + i.user.id;
-        // this.props.history.push('/users/'+i.id);
+        if(this.props.user.role === 'ROLE_ADMIN'){
+            window.location.href = '/users/' + i.user.id;
+        }
     }
     searchSubObj = e => {
         var str = e.target.value;
@@ -276,7 +265,6 @@ class View extends Component {
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
         if (e) {
@@ -286,7 +274,6 @@ class View extends Component {
         }
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
-
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadSubObjs)
@@ -295,46 +282,37 @@ class View extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = Const.server_url + Const.context_path + "api/sales-followup?enquiry.id=" + this.props.currentId + "&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&company=" + this.props.currentId;
-
         if (this.state.filters.search) {
             url += "&name=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         url = Const.defaultDateFilter(this.state, url);
-
         axios.get(url)
-            .then(res => {
-                this.setState({
-                    subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                    subPage: res.data.page
-                });
-
-                if (callBack) {
-                    callBack();
-                }
-            })
+        .then(res => {
+            this.setState({
+                subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                subPage: res.data.page
+            });
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
     loadActivity(id){
-        axios.get(Const.server_url + Const.context_path + "api/activity-log/?parentId="+id+"&type=sales")
+        axios.get(Const.server_url + Const.context_path + "api/activity-log/?parentId="+id+"&type=sales&sort=id,desc")
         .then(res => {
             let resData = res.data._embedded.activityLogs;
             let activityData = [];
             resData.map((act,i)=>{
                 activityData.push({
                     title:act.name,
+                    stage:act.stage,
                     subtitle:<Moment format="DD MMM YY">{act.creationDate}</Moment>,
                     avatar:<Avatar alt="" src={`${process.env.PUBLIC_URL}/static/images/face1.jpg`}/>,
                     body:act.description
@@ -343,7 +321,6 @@ class View extends Component {
             this.setState({activityData});
         });
     }
-
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit')
         .then(res => {
@@ -354,14 +331,12 @@ class View extends Component {
             });
         });
     }
-
     QuotationsCount(enqId) {
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + enqId + '&projection=sales_quotation_exists').then(res => {
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
             this.setState({ isQuoteExists: list.length });
         });
     }
-
     loadAssignedUsers(id){
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user?projection=" +
             this.props.baseUrl + "-user&reference=" + id).then(res => {
@@ -372,11 +347,9 @@ class View extends Component {
             });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.loadActivity(this.props.currentId);
         this.loadObj(this.props.currentId);
@@ -385,42 +358,34 @@ class View extends Component {
         this.props.onRef(this);
         this.setState({ loading: true });
     }
-
     updateStatus = (status) => {
         var obj = this.state.obj;
         obj.status = status;
         this.setState({ obj });
     }
-
     updateStatus = (status) => {
         var obj = this.state.obj;
         obj.status = status;
         this.setState({ obj });
     }
-
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
         })
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: false }, function () {
             this.loadObj(this.props.currentId);
         });
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
-
     toggleModal1 = () => {
         this.setState({
             modal1: !this.state.modal1
         });
     }
-
     toggleModal2 = () => {
         this.setState({
             modal2: !this.state.modal2
@@ -443,28 +408,21 @@ class View extends Component {
     }
     editInventory = (i) => {
         var prod = this.state.obj.products[i];
-
-
         this.setState({ editSubFlag: true, currentProdId: prod.id, currentProd: prod }, this.toggleModal);
     }
     addSubObj = () => {
         this.setState({ editSubFlag: false });
-
         this.toggleModal1();
     }
-
     editSubObj = (i) => {
         var obj = this.state.subObjs[i].id;
-
         this.setState({ editSubFlag: true, subId: obj }, this.toggleModal1);
     }
-
     saveObjSuccess(id) {
         this.setState({ editSubFlag: true });
         this.toggleModal1();
         this.loadSubObjs();
     }
-
     convertToOrder = () => {
         if (this.state.obj.adminApproval !== 'Y' && this.props.user.role !== 'ROLE_ADMIN') {
             swal("Unable to Convert!", "Please get Admin approval", "error");
@@ -475,9 +433,7 @@ class View extends Component {
             return;
         }
         createOrder('Sales', this.state.obj, this.props.baseUrl);
-
     }
-
     render() {
         return (
             <div>
@@ -525,7 +481,6 @@ class View extends Component {
                                                                             // error={errors?.productName_auto_suggest?.length > 0}
                                                                             inputProps={{ "data-validate": '[{ "key":"required"}]' }}
                                                                             onRef={ref => (this.productASRef[i] = ref)}
-
                                                                             projection="product_auto_suggest"
                                                                             value={this.state.formWizard.selectedProducts[i]}
                                                                             onSelect={e => this.setProductAutoSuggest(i, e?.id)}
@@ -535,7 +490,6 @@ class View extends Component {
                                                         </td>
                                                         <td>
                                                             <fieldset>
-
                                                                 <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
                                                                     inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
                                                                     // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
@@ -545,14 +499,12 @@ class View extends Component {
                                                         </td>
                                                         <td>
                                                             <fieldset>
-
                                                                 <UOM required={true} isReadOnly={false}
                                                                     value={this.state.obj.products[i].uom} onChange={e => this.setProductField(i, "uom", e, true)} />
                                                             </fieldset>
                                                         </td>
                                                         <td>
                                                             <fieldset>
-
                                                                 <TextField type="number" name="amount" label="Amount" required={true}
                                                                     inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
                                                                     // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
@@ -624,7 +576,6 @@ class View extends Component {
                                     <Tab label="Followups" />
                                     <Tab label="Approvals" />
                                     <Tab label="Order" />
-                                  
                                     {/* <Tab label="Inventory & Docs" />
                                    <Tab label="Pharma Documents" />
                                     <Tab label="Food Documents" />*/}
@@ -640,11 +591,6 @@ class View extends Component {
                                                         stylee={{fontSize: 80}} 
                                                         label="On going" 
                                                        color="primary"
-                                
-                 
-
-                                  
-                                                        
                                                         /> */}
                                                         <table>
                                                             <tbody>
@@ -730,21 +676,16 @@ class View extends Component {
                                                                                     </Avatar>
                                                                                 }
                                                                                 label={obj.user.name}
-
                                                                                 onClick={() => this.handleClick(obj)}
                                                                                 onDelete={() => this.handleDelete(i)}
-                                                                            // className={classes.chip}
+                                                                                // className={classes.chip}
                                                                             />
                                                                         )
                                                                     })}
                                                                 </td>
-                                                             
                                                                 <td style={{marginRight: -170}}>
-                                                            
                                                                     { this.props.user.role === 'ROLE_ADMIN' &&
-                                                                   
-                                                                        <Button  title="Assigned To" variant="contained"   size="small" onClick={this.toggleModalAssign}> <AddIcon  fontSize="small" />Add </Button>}
-                                                           
+                                                                        <Button  title="Assigned To" variant="contained" size="small" onClick={this.toggleModalAssign}> <AddIcon  fontSize="small" />Add </Button>}
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -847,7 +788,7 @@ class View extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                        {this.state.activityData.length &&
+                                        {this.state.activityData.length !== 0 &&
                                             // this.props.user.role === 'ROLE_ADMIN' &&
                                             <div className="col-md-4" >
                                                 {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
@@ -876,8 +817,6 @@ class View extends Component {
                                 <TabPanel value={this.state.activeTab} index={3}>
                                 <Followups repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)}></Followups>
                             </TabPanel>
-                            
-
                             {/*<TabPanel value={this.state.activeTab} index={2}>
                                 <InventoryDocs repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.inventoryDocsTemplateRef = ref)} parentObj={this.state.obj}></InventoryDocs> 
                             </TabPanel>*/}
@@ -906,12 +845,10 @@ class View extends Component {
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(View);
