@@ -129,7 +129,7 @@ const Menu = [
                 icon:'fa fa-history'
             },
             {
-                path:'/sales',
+                path:'/pbsales',
                 name:'Sales',
                 icon:'fa fa-history'
             },

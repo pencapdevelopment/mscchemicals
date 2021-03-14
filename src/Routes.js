@@ -52,6 +52,7 @@ const Branches = lazy(() => import('./components/Core/Companies/Branches'));
 const Contacts = lazy(() => import('./components/Core/CompanyContacts/CompanyContacts'));
 const Products = lazy(() => import('./components/Core/Products/Products'));
 const SalesEnquiry = lazy(() => import('./components/Core/SalesEnquiry/SalesEnquiry'));
+const PbSalesEnquiry = lazy(() => import('./components/Core/PbSalesEnquiry/SalesEnquiry'));
 const PurchaseEnquiry = lazy(() => import('./components/Core/PurchaseEnquiry/PurchaseEnquiry'));
 const Followups = lazy(() => import('./components/Core/Followups/Followups'));
 
@@ -157,12 +158,14 @@ const Routes = ({ location }) => {
                                     <PrivateRoute path="/branches/:objId" component={waitFor(Branches)} />
                                     <PrivateRoute path="/branches" component={waitFor(Branches)} />
                                     <PrivateRoute path="/company-contact/:objId" component={waitFor(Contacts)} />
-                                   
+                                 
                                     <PrivateRoute path="/company-contact" component={waitFor(Contacts)} />
                                     <PrivateRoute path="/products/:objId" component={waitFor(Products)} />
                                     <PrivateRoute path="/products" component={waitFor(Products)} />
                                     <PrivateRoute path="/sales/:objId" component={waitFor(SalesEnquiry)} />
                                     <PrivateRoute path="/sales" component={waitFor(SalesEnquiry)} />
+                                    <PrivateRoute path="/pbsales/:objId" component={waitFor(PbSalesEnquiry)} />
+                                    <PrivateRoute path="/pbsales" component={waitFor(PbSalesEnquiry)} />
                                     <PrivateRoute path="/purchases/:objId" component={waitFor(PurchaseEnquiry)} />
                                     <PrivateRoute path="/purchases" component={waitFor(PurchaseEnquiry)} />
                                     <PrivateRoute path="/followups/:objId" component={waitFor(Followups)} />
