@@ -1,10 +1,8 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, TextField  } from '@material-ui/core';
+import { Button,ButtonGroup, FormControl, InputLabel, MenuItem, Select} from '@material-ui/core';
 import axios from 'axios';
 import queryString from 'query-string';
 import { context_path, defaultDateFilter, server_url } from '../../Common/constants';
 import { makeStyles } from '@material-ui/core/styles';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import Moment from 'react-moment';
@@ -18,9 +16,8 @@ import AddQuotation from './AddQuotation';
 import Fab from '@material-ui/core/Fab';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
-import Divider from '@material-ui/core/Divider';
-import EditLocationRoundedIcon from '@material-ui/icons/EditLocationRounded';
 import AssignmentSharpIcon from '@material-ui/icons/AssignmentSharp';
+import Divider from '@material-ui/core/Divider';
 import {
     Form, Modal,
     ModalBody, ModalHeader,
@@ -283,21 +280,29 @@ class Quotation extends Component {
                                             <div className="col-sm-9">
                                                 <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span>
                                             </div>
-                                            <div className="col-sm-1">
-                                                <span title="Edit"  onClick={() => this.updateObj()}>
-                                                    <Avatar style={{left: 100}} size='extrasmall' fontSize="small">
-                                                        <EditIcon style={{color: "#000",  }} size="extrasmall"  fontSize="small" />
-                                                    </Avatar>    
-                                                </span>
+                                            <div className="col-sm-2" >
+                                                <buttonGroup>
+                                                <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6 ",borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px"}} color="primary" variant="contained"> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>
+                                              
+                                                </buttonGroup>
+                                                   
+                                             </div>
+      
+                                            {/* <div className="col-sm-1">                                  
+                                                    <Button  style={{marginLeft: 27  }} fontSize="small" variant="contained" title="Edit"  onClick={() => this.updateObj()}>
+                                                        <EditIcon style={{color: "#000",  }} fontSize="small"/>
+                                                    </Button>    
                                             </div>
-                                                <div className="col-sm-1" style={{left: 60}}>                   
-                                                <span  title=" SendEmail " onClick={() => this.sendEmail()}> 
-                                                <Avatar fontSize="small">  <EmailIcon style={{ color: '#000' }} color="primary" size="small" fontSize="small" /> </Avatar>
-                                                </span>
+                                                <div className="col-sm-1" >                   
+                                            
+                                                <Button  variant="contained" style={{marginLeft: 15  }} fontSize="small"  title=" SendEmail " onClick={() => this.sendEmail()}><EmailIcon style={{ color: '#000' }} fontSize="small" /> </Button>
+                                              
                                                 </div>
                                                 <div className="col-sm-1">
-                                                <span title="Convert order"  color="#3f51b5"  > <Avatar  style={{left: 20}} fontSize="small"> <AssignmentSharpIcon style={{ color: '#000', }} size="small"  fontSize="small" /> </Avatar></span>                        
-                                                </div>
+                                              <Button  variant="contained" fontSize="small" title="Convert order" > <AssignmentSharpIcon style={{ color: '#000', }} fontSize="small" /> </Button>                       
+                                                </div> */}
                                         </div>
                                         {/* {this.props.parentObj.products.map((product, i) => {
                                             return (

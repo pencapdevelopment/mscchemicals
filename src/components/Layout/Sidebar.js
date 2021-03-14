@@ -21,7 +21,7 @@ const SidebarItemHeader = ({ item }) => (
 
 /** Normal items for the sidebar */
 const SidebarItem = ({ item, isActive }) => (
-    <li className={isActive ? 'active' : ''}>
+    <li className={isActive ? 'active' : ''} >
         <Link to={item.path} title={item.name}>
             {item.label && <Badge tag="div" className="float-right" color={item.label.color}>{item.label.value}</Badge>}
             {item.icon && <em className={item.icon}></em>}
@@ -33,13 +33,20 @@ const SidebarItem = ({ item, isActive }) => (
 /** Build a sub menu with items inside and attach collapse behavior */
 const SidebarSubItem = ({ item, isActive, handler, children, isOpen }) => (
     <li className={isActive ? 'active' : ''}>
+        {console.log("item",item,"isopen",isOpen,"isActive",isActive,"childrn",children,"isactive",isActive)}
         <div className="nav-item" onClick={handler}>
-            {item.label && <Badge tag="div" className="float-right" color={item.label.color}>{item.label.value}</Badge>}
-            {item.icon && <em className={item.icon}></em>}
+            {/* {item.label && <Badge tag="div" className="float-right" color={item.label.color}>{item.label.value}</Badge>} 
+                 // &&
+            //  <em style={{marginRight: "-20px"}} className={"float-right " +item.icon}></em>
+            */}
+            {item.label && item.icon && <em className={item.icon}></em>}
+       
+         
+            {/* {item.icon && <em className={item.icon}></em>} */}
             <span><Trans i18nKey={item.translate}>{item.name}</Trans></span>
         </div>
-        <Collapse isOpen={isOpen}>
-            <ul id={item.path} className="sidebar-nav sidebar-subnav">
+        <Collapse isOpen={isOpen} style={{marginLeft: 70}}>
+            <ul id={item.path} className="sidebar-nav sidebar-subnav" >
                 {children}
             </ul>
         </Collapse>
@@ -143,7 +150,7 @@ class Sidebar extends Component {
                 <div className="aside-inner">
                     <nav data-sidebar-anyclick-close="" className="sidebar smooth-scroll">
                         { /* START sidebar nav */}
-                        <ul className="sidebar-nav">
+                        <ul className="sidebar-nav  ">
                             { /* Iterates over all sidebar items */}
                             {
                                 Menu.map((item, i) => {

@@ -30,7 +30,7 @@ class ProspectiveVendor extends Component {
     state = {
         activeTab: 0,
         loading: true,
-        baseUrl: 'ProspectiveVendor',
+        baseUrl: 'prospective-vendor',
         editFlag: false,
         currentId: 0
     }

@@ -97,12 +97,7 @@ const Menu = [
         heading: 'Marketing',
         role: 'ROLE_ADMIN'
     },
-    {
-        name: 'Communication History',
-        path: '/followups',
-        icon: 'fa fa-history',
-        role: 'ROLE_ADMIN'
-    },
+  
     // {
     //     name: 'Leads',
     //     path: '/leads',
@@ -110,19 +105,81 @@ const Menu = [
     //     role: 'ROLE_ADMIN',
     //     permission:"MG_CM"
     // },
+    // {
+    //     name: 'Prospective Buyers',
+    //     path: '/ProspectiveBuyer',
+    //     icon: 'fa fa-history',
+    //     role: 'ROLE_ADMIN',
+    //     permission:"MG_CM"
+    // },
     {
-        name: 'Prospective Buyers',
-        path: '/ProspectiveBuyer',
-        icon: 'fa fa-history',
+       
+        name: 'Prospective Buyer',
+        icon: 'fas fa-caret-down',
         role: 'ROLE_ADMIN',
-        permission:"MG_CM"
+        permission:"MG_CM",
+        label:{
+            color: '#2b3db6',
+            icon:'fas fa-caret-down'
+        },
+        submenu:[
+            {
+                path:'/ProspectiveBuyer',
+                name:'Prospective Buyers',
+                icon:'fa fa-history'
+            },
+            {
+                path:'/sales',
+                name:'Sales',
+                icon:'fa fa-history'
+            },
+            {
+                path:'/Orders',
+                name:'Orders',
+                icon:'fa fa-history'
+            }
+        ]
+    },
+    // {
+    //     name: 'Prospective Vendors',
+    //     path: '/prospectivevendor',
+    //     icon: 'fa fa-history',
+    //     role: 'ROLE_ADMIN',
+    //     permission:"MG_CM"
+    // },
+    {
+        name: 'Prospective Vendor',
+        path: '/prospectivevendor',
+        icon: 'fas fa-caret-down',
+        role: 'ROLE_ADMIN',
+        permission:"MG_CM",
+        label:{
+            color: '#2b3db6',
+            icon:'fas fa-caret-down'
+        },
+        submenu:[
+            {
+                path:'/prospectivevendor',
+                name:'Prospective Vendors',
+                icon:'fa fa-history'
+            },
+            {
+                path:'/purchases',
+                name:'Purchases',
+                icon:'fa fa-history'
+            },
+            {
+                path:'/Orders',
+                name:'Orders',
+                icon:'fa fa-history'
+            }
+        ]
     },
     {
-        name: 'Prospective Vendors',
-        path: '/prospectivevendor',
+        name: 'Communication History',
+        path: '/followups',
         icon: 'fa fa-history',
-        role: 'ROLE_ADMIN',
-        permission:"MG_CM"
+        role: 'ROLE_ADMIN'
     },
     {
         name: 'Sample Tracking',

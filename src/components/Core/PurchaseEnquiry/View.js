@@ -4,16 +4,20 @@ import { connect } from 'react-redux';
 import swal from 'sweetalert';
 import axios from 'axios';
 import Moment from 'react-moment';
-import { Link } from 'react-router-dom';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import AddIcon from '@material-ui/icons/Add';
 import { Table } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import { Modal, ModalBody, ModalHeader} from 'reactstrap';
 import AutoSuggest from '../../Common/AutoSuggest';
 import { mockActivity } from '../../Timeline';
+import EditIcon from '@material-ui/icons/Edit';
+import EmailIcon from '@material-ui/icons/Email';
+import AssignmentSharpIcon from '@material-ui/icons/AssignmentSharp';
 import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
 import AddInventory from './AddInventory';
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
+import Divider from '@material-ui/core/Divider';
 import PageLoader from '../../Common/PageLoader';
 // import {
 //     Row, Col, Modal,
@@ -27,7 +31,6 @@ import { Button,  Tab, Tabs, AppBar, FormControl, TextField} from '@material-ui/
 import * as Const from '../../Common/constants';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
 // import {
@@ -562,20 +565,14 @@ class View extends Component {
                                                             <span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span>
                                                         </div> */}
                                                         {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
-                                                        <Button title="Edit" fontSize="small"  variant="contained" size="small" onClick={() => this.updateObj()}>Edit</Button>}
-                                                        {this.state.isQuoteExists < 1 ? <img title="Quotation icon" onClick={() => this.handleGenerateQuote()} style={{width:25, height:30}} src="img/quotei.png" />:'' }
-                                                             {/* <Fab   variant="contained"  aria-label="edit" size='small'>
-                                                        {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && 
-                                                       
-                                                            <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
-                                                            </Fab> */}
-                                                        
-                                                        {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
-                                                            <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
+                                                        <button title="Edit" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
+                                                         <button title="Email" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                        {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+                                                            <button  style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} variant="contained" color="primary" size="small" onClick={this.convertToOrder}><AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
-                                                                <Button title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Convert Order</span></Button>
-                                                            </Link>} */}
+                                                                <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}}><span style={{  textTransform: 'none', fontWeight: 'normal'}}> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></span></button>
+                                                            </Link>}
                                                     </div>
                                                     <h4 className="my-2">
                                                         <span>{this.state.obj.name}</span>
@@ -589,7 +586,7 @@ class View extends Component {
                                         <div className="col-md-8">
                                             <div className="card b">
                                                     <div className="card-body bb bt">
-                                                    <table className="table">
+                                                    <table className="table" style={{marginBottom: 7}}>
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -603,9 +600,11 @@ class View extends Component {
                                                                         }
                                                                         return (
                                                                             <Chip
+                                                                            style={{backgroundColor:"lightgreen"}}
+                                                                            fontSize="small" 
                                                                                 avatar={
                                                                                     <Avatar>
-                                                                                        <AssignmentIndIcon />
+                                                                                        <AssignmentIndIcon  style={{color:"#000"}} fontSize="small" />
                                                                                     </Avatar>
                                                                                 }
                                                                                 label={obj.user.name}
@@ -622,7 +621,7 @@ class View extends Component {
                                                             
                                                                     { this.props.user.role === 'ROLE_ADMIN' &&
                                                                    
-                                                                        <Button   style={{marginRight: -30}} title="Assigned To" color=""  variant="contained" fontSize="small"  size="small" onClick={this.toggleModalAssign}> + Add </Button>}
+                                                                        <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"3px"}} title="Assigned To" onClick={this.toggleModalAssign}><AddIcon  style={{ color: '#fff', }} fontSize="small" /> </button>}
                                                            
                                                                 </td>
                                                             </tr>
@@ -674,16 +673,23 @@ class View extends Component {
                                                             </tr>
                                                             <tr>
                                                                 <td>
+                                                                    <strong>Specification</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.specification}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Port of Landing</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.portOfLanding}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
                                                                     <strong>Dispatch</strong>
                                                                 </td>
                                                                 <td>{this.state.obj.dispatch}</td>
                                                             </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <strong>port OfLanding</strong>
-                                                                </td>
-                                                                <td>{this.state.obj.portOfLanding}</td>
-                                                            </tr>
+                                                          
                                                             <tr>
                                                                 <td>
                                                                     <strong>FOB</strong>
@@ -695,7 +701,13 @@ class View extends Component {
                                                                     <strong>CIF</strong>
                                                                 </td>
                                                                 <td>{this.state.obj.cif}</td>
-                                                            </tr>                                               
+                                                            </tr>   
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Payment Terms</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.paymentterms}</td>
+                                                            </tr>                                            
                                                             <tr>
                                                                 <td>
                                                                     <strong>Currency</strong>
@@ -721,11 +733,14 @@ class View extends Component {
                                                                 <td>{this.state.obj.description}</td>
                                                             </tr>
                                                         </tbody>
+                                            
                                                     </table>
-                                                    <div className=" mt-4 row">
+                                                    <Divider/>
+                                                    <div className=" mt-2 row" >
                                                         <h4 className="col-md-9" style={{fontSize:18}}>Products</h4>
                                                         {/* <Button className="col-md-3" variant="contained" color="warning" size="xs" onClick={this.toggleModalNegotation}>Negotation</Button>
                                                      */}</div>
+                                                      <Divider/>
                                                     <Table hover responsive>
                                                         <thead>
                                                             <tr>
@@ -772,6 +787,7 @@ class View extends Component {
                                                 />
                                             </div>}
                                     </div>
+                                
                                 </TabPanel>
                             }  
                                <TabPanel value={this.state.activeTab} index={1}>

@@ -10,8 +10,8 @@ import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
 import Upload from '../Common/Upload';
 import AddQuotation from './AddQuotation';
-
-
+import EditIcon from '@material-ui/icons/Edit';
+import EmailIcon from '@material-ui/icons/Email';
 
 
 
@@ -102,12 +102,14 @@ class Quotation extends Component {
                              </div>
                             <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
                             currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload>
+                              <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
+                            currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload>
 
                             {this.state.obj &&
                             <div className="card b">
                                 <div className="card-header">
                                     <div className="float-right mt-2">
-                                        <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6 ",borderRadius:"5x"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
                                     </div>
                                     <h4 className="my-2">
                                         <span>{this.state.obj.name}</span>
@@ -216,12 +218,13 @@ class Quotation extends Component {
                                                         {product.status && <span className="badge badge-success">{product.status}</span>}
                                                     </td>
                                                     <td>
-                                                        <Button variant="contained" color="inverse" size="xs" onClick={() => this.sendEmail(i)}>Send Email</Button>
+                                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
                                                     </td>
                                                 </tr>)
                                             })}
                                         </tbody>}
                                     </Table>
+                               
                                 </div>
                             </div>}
                             {/* {!this.state.obj &&

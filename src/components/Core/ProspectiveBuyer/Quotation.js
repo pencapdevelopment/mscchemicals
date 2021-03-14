@@ -1,57 +1,168 @@
-import { Button } from '@material-ui/core';
+import { Button,ButtonGroup, FormControl, InputLabel, MenuItem, Select} from '@material-ui/core';
 import axios from 'axios';
+import queryString from 'query-string';
+import { context_path, defaultDateFilter, server_url } from '../../Common/constants';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import Status from '../Common/Status';
 import { Table } from 'reactstrap';
 import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
-import Upload from '../Common/Upload';
-import AddQuotation from './AddQuotation'
-
-
-
-
-
+import AddQuotation from './AddQuotation';
+import Fab from '@material-ui/core/Fab';
+import EditIcon from '@material-ui/icons/Edit';
+import EmailIcon from '@material-ui/icons/Email';
+import AssignmentSharpIcon from '@material-ui/icons/AssignmentSharp';
+import Divider from '@material-ui/core/Divider';
+import {
+    Form, Modal,
+    ModalBody, ModalHeader,
+} from 'reactstrap';
+import { green, pink } from '@material-ui/core/colors';
+import Avatar from '@material-ui/core/Avatar';
+const useStyles = makeStyles((theme) => ({
+    root: {
+      display: 'flex',
+      '& > *': {
+        margin: theme.spacing(1),
+      },
+    },
+    pink: {
+      color: theme.palette.getContrastText(pink[500]),
+      backgroundColor: pink[500],
+    },
+    green: {
+      color: '#fff',
+      backgroundColor: green[500],
+    },
+  }));
 // const json2csv = require('json2csv').parse;
-
 class Quotation extends Component {
     state = {
         activeTab: 0,
         editFlag: false,
         modal: false,
+        modalproduct: false,
+        ngTracking : [],
         obj: '',
+        newObj: '',
         baseUrl: 'sales-quotation',
         currentId: '',
+        selectedStatus: '',
+        error: {},
+        selectedStatus: '',
+        statusNotes:'',
+        status: [
+            { label: 'Accepted', value: 'On going', badge: 'info' },
+            { label: 'Rejected', value: 'Rejected', badge: 'danger' },
+           
+        ]
     }
+    loadObj() {
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
+            if (res.data.paymentTerms) {
+                res.data.paymentTerms = this.state.terms.find(g => g.value === res.data.paymentTerms).label;
+            }
+            this.setState({ newObj: res.data,
+            loading:false
+            });
+            if (res.data.locationType !== 'I') {
+                if (!res.data.fssai || !res.data.drugLicense || !res.data.others) {
+                    var fileTypes1 = this.state.fileTypes1;
+                    if (!res.data.fssai) {
+                        fileTypes1[2].noshow = true;
+                    }
+                    if (!res.data.drugLicense) {
+                        fileTypes1[3].noshow = true;
+                    }
+                    if (!res.data.fssai && !res.data.drugLicense) {
+                        fileTypes1[4].noshow = false;
+                    }
 
-
+                    if (!res.data.others) {
+                        fileTypes1[5].noshow = true;
+                    }
+                    this.setState({ fileTypes1 });
+                }
+            }
+            // this.loadSubObjs();
+            if (this.props.location.search) {
+                let params = queryString.parse(this.props.location.search);
+                if (params.branch) {
+                    this.toggleTab(1);
+                }
+            }
+        });
+    }
+    closetoggleModal = () => {
+        this.setState({
+            modal: !this.state.modal
+        });
+    };
+    closetoggleModalProduct = () => {
+        this.setState({
+            modalproduct: !this.state.modalproduct
+        });
+    };
+    toggleModal = (label) => {
+        this.setState({
+            modal: !this.state.modal,
+            label: label
+        });
+    };
+    updateStatus = (status) => {
+        var obj = this.state.obj;
+        obj.status = status;
+        this.setState({ obj });
+    }
+    updateStatus = (status) => {
+        var obj = this.state.obj;
+        obj.status = status;
+        this.setState({ obj });
+    }
+    updateObj() {
+        this.setState({ editFlag: true }, () => {
+            this.addTemplateRef.updateObj(this.props.currentId);
+        })
+    }
     loadObj(id) {
+        console.log("QUotation.js loadObj function")
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
+            console.log("Quotation.js", list)
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
-
+            console.log("Quotation.js", list)
             if(list.length) {
                 this.setState({ obj: list[0], currentId: list[0].id });
+                console.log("setState")
             }
         });
     }
 
+    
+
+
+
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
+        this.props.onRef(this);
+        this.setState({
+            selectedStatus: this.props.status,
+            statusNotes: this.props.statusNotes
+        })
         // console.log('quotation component did mount');
-        console.log(this.props.currentId);
-
-       
+        console.log("componentDidMount", this.props.currentId);
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
+        
     }
-
     updateObj() {
+        console.log("updateObj in Quotation.js")
         if(this.state.obj) {
             this.setState({ editFlag: true }, () => {
                 this.addTemplateRef.updateObj(this.state.currentId);
@@ -60,64 +171,130 @@ class Quotation extends Component {
             this.setState({ editFlag: true });
         }
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: false });
         this.loadObj(this.props.currentId);
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
-    sendEmail = (i) => {
+    sendEmail = () => {
         var obj = this.state.obj;
-        var prod = this.props.parentObj.products[i];
-
-        axios.patch(Const.server_url + Const.context_path + "quotations/" + obj.id + "/products/" + prod.id)
-            .then(res => {
-                prod.status = 'Email Sent';
-                this.setState({ obj });
-                swal("Sent Quotation!", 'Succesfully sent quotation mail.', "success");
-            }).finally(() => {
-                this.setState({ loading: false });
-            }).catch(err => {
-                swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
-            })
+        // var prod = this.props.parentObj.products[i];
+        axios.patch(Const.server_url + Const.context_path + "quotations/" + obj.id)
+        .then(res => {
+            // prod.status = 'Email Sent';
+            this.setState({ obj });
+            swal("Sent Quotation!", 'Succesfully sent quotation mail.', "success");
+        }).finally(() => {
+            this.setState({ loading: false });
+        }).catch(err => {
+            swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
+        })
     }
-
-    render() {
+    render() {   
         return (
-            <div>
+            <div>  
+               <Modal isOpen={this.state.modalproduct} backdrop="static" toggle={this.closetoggleModalProduct} size={'md'}>
+                    <ModalHeader toggle={this.closetoggleModalProduct}>
+                        Convert To Order
+                    </ModalHeader>
+                    <ModalBody>
+                        <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
+                            <div className="row">
+                                <div className="col-md-12 ">
+                                    <div className="row" >
+                                        <div className="col-md-5">
+                                        Company Name
+                                        </div>
+                                        <div className="col-md-6">
+                                        <span>{this.state.newObj.name}</span> 
+                                        </div>
+                                    </div>
+                                    <div className="row" >
+                                        <div className="col-md-5"  style={{marginTop: 20}}  >
+                                        Status
+                                        </div>
+                                        <div className="col-md-6">
+                                        <FormControl    >
+                                            <InputLabel> Status</InputLabel>
+                                            <Select>
+                                                <MenuItem value={0} >Open</MenuItem>
+                                                <MenuItem value={10}>Pending</MenuItem>
+                                                <MenuItem value={20}>Accepted</MenuItem>
+                                                <MenuItem value={30}>Rejected</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Form>
+                        <div className="text-center">
+                        {/* onClick={e => this.addProduct()} */}
+                            <Button variant="contained" color="primary" >Submit</Button>
+                        </div>
+                    </ModalBody>
+                </Modal>
                 {!this.state.editFlag &&
                     <div className="row">
                         <div className="col-md-12">
                             {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
                             currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
-
                             {this.state.obj &&
                             <div className="card b">
                                 <div className="card-header">
-                                    <div className="float-right mt-2">
-                                        <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
-                                    </div>
+                                    <div className="">
+                                        <div className="row">
+                                            <div className="col-sm-10">
+                                            <button variant="contained" title=" "  style={{border:"1px solid  #2b3db6", borderRadius: "5px" }} > <span style={{fontSize: 11, textTransform : "none"}}>Status</span></button>
+                                            </div>
+                                            <div className="col-sm-2" >
+                                                <buttonGroup>
+                                                <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6 ", borderRadius: "5px" }} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6 ", borderRadius: "5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6", borderRadius: "5px" }} color="primary" variant="contained"> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>
+                                              
+                                                </buttonGroup>
+                                                   
+                                             </div>
+      
+                                            {/* <div className="col-sm-1">                                  
+                                                    <Button  style={{marginLeft: 27  }} fontSize="small" variant="contained" title="Edit"  onClick={() => this.updateObj()}>
+                                                        <EditIcon style={{color: "#000",  }} fontSize="small"/>
+                                                    </Button>    
+                                            </div>
+                                                <div className="col-sm-1" >                   
+                                            
+                                                <Button  variant="contained" style={{marginLeft: 15  }} fontSize="small"  title=" SendEmail " onClick={() => this.sendEmail()}><EmailIcon style={{ color: '#000' }} fontSize="small" /> </Button>
+                                              
+                                                </div>
+                                                <div className="col-sm-1">
+                                              <Button  variant="contained" fontSize="small" title="Convert order" > <AssignmentSharpIcon style={{ color: '#000', }} fontSize="small" /> </Button>                       
+                                                </div> */}
+                                        </div>
+                                        {/* {this.props.parentObj.products.map((product, i) => {
+                                            return (
+                                                <Button key={i} variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>     
+                                                )
+                                            })
+                                        }  */}
+                                    {/* onClick={e => this.closetoggleModalProduct()} */}
+                                          </div>
+                                          <div className=" mt-2" style={{right: 1}}></div>
                                     <h4 className="my-2">
                                         <span>{this.state.obj.name}</span>
                                     </h4>
                                 </div>
-                                <div className="card-body bb bt">
-                                    <table className="table">
+                                <div className="row  card-body bb bt">
+                                    <table className="col-sm-7 table">
                                         <tbody>
                                             <tr>
-                                                <td>
-                                                    <strong>Code</strong>
-                                                </td>
+                                                <td><strong>Code</strong></td>
                                                 <td>{this.state.obj.code}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Company</strong>
-                                                </td>
+                                                <td><strong>Company</strong></td>
                                                 <td>
                                                     <Link to={`/companies/${this.state.obj.company.id}`}>
                                                         {this.state.obj.company.name}
@@ -125,102 +302,98 @@ class Quotation extends Component {
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Specification</strong>
-                                                </td>
+                                                <td><strong>Specification</strong></td>
                                                 <td>{this.state.obj.specification}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Makes</strong>
-                                                </td>
+                                                <td><strong>Makes</strong></td>
                                                 <td>{this.state.obj.make}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Payment Terms</strong>
-                                                </td>
+                                                <td><strong>Payment Terms</strong></td>
                                                 <td>{this.state.obj.terms}</td>
                                             </tr>
                                            {/* <tr>
-                                                <td>
-                                                    <strong>Transportation Charger</strong>
-                                                </td>
+                                                <td><strong>Transportation Charger</strong></td>
                                                 <td>{this.state.obj.transportationCharges}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Packing</strong>
-                                                </td>
+                                                <td><strong>Packing</strong></td>
                                                 <td>{this.state.obj.packing}</td>
                                             </tr>
-                                           
                                             <tr>
-                                                <td>
-                                                    <strong>Delivery Period</strong>
-                                                </td>
+                                                <td><strong>Delivery Period</strong></td>
                                                 <td>{this.state.obj.deliveryPeriod} days</td>
                                             </tr>*/}
                                              <tr>
-                                                <td>
-                                                    <strong>GST</strong>
-                                                </td>
+                                                <td><strong>GST</strong></td>
                                                 <td>{this.state.obj.gst}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <strong>Valid Till</strong>
-                                                </td>
+                                                <td><strong>Valid Till</strong></td>
                                                 <td><Moment format="DD MMM YY">{this.state.obj.valiTill}</Moment></td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                    
-                                    <div className="mt-4">
-                                        <h4 style={{fontSize: 14}}>Products</h4>
                                     </div>
-                                    <Table hover responsive>
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Quantity</th>
-                                                <th>Amount</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        {this.state.obj.products &&
-                                        <tbody>
-                                        {this.props.parentObj.products.map((product, i) => {
-                                            return (
-                                                <tr key={i}>
-                                                    <td className="va-middle">{i + 1}</td>
-                                                    <td>
-                                                        <Link to={`/products/${product.product.id}`}>
-                                                            {product.product.name}
-                                                        </Link>
+                                    <Divider />
+                                    <div className=" row text-left mt-4">
+                                        <div className="col-sm-12" >
+                                            <h4 style={{fontSize: 18,flexDirection: 'row',marginLeft: 12}}>Products </h4>
+                                        </div>
+                                    </div>
+                                    <Divider />
+                                    <Divider />
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                        <Table  hover responsive>
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                    {/* <th>Actions</th> */}
+                                                </tr>
+                                            </thead>
+                                            {this.state.obj.products &&
+                                            <tbody>
+                                            {this.props.parentObj.products.map((product, i) => {
+                                                return (
+                                                    <tr key={i}>
+                                                        <td className="va-middle">{i + 1}</td>
+                                                        <td>
+                                                            <Link to={`/products/${product.product.id}`}>
+                                                                {product.product.name}
+                                                            </Link>
+                                                        </td>
+                                                        <td>{product.quantity}</td>
+                                                        <td>{product.amount}</td>
+                                                        <td>
+                                                    {product.status===null ? <div>
+                                                        <span className="badge badge-secondary">Pending</span></div> :<div>
+                                                            {product.status === 'Rejected' ? <div>
+                                                            <span className="badge badge-danger">{product.status}</span></div>:<div>
+                                                            <span className="badge badge-success">{product.status}</span></div>
+                                                    }
+                                                    </div>
+                                                }
                                                     </td>
-                                                    <td>{product.quantity}</td>
-                                                    <td>{product.amount}</td>
-                                                    <td>
-                                                        {!product.status && '-NA-'}
-                                                        {product.status && <span className="badge badge-success">{product.status}</span>}
-                                                    </td>
-                                                    <td>
-                                                        <Button variant="contained" color="inverse" size="xs" onClick={() => this.sendEmail(i)}>Send Email</Button>
-                                                    </td>
-                                                </tr>)
-                                            })}
-                                        </tbody>}
-                                    </Table>
-                               
+                                                        {/* <td>
+                                                            <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
+                                                        </td> */}
+                                                    </tr>)
+                                                })}
+                                            </tbody>}
+                                        </Table>
+                                    </div>
                                 </div>
                             </div>}
-                            {!this.state.obj &&
+                            {/* {!this.state.obj &&
                             <div className="text-center">
                                 {this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Generate Quotation</Button>}
-                            </div>}
+                            </div>} */}
                         </div>
                     </div>}
                 {this.state.editFlag &&
@@ -233,12 +406,10 @@ class Quotation extends Component {
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Quotation);

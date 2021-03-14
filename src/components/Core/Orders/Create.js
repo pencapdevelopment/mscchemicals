@@ -10,7 +10,6 @@ export function createOrder(type, obj, baseUrl) {
         newObj.enquiryId = obj.id;
         newObj.id = undefined;
         newObj.status = 'On going';
-
         newObj.company = '/companies/' + newObj.company.id;
 
         newObj.terms = '';

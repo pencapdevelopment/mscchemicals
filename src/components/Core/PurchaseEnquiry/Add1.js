@@ -52,7 +52,7 @@ class Add extends Component {
             errors: {},
             modalassign: false,
             obj: {
-                code: getUniqueCode('PR'),
+                code: getUniqueCode('PE'),
                 enquiryDate: getTodayDate(),
                 company: '',
                 contactName: '',

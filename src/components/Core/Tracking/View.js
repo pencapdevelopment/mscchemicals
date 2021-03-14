@@ -11,7 +11,7 @@ import {  Modal,
     ModalHeader,
     ModalBody } from 'reactstrap';
 import Sorter from '../../Common/Sorter';
-
+import EditIcon from '@material-ui/icons/Edit';
 import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
 import { Button, Tab, Tabs, AppBar } from '@material-ui/core';
@@ -211,7 +211,7 @@ class View extends Component {
                                 <div className="card b">
                                     <div className="card-header">
                                         <div className="float-right mt-2">
-                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                            <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}><EditIcon style={{color:"#fff"}} fontSize="small" /></button>
                                         </div>
                                         <h4 className="my-2">
                                             <span>{this.state.obj.name}</span>

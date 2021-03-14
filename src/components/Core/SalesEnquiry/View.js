@@ -623,10 +623,10 @@ class View extends Component {
                                                                         <td>
                                                                              {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
                                                         
-                                                                                 <Button title="Edit" fontSize="small" variant="contained" onClick={() => this.updateObj()}> <EditIcon fontSize="small" style={{color:"#000" }} /></Button>}
+                                                        <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff'}} fontSize="small" /></button>}
                                                                         </td>
                                                                         <td>
-                                                                             {this.state.isQuoteExists < 1 ?  <Button style={{right: -10}} Size="small" variant="contained" title=" Generate Quotation" onClick={() => this.handleGenerateQuote()} > <img style={{width: "20px", height: "20px"}} src="img/quotei.png" /></Button>:'' }
+                                                                             {this.state.isQuoteExists < 1 ?  <button style={{right: -10, backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} Size="small" variant="contained" title=" Generate Quotation" onClick={() => this.handleGenerateQuote()} > <img style={{width: "20px", height: "20px"}} src="img/quotei.png" /></button>:'' }
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
@@ -670,9 +670,11 @@ class View extends Component {
                                                                     {this.state.users.map((obj, i) => {
                                                                         return (
                                                                             <Chip
-                                                                                avatar={
+                                                                               style={{backgroundColor:"lightgreen"}}
+                                                                               fontSize= "small"
+                                                                               avatar={
                                                                                     <Avatar>
-                                                                                        <AssignmentIndIcon />
+                                                                                        <AssignmentIndIcon  style={{color: "#000"}}/>
                                                                                     </Avatar>
                                                                                 }
                                                                                 label={obj.user.name}
@@ -685,7 +687,9 @@ class View extends Component {
                                                                 </td>
                                                                 <td style={{marginRight: -170}}>
                                                                     { this.props.user.role === 'ROLE_ADMIN' &&
-                                                                        <Button  title="Assigned To" variant="contained" size="small" onClick={this.toggleModalAssign}> <AddIcon  fontSize="small" />Add </Button>}
+                                                                   
+                                                                   <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} title="Assigned To" onClick={this.toggleModalAssign}><AddIcon  style={{ color: '#fff', }} fontSize="small" /> </button>}
+                                                           
                                                                 </td>
                                                             </tr>
                                                             <tr>

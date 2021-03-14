@@ -334,7 +334,7 @@ class Negotiation extends Component {
                     <div className="card b">
                     <div className="row ml-1 mt-4">
                                         <div className="col-sm-12" >
-                                        <h4 style={{fontSize: 18,flexDirection: 'row'}}>Generated Quotation</h4>
+                                        {/* <h4 style={{fontSize: 18,flexDirection: 'row'}}>Generated Quotation</h4> */}
                                    
                                         </div>
                                         
@@ -342,9 +342,11 @@ class Negotiation extends Component {
                         <Table className="card-header" hover responsive>
                         <thead>
                                             <tr>
-                                                <th>Quotation Code</th>
+                                                <th>Generate Code</th>
                                                 <th>Sent Date</th>
+                                                <th>Received Date</th>
                                                 <th>Create On</th>
+                                                <th>Expiry Date</th>
                                                 
                                             </tr>
                                         </thead>
@@ -353,7 +355,8 @@ class Negotiation extends Component {
                     <tbody className="card-body bb bt" hover responsive>
                                 <tr>
                                 <td>{this.state.obj.code}</td>
-                                <td> hgjhjh</td>
+                                <td> </td>
+                                <td> </td>
                                 <td>{this.state.obj.creationDate}</td>
                                 </tr>      
                                        

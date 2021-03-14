@@ -5,11 +5,14 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 // import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
-
 // import PageLoader from '../../Common/PageLoader';
 import Chip from '@material-ui/core/Chip';
 import Box from '@material-ui/core/Box';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Moment from 'react-moment';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import { Table } from 'reactstrap';
+import CloseSharpIcon from '@material-ui/icons/CloseSharp';
 import {
      Modal,
     ModalHeader,
@@ -20,7 +23,7 @@ import SalesInventory from './SalesInventory';
 // import Sorter from '../../Common/Sorter';
 // import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter,  } from '../../Common/constants';
-import { Button,  Tab, Tabs, AppBar,  TextField  } from '@material-ui/core';
+import { Button,  Tab, Tabs, AppBar,  TextField,InputLabel  } from '@material-ui/core';
 // import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
@@ -37,7 +40,7 @@ import Add from './Add';
 import Upload from '../Common/Upload';
 // import Status from '../Common/Status';
 import Followups from '../Followups/Followups';
-import ShipmentDetails from './ShipmentDetails';
+import CheckList from './CheckList';
 import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
 import Accounts from './Accounts';
@@ -107,6 +110,17 @@ class View extends Component {
             {label: 'Advance Remittance request', expiryDate: false },
             {label: 'PDC', expiryDate: false },
         ]
+    }
+    getFileName = (type) => {
+        var doc = this.state.formWizard.docs.find(g => g.fileType === type);
+        if (doc) {
+            // return doc.fileName;
+            return <a href="javascript:void(0);" className="btn-link" onClick={(e) => this.downloadFile(e, type)}>
+                        {doc.fileName}
+                    </a>
+        } else {
+            return "-NA-";
+        }
     }
 
     toggleTab = (tab) => {
@@ -224,6 +238,9 @@ class View extends Component {
     }
 
     componentDidMount() {
+        if(this.props.user.role === 'ROLE_ACCOUNTS'||this.props.user.role === 'ROLE_INVENTORY'){
+            this.toggleTab(1);
+        }
         console.log('view component did mount');
         console.log(this.props.currentId);
         this.orderUser(this.props.currentId);
@@ -358,38 +375,41 @@ class View extends Component {
                 {!this.state.editFlag &&
                  
                     <div className="row">
+                         
                         <div className="col-md-12">
                             <AppBar position="static">
                                   {(this.props.user.role !== 'ROLE_ACCOUNTS'&& this.props.user.role !== 'ROLE_INVENTORY'&& 
                                     <div>     
-                                <Tabs
-                                    className="bg-white"
-                                    indicatorColor="primary"
-                                    textColor="primary"
-                                    variant="scrollable"
-                                    scrollButtons="auto"
-                                    aria-label="scrollable auto tabs example"
-                                    value={this.state.activeTab}
-                                    onChange={(e, i) => this.toggleTab(i)} >
-                                       
-                                            <Tab  label="Details"   />
-                                            <Tab label="Shipment Details" />
-                                            {/* <Tab label="Inventory" /> */}
-                                            <Tab label="Accounts" />
-                                            <Tab label="Followups" />
-                                            <Tab label="Shipping Documents" />
-                                            
-                                            <Tab label="Banking Documents" />
-                                            <Tab label="Approvals" />   
-                                            </Tabs>
-                                        </div>)}
-                                   
-                                   
-                                
+                                        <Tabs
+                                            className="bg-white"
+                                            indicatorColor="primary"
+                                            textColor="primary"
+                                            variant="scrollable"
+                                            scrollButtons="auto"
+                                            aria-label="scrollable auto tabs example"
+                                            value={this.state.activeTab}
+                                            onChange={(e, i) => this.toggleTab(i)} >
+                                                <Tab  label="Details"   />
+                                                {(this.state.obj.type === "Sales" ?
+                                                    <Tab label="Shipping Method" /> 
+                                                : 
+                                                    <Tab label="CheckList" /> )
+                                                }
+                                                <Tab label="CHA Documents" />
+                                                <Tab label="Accounts" />
+                                                <Tab label="Followups" />
+                                                <Tab label="Shipping Documents" />
+                                                <Tab label="Banking Documents" />
+                                                <Tab label="Approvals" />   
+                                             
+                                        </Tabs>
+                                    </div>)}
                             </AppBar>
                             </div>
+                        
                     </div>}
-                            {this.state.obj &&
+                            {this.state.obj &&  
+                            (this.state.obj.type === "Sales" ? 
                             <TabPanel value={this.state.activeTab} index={0}>
                              
                                   
@@ -399,11 +419,11 @@ class View extends Component {
                                         <div className=" mt-2">
                                         <div className="row" >
                                        
-                                        <div className="col-sm-2"><Button title="status" size="small" variant="contained">Status</Button></div>
-                                            <div className="col-sm-7"></div>
-                                            <div className="col-sm-1"  >  </div>
+                                        <div className="col-sm-2"><button style={{ border:"1px solid " }} title="status" size="small" variant="contained">Status</button></div>
+                                            <div className="col-sm-9"></div>
+                                            {/* style={{ backgroundColor: "#2b3db6", border:"1px solid " }} */}
                                             {(this.props.user.role !== 'ROLE_ACCOUNTS'&& this.props.user.role !== 'ROLE_INVENTORY' &&
-                                   <div className="col-sm-2" ><Button variant="contained" size="small">cancel</Button></div>
+                                   <div className="col-sm-1" ><button style={{ backgroundColor: "#fff", border:"1px solid " }} variant="contained" size="small"><CloseSharpIcon style={{color:"#fff"}} fontSize="small" /></button></div>
                                    )}
                                            
 
@@ -810,16 +830,8 @@ class View extends Component {
                                                             <TextField
                                                                 name="customerDeclaration"
                                                                 type="text"
-                                                                label="Invoice"
-                                                                // required={true}
-                                                                // fullWidth={true}
-                                                                // inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License or Customer Declaration is required"}]' }}
-                                                                // helperText={errors?.customerDeclaration?.length > 0 ? errors?.customerDeclaration[0]?.msg : ''}
-                                                                // error={errors?.customerDeclaration?.length > 0}
+                                                                label="Invoice"                                                             
                                                                 className="col-md-3"
-                                                                // value={this.state.formWizard.obj.customerDeclaration}
-                                                                // onBlur={e => this.optionalValidator('customerDeclaration', e)}
-                                                                // onChange={e => this.setField('customerDeclaration', e)}
                                                                  />
                                                             <Button
                                                                 variant="contained"
@@ -994,32 +1006,249 @@ class View extends Component {
                                             </div>}
                                     </div>
                                     
-                            </TabPanel>}
-                            <TabPanel value={this.state.activeTab} index={1}>
-                                <ShipmentDetails baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
-                                currentId={this.props.currentId} parentObj={this.state.obj}></ShipmentDetails>
                             </TabPanel>
-                            {/* <TabPanel value={this.state.activeTab} index={2}>
-                                <Inventory baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
-                                currentId={this.props.currentId} parentObj={this.state.obj} parentObj={this.state.obj}></Inventory>
-                            </TabPanel>*/}
+                            :
+                            <TabPanel value={this.state.activeTab} index={0}>
+                                  <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="card">
+                                                <div className="card-header">                                             
+                                    
+                                               
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                 
+                                    <div className="row">
+                                        <div className="col-md-8">
+                                           
+                                            <div className="card b">
+                                                    <div className="card-body bb bt">
+                                                    <table className="table" style={{marginBottom: 7}}>
+                                                        <tbody>
+                                              
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Order No</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.code}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Order Date</strong>
+                                                                </td>
+                                                                <td><Moment format="DD MMM YY">{this.state.obj.enquiryDate}</Moment></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Port of Landing</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.portOfLanding}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Dispatch</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.dispatch}</td>
+                                                            </tr>
+                                                          
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>FOB</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.fob}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>CIF</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.cif}</td>
+                                                            </tr>   
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Payment Terms</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.paymentterms}</td>
+                                                            </tr>                                            
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Currency</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.currency}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Description</strong>
+                                                                </td>
+                                                                <td>{this.state.obj.description}</td>
+                                                            </tr>
+                                                        </tbody>
+                                            
+                                                    </table>
+                                                    <Divider/>
+                                                    <div className=" mt-2 row" >
+                                                        <h4 className="col-md-9" style={{fontSize:18}}>Products</h4>
+                                                     </div>
+                                                      <Divider/>
+                                                    <Table hover responsive>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Name</th>
+                                                                <th>Quantity</th>
+                                                                <th>Amount</th>
+                                                                <th>Specification</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {this.state.obj.products.map((product, i) => {
+                                                                return (
+                                                                    <tr key={i}>
+                                                                        <td className="va-middle">{i + 1}</td>
+                                                                        <td>
+                                                                            <Link to={`/products/${product.product.id}`}>
+                                                                                {product.product.name}
+                                                                            </Link>
+                                                                        </td>
+                                                                        <td>{product.quantity} {product.uom}</td>
+                                                                        <td>{product.amount}</td>
+                                                                        <td></td>
+                                                                        {/* <td><Button variant="contained" color="warning" size="xs" onClick={() => this.editInventory(i)}>Inventory & Docs</Button> </td> */}
+                                                                    </tr>
+                                                                )
+                                                            })}
+                                                        </tbody>
+                                                    </Table>
+                                                  
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-5  offset-md-1">
+                                                        <fieldset >
+                                                            <TextField type="text" name="customerDeclaration" label="Sales Contract Upload" required={true} fullWidth={true}
+                                                                // inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                                                // helperText={errors?.coa?.length > 0 ? errors?.coa[0]?.msg : ""}
+                                                                // error={errors?.coa?.length > 0}
+                                                                // value={this.state.formWizard.obj.coa} onChange={e => this.setField("coa", e)} 
+                                                                />                         
+                                                            </fieldset>
+                                                        </div>   
+                                                    <div >
+                                                    <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px" }}   startIcon={<CloudUploadIcon />} >Upload</Button>
+                                                    </div>  
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-5  offset-md-1">
+                                                        <fieldset >
+                                                            <TextField type="text" name="customerDeclaration" label="performa Invoice Upload " required={true} fullWidth={true}
+                                                                // inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                                                // helperText={errors?.coa?.length > 0 ? errors?.coa[0]?.msg : ""}
+                                                                // error={errors?.coa?.length > 0}
+                                                                // value={this.state.formWizard.obj.coa} onChange={e => this.setField("coa", e)}
+                                                                 />                         
+                                                            </fieldset>
+                                                        </div>   
+                                                    <div >
+                                                    <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px" }}   startIcon={<CloudUploadIcon />} >Upload</Button>
+                                                    </div>  
+                                                </div>
+                                               
+                                                        <div className="row  ml-4 p-2" >
+                                                            <InputLabel  className=" col-md-4 mt-3 " style={{left:"30px"}}>Est.Time of Dispatch :</InputLabel> 
+                                                            <TextField
+                                                                name="customerDeclaration"
+                                                                type="text"   
+                                                                style={{left:"-30px"}}                                                        
+                                                                className="col-md-4"                                                             
+                                                                 />                                                   
+                                                        </div>
+                                            </div>
+                                        </div>
+                                        {
+                                            // this.props.user.role === 'ROLE_ADMIN' &&
+                                            <div className="col-md-4" >
+                                                {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
+                                                    parentObj={this.state.obj} currentId={this.props.currentId}></Assign> */}
+                                                {/* <Timeline
+                                                    title='Period ending 2017'
+                                                    timeline={mockTimeline}
+                                                /> */}
+                                                <ActivityStream
+                                                    title="Activity"
+                                                    stream={mockActivity}
+                                                    
+                                                />
+                                            </div>
+                                            }
+                                    </div>
+                                
+                            </TabPanel>
+                            )
+                            }
+                            <TabPanel value={this.state.activeTab} index={1}>
+                                <CheckList baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
+                                currentId={this.props.currentId} parentObj={this.state.obj}></CheckList>
+                            </TabPanel>
                             <TabPanel value={this.state.activeTab} index={2}>
+                            <div className="row">
+                                    <div className="col-md-8  offset-md-2">
+                                        <table className="table" >
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                <InputLabel>Invoice No</InputLabel>
+                                                </td>
+                                                <td>
+                                          
+                                                </td>                                          
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                <InputLabel>Packing List</InputLabel>
+                                                </td>
+                                                <td>
+                                          
+                                                </td>                                          
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                <InputLabel>Coo</InputLabel>
+                                                </td>
+                                                <td>
+                                          
+                                                </td>                                          
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                <InputLabel>Bill of Landing </InputLabel>
+                                                </td>
+                                                <td>
+                                          
+                                                </td>                                          
+                                            </tr>
+                                            </tbody>
+                                            </table>
+                                    </div>   
+                                            
+                                </div>
+                            </TabPanel>
+                            <TabPanel value={this.state.activeTab} index={3}>
                                 <Accounts baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
                                 currentId={this.props.currentId}  parentObj={this.state.obj}></Accounts>
                             </TabPanel>
-                            <TabPanel value={this.state.activeTab} index={3}>
+                            <TabPanel value={this.state.activeTab} index={4}>
                                 <Followups repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)}></Followups> 
                             </TabPanel>
-                             <TabPanel value={this.state.activeTab} index={4}>
+                             <TabPanel value={this.state.activeTab} index={5}>
                                 <Upload onRef={ref => (this.shippinguploadRef = ref)} fileFrom={this.props.baseUrl + '_Shipping'} 
                                 currentId={this.props.currentId} fileTypes={this.state.shippingFileTypes}></Upload>
                             </TabPanel>
                           
-                            <TabPanel value={this.state.activeTab} index={5}>
+                            <TabPanel value={this.state.activeTab} index={6}>
                                 <Upload onRef={ref => (this.bankinguploadRef = ref)} fileFrom={this.props.baseUrl + '_Banking'} 
                                 currentId={this.props.currentId} fileTypes={this.state.bankingFileTypes}></Upload>
                             </TabPanel>
-                            <TabPanel value={this.state.activeTab} index={6}>
+                            <TabPanel value={this.state.activeTab} index={7}>
                                 <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)}></Approval> 
                             </TabPanel>
                           {/*  <TabPanel value={this.state.activeTab} index={7}>

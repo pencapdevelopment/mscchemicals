@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 // import swal from 'sweetalert';
 import axios from 'axios';
+import EditIcon from '@material-ui/icons/Edit';
 // import Moment from 'react-moment';
 // import { Link } from 'react-router-dom';
 // import { Table } from 'reactstrap';
@@ -15,7 +16,7 @@ import Followups from '../Followups/Followups';
 // import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
 import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
-
+import Chip from '@material-ui/core/Chip';
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
 // import {
@@ -95,10 +96,7 @@ class ProspectiveVendorView extends Component {
 
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
@@ -127,7 +125,7 @@ class ProspectiveVendorView extends Component {
 
 
     loadObj(id) {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=template_edit').then(res => {
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=prospective_vendor_edit').then(res => {
             this.setState({ obj: res.data });
         });
     }
@@ -137,9 +135,6 @@ class ProspectiveVendorView extends Component {
     }
 
     componentDidMount() {
-        console.log('view component did mount');
-        console.log(this.props.currentId);
-
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
     }
@@ -186,7 +181,7 @@ class ProspectiveVendorView extends Component {
     render() {
         return (
             <div>
-                <div className="content-heading">Template</div>
+                <div className="content-heading">Vendors</div>
                 {!this.state.editFlag &&
                     <div className="row">
                         <div className="col-md-12">
@@ -210,7 +205,7 @@ class ProspectiveVendorView extends Component {
                                 <div className="card b">
                                     <div className="card-header">
                                         <div className="float-right mt-2">
-                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                          <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
                                         </div>
                                       
                                     </div>
@@ -226,10 +221,22 @@ class ProspectiveVendorView extends Component {
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <strong>Contact name</strong>
+                                                        <strong>Company Name</strong>
                                                     </td>
-                                                    <td>{this.state.obj.contactName}</td>
+                                                    <td>{this.state.obj.companyName}</td>
                                                 </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Department</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.department}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Designation</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.designation}</td>
+                                                </tr>   
                                                 <tr>
                                                     <td>
                                                         <strong>Email</strong>
@@ -244,9 +251,50 @@ class ProspectiveVendorView extends Component {
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <strong>Other</strong>
+                                                        <strong>Country</strong>
                                                     </td>
-                                                    <td>{this.state.obj.other}</td>
+                                                    <td>{this.state.obj.country}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Province</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.province}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Category</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.categories}</td>
+                                                </tr>
+                                                  
+                                                <tr>
+                                                    <td>
+                                                        <strong>Products Offered</strong>
+                                                    </td>
+                                                    <td>
+                                                    {this.state.obj.vendorProduct.map((obj, i) => {
+                                                                        return (
+                                                                            <Chip
+                                                                               style={{color: "#000",backgroundColor: "#eee342", marginLeft: "5px"}}
+
+                                                                                avatar={
+                                                                                    // <Avatar>
+                                                                                        {/* <AssignmentIndIcon /> */}
+                                                                                    // </Avatar>
+                                                                                }
+                                                                                label=  {obj.product.name}
+                                                                              
+                                                                           />
+                                                                        )
+                                                                    })} 
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Remarks</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.remarks}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

@@ -341,6 +341,7 @@ class Upload extends Component {
                                 <thead>
                                     <Sorter columns={[
                                         { name: 'File Type', sortable: false },
+                                        // { name: 'File Type', sortable: false },
                                         { name: 'Action', sortable: false },
                                         { name: 'File Name', sortable: false },
                                         { name: 'Expiry Date', sortable: false },
@@ -353,9 +354,16 @@ class Upload extends Component {
                                         return (
                                             <tr key={obj.label} className={obj.noshow ? 'd-none' : ''}>
                                                 <td>{obj.label}</td>
-                                                <td>
+                                            
 
-                                                    <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)} color="primary" startIcon={<CloudUploadIcon />}>Upload  </Button>
+                                                    {/*<td> <Button variant="contained" disabled={this.props.disabled}   style={{textTransform:"none", marginLeft: "-10px"}} color="warning" size="xs" onClick={() => this.editSubObj(i)} color="primary" startIcon={<CloudUploadIcon />}> COA Upload  </Button> 
+                                                    </td>
+                                                    */}
+                                                    {/* <img onClick={() => this.editSubObj(i)}  src="img/upload.png" />  */}
+                                               
+                                                <td>
+                                                <Button Size="small" disabled={this.props.disabled} variant="contained" color="primary" style={{marginTop: "30px",marginLeft: "-10px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload</Button>
+                                                    {/* <Button variant="contained" disabled={this.props.disabled} style={{textTransform:"none", marginLeft: "-10px"}} color="warning" size="xs" onClick={() => this.editSubObj(i)} color="primary" startIcon={<CloudUploadIcon />}>Upload  </Button> */}
                                                     {/* <img onClick={() => this.editSubObj(i)}  src="img/upload.png" />  */}
                                                 </td>
                                                 <td>

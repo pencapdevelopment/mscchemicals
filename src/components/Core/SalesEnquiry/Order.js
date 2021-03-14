@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import MomentUtils from '@date-io/moment';
 import * as Const from '../../Common/constants';
-
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import {  FormControl, TextField} from '@material-ui/core';
 import {
      Modal,
@@ -224,7 +224,7 @@ class Order extends Component {
             <div>
                  <Modal isOpen={this.state.modal} backdrop="static" toggle={this.closetoggleModal} size={'md'}>
                     <ModalHeader toggle={this.closetoggleModal}>
-                        Upload - PO
+                        Upload - Po
                         {/* {this.state.label} */}
                     </ModalHeader>
                     <ModalBody>
@@ -242,7 +242,7 @@ class Order extends Component {
                         {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
                         <fieldset>
                                 <FormControl>
-                                    <TextField id="Po Number" name="PO Number" label="PO Number" type="text"
+                                    <TextField id="Po Number" name="Po Number" label="Po Number" type="text"
                                         inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"2"},{"key":"maxlen","param":"30"}]' }}
                                         // helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
                                         // error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
@@ -314,7 +314,9 @@ class Order extends Component {
                                 <tr>
                                     <td></td>
                                     <td></td>
-                                    <td>   <img title=""onClick={e => this.toggleModal('GST')}  src="img/upload.png" /></td>
+                                    <td>   
+                                    <Button  title="upload Po" variant="contained" color="primary" onClick={e => this.toggleModal('GST')} startIcon={<CloudUploadIcon />} style={{textTransform :"none", marginLeft: -30}}>Upload Po</Button>
+                                    </td>
                                 </tr>      
                                        
                         </tbody>           
