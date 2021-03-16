@@ -16,7 +16,9 @@ import AddQuotation from './AddQuotation';
 import Fab from '@material-ui/core/Fab';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
-import AssignmentSharpIcon from '@material-ui/icons/AssignmentSharp';
+// import AssignmentSharpIcon from '@material-ui/icons/AssignmentSharp';
+// import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import Divider from '@material-ui/core/Divider';
 import {
     Form, Modal,
@@ -365,7 +367,7 @@ class Quotation extends Component {
                                                     <EditIcon style={{ color: '#fff', }} fontSize="small" /></button>)}
 
                                                     <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
-                                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px"}} color="primary" variant="contained"> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>
+                                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px"}} color="primary" variant="contained"> <ShoppingCartIcon   style={{ color: '#fff', }} fontSize="small"/></button>
                                               
                                                 </buttonGroup>
                                                    
