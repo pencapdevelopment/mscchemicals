@@ -8,7 +8,7 @@ import 'react-datetime/css/react-datetime.css';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Status from '../Common/Status';
+import Status1 from '../Common/Status1';
 import { Table } from 'reactstrap';
 import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
@@ -22,6 +22,7 @@ import {
     Form, Modal,
     ModalBody, ModalHeader,
 } from 'reactstrap';
+import FormValidator from '../../Forms/FormValidator';
 import { green, pink } from '@material-ui/core/colors';
 import Avatar from '@material-ui/core/Avatar';
 const useStyles = makeStyles((theme) => ({
@@ -48,6 +49,7 @@ class Quotation extends Component {
         modal: false,
         modalproduct: false,
         ngTracking : [],
+        statusObj:'',
         obj: '',
         newObj: '',
         baseUrl: 'sales-quotation',
@@ -55,14 +57,29 @@ class Quotation extends Component {
         selectedStatus: '',
         error: {},
         selectedStatus: '',
-        statusNotes:'',
         status: [
             { label: 'Approved', value: 'Approved', badge: 'success'},
-            { label: 'Rejected', value: 'Rejected', badge: 'danger'},
-            { label: 'Pending', value: 'Pending', badge: 'secondary'},
-            { label: 'Email Sent', value: 'Email Sent', badge: 'info'}
-        ]
+            { label: 'Rejected', value: 'Rejected', badge: 'danger'}
+            
+        ],
+
+        formWizard: {
+            editFlag: false,
+            readOnly:false,
+            obj: {
+                status:'',
+                remark:''
+            }
+        },
+        status1: [
+            { label: 'Accept', value: 'Approved' },
+            { label: 'Reject', value: 'Rejected' },
+          
+        ], 
     }
+
+   
+
     loadObj() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
             if (res.data.paymentTerms) {
@@ -145,9 +162,9 @@ class Quotation extends Component {
         });
     };
     updateStatus = (status) => {
-        var obj = this.state.obj;
-        obj.status = status;
-        this.setState({ obj });
+        var statusObj = this.state.obj;
+        statusObj.status = status;
+        this.setState({ statusObj });
     }
     updateStatus = (status) => {
         var obj = this.state.obj;
@@ -166,7 +183,7 @@ class Quotation extends Component {
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
             console.log("Quotation.js", list)
             if(list.length) {
-                this.setState({ obj: list[0], currentId: list[0].id });
+                this.setState({ obj: list[0], currentId: list[0].id }, ()=>console.log("loadobj sales-quotation data", this.state.obj));
                 console.log("setState")
             }
         });
@@ -178,7 +195,7 @@ class Quotation extends Component {
         this.props.onRef(this);
         this.setState({
             selectedStatus: this.props.status,
-            statusNotes: this.props.statusNotes
+            // statusNotes: this.props.statusNotes
         })
         // console.log('quotation component did mount');
         console.log("componentDidMount", this.props.currentId);
@@ -223,7 +240,29 @@ class Quotation extends Component {
             })
         }
     }
-    render() {   
+
+
+    setField(field, e, noValidate) {
+        var formWizard = this.state.formWizard;
+        var input = e.target;
+        formWizard.obj[field] = e.target.value;
+        this.setState({ formWizard });
+        if (!noValidate) {
+            const result = FormValidator.validate(input);
+            formWizard.errors[input.name] = result;
+            this.setState({
+                formWizard
+            });
+        }
+    }
+    setSelectField(field, e) {
+        this.setField(field, e, true);
+    }
+
+
+    render() { 
+        const errors = this.state.formWizard.errors;
+        const readOnly=this.state.readOnly;  
         return (
             <div>  
                <Modal isOpen={this.state.modalproduct} backdrop="static" toggle={this.closetoggleModalProduct} size={'md'}>
@@ -278,11 +317,53 @@ class Quotation extends Component {
                                     <div className="">
                                         <div className="row">
                                             <div className="col-sm-9">
-                                                <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span>
+                                                  
+                                            <table>
+                                                            <tbody>
+                                                            <tr style={{marginTop: 70, marginLeft: 10}}>
+                                                                {/* <td style={{backgroundColor:'rgba(0, 0, 0, 0.04);'}}>
+                                                                    <span ><ArrowDropDownIcon/></span>
+                                                                </td> */}
+                                                            <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span> 
+                                                            {/* <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span> */}
+                                                            </tr>
+                                                             </tbody>
+                                                        </table>
+                                                       
+                                                 {(this.props.user.role === 'ROLE_ADMIN'  && <Status1 onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
+                                                            showNotes={true}
+                                                            onUpdate={(id) => this.updateStatus(id)}
+                                                            color="primary"
+                                                            statusList={this.state.status}  status={this.state.statusObj}
+                                                            statusType="Enquiry"></Status1>)} 
+                                            {/* {(this.props.user.role === 'ROLE_ADMIN' || readOnly || (this.props.user.permissions.indexOf("MG_AC") >= 0)) &&
+                                                <FormControl>
+                                                   
+                                                    <Select name="status" style={{width:"0px"}} label="Status" value={this.state.formWizard.obj.status}
+                                                        disabled={readOnly}
+                                                        helperText={errors?.status?.length > 0 ? errors?.status[0]?.msg : ""}
+                                                        error={errors?.status?.length > 0}
+                                                        onChange={e => this.setSelectField('status', e)}> {this.state.status.map((e, keyIndex) => {
+                                                            return (
+                                                                <MenuItem key={keyIndex} value={e.value}>{e.label}</MenuItem>
+                                                            );
+                                                        })}
+                                                    </Select>
+                                                    
+                                                </FormControl>
+                                            }
+                                                <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span> */}
                                             </div>
-                                            <div className="col-sm-2" >
+                                            <div className="col-sm-2"  >
                                                 <buttonGroup>
-                                                <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6 ",borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                    
+                                                {(this.props.user.role === 'ROLE_ADMIN' && <button disabled={this.state.obj.status === 'Approved' || this.state.obj.status === null }
+
+
+                                                    style={{ backgroundColor: "#2b3db6", border: "1px solid #2b3db6 ", borderRadius: "5px" }}
+                                                    color="primary" variant="contained" onClick={() => this.updateObj()}>
+                                                    <EditIcon style={{ color: '#fff', }} fontSize="small" /></button>)}
+
                                                     <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
                                                     <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px"}} color="primary" variant="contained"> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>
                                               
@@ -438,6 +519,7 @@ class Quotation extends Component {
                             <AddQuotation baseUrl={this.state.baseUrl} saleId={this.props.currentId} currentId={this.state.currentId} parentObj={this.props.parentObj}
                             onRef={ref => (this.addTemplateRef = ref)} onSave={(id) => this.saveSuccess(id)} onCancel={this.cancelSave}></AddQuotation>
                         </div>
+                        
                     </div>}
             </div>)
     }
