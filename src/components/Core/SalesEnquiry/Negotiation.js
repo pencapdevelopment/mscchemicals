@@ -372,6 +372,7 @@ class Negotiation extends Component {
     render() {
         return (
             <div>
+                {(this.state.obj.status === 'Rejected' || this.state.obj.status === null) ? null: <div>
                 {this.state.loading && <PageLoader />}
                 <Modal isOpen={this.state.modalnegatation} backdrop="static" toggle={this.toggleModalNegotation1} size={'lg'}>
                      <ModalHeader toggle={this.toggleModalNegotation1}>
@@ -723,7 +724,7 @@ class Negotiation extends Component {
                             onRef={ref => (this.addTemplateRef = ref)} onSave={(id) => this.saveSuccess(id)} onCancel={this.cancelSave}></AddQuotation>
                         </div>
                     </div>}
-            </div>)
+            </div>}</div>)
     }
 }
 const mapStateToProps = state => ({

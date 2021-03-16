@@ -357,7 +357,7 @@ class Quotation extends Component {
                                             <div className="col-sm-2"  >
                                                 <buttonGroup>
                                                     
-                                                {(this.props.user.role === 'ROLE_ADMIN' && <button disabled={this.state.obj.status === 'Approved' || this.state.obj.status === null }
+                                                {(this.props.user.role === 'ROLE_ADMIN' && <button disabled={this.state.obj.status === 'Approved' || this.state.obj.status === null || this.state.obj.status === 'Email Sent' }
 
 
                                                     style={{ backgroundColor: "#2b3db6", border: "1px solid #2b3db6 ", borderRadius: "5px" }}

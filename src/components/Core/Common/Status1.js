@@ -80,7 +80,9 @@ class Status1 extends Component {
 
     render() {
         const errors = this.state.formWizard.errors;
-        return (<span>
+        return (
+        <div>
+            {(this.state.SqObj.status==='Approved' || this.state.SqObj.status==='Email Sent') ? null: <div>
             <Modal isOpen={this.state.modal} toggle={this.toggleModal}>
                 <ModalHeader toggle={this.toggleModal}>
                     Quotation Approval
@@ -143,7 +145,7 @@ class Status1 extends Component {
             </button>
                        */}
             {/* <Button className="ml-2 mr-2" variant="contained" color="warning" size="xs" onClick={this.toggleModal}> {this.props.statusType} Status</Button> */}
-        </span>)
+        </div>}</div>)
     }
 }
 
