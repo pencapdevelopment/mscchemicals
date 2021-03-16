@@ -435,7 +435,7 @@ class Quotation extends Component {
                 {this.state.editFlag &&
                     <div className="card b">
                         <div className="card-body bb bt">
-                            <AddQuotation baseUrl={this.state.baseUrl} currentId={this.state.currentId} parentObj={this.props.parentObj}
+                            <AddQuotation baseUrl={this.state.baseUrl} saleId={this.props.currentId} currentId={this.state.currentId} parentObj={this.props.parentObj}
                             onRef={ref => (this.addTemplateRef = ref)} onSave={(id) => this.saveSuccess(id)} onCancel={this.cancelSave}></AddQuotation>
                         </div>
                     </div>}

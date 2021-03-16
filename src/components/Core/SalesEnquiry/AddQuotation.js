@@ -36,6 +36,7 @@ class AddQuotation extends Component {
     state = {
         editFlag: false,
         status: [],
+        newObj1:'',
         formWizard: {
             globalErrors: [],
             msg: '',
@@ -63,6 +64,12 @@ class AddQuotation extends Component {
         }
     }
 
+    loadObj1() {
+        axios.get(server_url + context_path + "api/sales/" + this.props.saleId+ '?projection=sales_edit').then(res => {
+              this.setState({ newObj1: res.data
+            }, ()=>console.log("addquotation sales data==>>", this.state.newObj));
+        })}
+
     loadData() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=sales_quotation_edit')
             .then(res => {
@@ -79,7 +86,7 @@ class AddQuotation extends Component {
                     this.productASRef.push(''); //this.productASRef[idx].setInitialField(p);
                 });
 
-                this.setState({ formWizard });
+                this.setState({ formWizard }, ()=>console.log("add Quotation==>",this.state.formWizard));
             });
     }
 
@@ -290,7 +297,9 @@ class AddQuotation extends Component {
     componentDidMount() {
         this.productASRef = [];
         this.props.onRef(this);
+        this.loadObj1();
         this.setState({ loding: false })
+      
 
         console.log("hello");
 
@@ -460,12 +469,21 @@ class AddQuotation extends Component {
                         </h4>
                     </div>
 
-                    {this.state.formWizard.obj.products && this.state.formWizard.obj.products.length &&
+                    {this.state.newObj1 && 
                         <div className="row">
                             <div className="col-md-12">
                                 <Table hover responsive>
+                                <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Amount</th>
+                                                   
+                                                </tr>
+                                                </thead>
                                     <tbody>
-                                        {this.state.formWizard.obj.products.map((prod, i) => {
+                                        {this.state.newObj1.products.map((prod, i) => {
                                             return (
                                                 <tr key={i}>
                                                     <td className="va-middle">{i + 1}</td>
@@ -517,18 +535,19 @@ class AddQuotation extends Component {
                                                                     value={this.state.formWizard.obj.products[i].amount} onChange={e => this.setProductField(i, "amount", e)} />}
                                                         </fieldset>
                                                     </td>
-                                                    <td className="va-middle">
+                                                    {/* <td className="va-middle">
                                                         <Button variant="outlined" color="secondary" size="sm" onClick={e => this.deleteProduct(i)} title="Delete Product">
                                                             <em className="fas fa-trash"></em>
                                                         </Button>
-                                                    </td>
+                                                    </td> */}
                                                 </tr>)
                                         })}
                                     </tbody>
                                 </Table>
                             </div>
-                        </div>}
-
+                        </div>
+                        
+                                    }
                     <div className="text-center mt-4">
                         <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
                         <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save</Button>
