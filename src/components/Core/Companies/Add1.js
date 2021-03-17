@@ -784,7 +784,7 @@ class Add extends Component {
                     });
                 }
                 formWizard.errors = errors;
-                this.setState({ formWizard });
+                this.setState({ formWizard, loading: false});
                 if (!errorMessage) errorMessage = "Please resolve the errors";
                 swal("Unable to Save!", errorMessage, "error");
             })

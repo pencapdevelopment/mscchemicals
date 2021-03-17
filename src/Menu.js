@@ -234,12 +234,16 @@ const Menu = [
     {
         name: 'Sales Approvals',
         path: '/sales-approval-alerts',
-        icon: 'fa fa-bell'
+        icon: 'fa fa-bell',
+        role: 'ROLE_ADMIN',
+        permission:"MG_SE_E,MG_SE_V"
     },
     {
         name: 'Purchases Approvals',
         path: '/purchases-approval-alerts',
-        icon: 'fa fa-bell'
+        icon: 'fa fa-bell',
+        role: 'ROLE_ADMIN',
+        permission:"MG_PR_E,MG_PR_V"
     },
     
     {

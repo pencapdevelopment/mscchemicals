@@ -301,13 +301,12 @@ class View extends Component {
                                                         <span>{this.state.newObj.name}</span> 
                                                     </h6>
                                                 </div>
-                                                {  this.props.user.role === 'ROLE_ADMIN' &&
-                                                   <div className="col-sm-1">
-                                                   <div className=" mt-2">                                                              
-                                                         <button  title="Company Details" style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6", borderRadius: "5px" }} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
-                                                  </div>
-                                              </div> }
-                                             
+                                                {this.props.user.role === 'ROLE_ADMIN' &&
+                                                <div className="col-sm-1">
+                                                     <div className=" mt-2">                                                              
+                                                           <button  title="Company Details" style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6", borderRadius: "5px" }} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                    </div>
+                                                </div>} 
                                             </div>
                                             <div className="" style={{top: -90}}></div>
                                             {/* {/* <Image  onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}

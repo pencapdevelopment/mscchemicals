@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import {
     Modal,
-
     ModalBody, ModalHeader,
 } from 'reactstrap';
 import { context_path, getUniqueCode, server_url, defaultDateFilter } from '../../Common/constants';
@@ -29,14 +28,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import PageLoader from '../../Common/PageLoader';
 // import CustomPagination from '../../Common/CustomPagination';
 import styled from "styled-components";
-
-
-
-
-
-
 // const json2csv = require('json2csv').parse;
-
 class Negotiation extends Component {
     state = {
         activeTab: 0,
@@ -59,16 +51,13 @@ class Negotiation extends Component {
         ngList:'',
         obj4:{
             remark:'',
-        }
-      
+        } 
     }
-
 
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
             console.log("loadObj negotiation.js", list)
-
             if(list.length) {
                 this.setState({ obj: list[0], currentId: list[0].id });
                 console.log("if negotiation.js", list)
@@ -76,12 +65,9 @@ class Negotiation extends Component {
         });
            
     }
-
     negotiationTraking(){
         axios.get( server_url + context_path + "api/sales-negotiation-tracking?projection=sales-negotiation-tracking").then(res => {
             var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
-            console.log("first ngList loadObj... negotiation.js", ngList)
-
             if(ngList.length>0){
                 console.log("negotiationTraking() ngList")
               this.setState({
@@ -91,33 +77,22 @@ class Negotiation extends Component {
                 console.log("ngList")
                 this.setState({
                    page:  <Span2>No Records Found</Span2>
-                    
                 }); 
             }
-            
         });   
     }
-
     loadObj1(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
             console.log("loadObj1 Products", res.data)
             this.setState({ obj1: res.data });
-        });
-
-       
+        });       
     }
-
     // loadObj2(id) {
     //     axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit').then(res => {
     //         var newData=res.data;
     //         this.setState({ obj: newData });
     //     });
     // }
-
-
-
-
-
     saveNegotiation= (productsid) => {
         console.log(" save negotiation", productsid);
         var obj2=this.state.obj3;
@@ -125,38 +100,22 @@ class Negotiation extends Component {
         obj2.product = "/products/"+obj2.product.id;
         obj2.reference = "/sales/"+this.state.obj1.id;
         obj2.sales_product = "/sales-product/"+obj2.id;
-       
         console.log("with remark product values===>", obj2);    
-        
        // console.log("without remark product values===>",obj6);
         //axios.patch(server_url + context_path + "api/sales-products/"+productsid, obj5)
-       
-        
-        axios.patch(server_url + context_path + "api/sales-products/"+productsid,obj2).then(res => {
-                       
-                        console.log("patch data of sales-products data==>", res.data)
-                    });
-                   if(obj2)
-                   {
-
-                    obj2.remark=this.state.obj4.remark;  
-
-             axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2).then(res => {
-                        console.log("axios.get  Negotations toggleModal Negotations==>", res.data)
-                        console.log("sales-negotiation-tracking data==>", res.data)
-                        
-                            this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true });
-                            
-                            
-                            this.loadObj1(this.props.currentId);
-                            this.negotiationTraking();
-                            console.log("after componentDidMount")
-                        });           
-                    }
-                    // this.componentDidMount();
-                    
-                   
-                }
+        axios.patch(server_url + context_path + "api/sales-products/"+productsid,obj2).then(res => {});
+        if(obj2)
+        {
+            obj2.remark=this.state.obj4.remark;  
+            axios.post( server_url + context_path + "api/sales-negotiation-tracking/", obj2).then(res => {
+                this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true });
+                this.loadObj1(this.props.currentId);
+                this.negotiationTraking();
+                console.log("after componentDidMount")
+            });           
+        }
+        // this.componentDidMount();
+    }
 
     toggleModalNegotation = (productId) => {
         console.log("toggleModalNegotation calling ",productId )
@@ -333,51 +292,41 @@ class Negotiation extends Component {
                     <div className="col-sm-12">
                     <div className="card b">
                     <div className="row ml-1 mt-4">
-                                        <div className="col-sm-12" >
-                                        {/* <h4 style={{fontSize: 18,flexDirection: 'row'}}>Generated Quotation</h4> */}
-                                   
-                                        </div>
-                                        
-                                    </div>
-                        <Table className="card-header" hover responsive>
-                        <thead>
-                                            <tr>
-                                                <th>Generate Code</th>
-                                                <th>Sent Date</th>
-                                                <th>Received Date</th>
-                                                <th>Create On</th>
-                                                <th>Expiry Date</th>
-                                                
-                                            </tr>
-                                        </thead>
-                  
-                                
+                        <div className="col-sm-12" >
+                            <h4 style={{fontSize: 18,flexDirection: 'row'}}>Uploaded Quotation</h4>
+                        </div>          
+                    </div>
+                    <Table className="card-header" hover responsive>
+                    <thead>
+                        <tr>
+                            <th>Quotation Code</th>
+                            <th>Sent Date</th>
+                            <th>Recieved Date</th>
+                            <th>Created On</th>
+                            <th>Expiry Date</th>
+                        </tr>
+                    </thead>           
                     <tbody className="card-body bb bt" hover responsive>
-                                <tr>
-                                <td>{this.state.obj.code}</td>
-                                <td> </td>
-                                <td> </td>
-                                <td>{this.state.obj.creationDate}</td>
-                                </tr>      
-                                       
+                        <tr>
+                            <td>{this.state.obj.code}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{this.state.obj.creationDate}</td>
+                            <td></td>
+                        </tr>      
                     </tbody>           
                     </Table>
-                            </div>    
-                    </div>
+                </div>    
+            </div>
                 </div>
                 {!this.state.editFlag &&
                     <div className="row">
-                        
                         <div className="col-md-12">
                             {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
                             currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
-
                             {
                             <div className="card b">
-                                
                                 <div className="card-body bb bt">
-                          
-                                   
                                     <div className=" row text-left mt-4">
                                         <div className="col-sm-12" >
                                         <h4 style={{fontSize: 18,flexDirection: 'row'}}>Products</h4>
@@ -397,51 +346,36 @@ class Negotiation extends Component {
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
-                                       
-                                      
                                         <tbody>
- 
-                                                
                                                 <tr >
                                                     <td className="va-middle"></td>
                                                     <td>
-                                                        
                                                     </td>
                                                     <td></td>
                                                     <td></td>
-                                                   
                                                     <td style={{marginLeft: 10}}>
                                                     <button className="btn btn-primary"  onClick={()=>this.toggleRemarkNegotiation()}  >< VisibilityRoundedIcon  size="medium" style={{marginLeft: 20}} color="primary" aria-label=" VisibilityRoundedIcon" /></button>
                                                     </td>
                                                     <td>
-                                                        
                                                     <Button color='primary' size='small'  onClick={()=>this.toggleModalNegotation()} variant="contained">Negotiation</Button>
                                                     </td>
                                                     <td>
-                                                       
                                                     </td>
                                                     {/* <td>
                                                         <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                     </td> */}
                                                 </tr>
-                                      
                                         </tbody>
                                     </Table>
-                                    
                                 </div>
                             </div>}
                             {
                             <div className="card b" style={{marginTop: 0}}>
-                                
                                 <div className="card-body bb bt">
-                          
-                                   
                                     <div className=" row text-left mt-4">
                                         <div className="col-sm-12" >
                                         <h4 style={{fontSize: 18,flexDirection: 'row'}}>Product Negotiation Tracking </h4>
-                                   
                                         </div>
-                                        
                                     </div>
                                     <Table hover responsive >
                                         <thead>
@@ -455,10 +389,7 @@ class Negotiation extends Component {
                                                 <th>Negotiation Stage 2</th>
                                             </tr>                                         
                                         </thead>
-                                       
                                         <tbody>
-                                            
-                                            
                                             {this.state.ngTracking.map((product, i) => {
                                                 return (
                                                     

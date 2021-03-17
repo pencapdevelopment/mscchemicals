@@ -311,7 +311,7 @@ class List extends Component {
                             <tr key={obj.id}>
                                 <td>{i + 1}</td>
                                 <td>
-                                    <a href="#s" className="btn-link" onClick={() => this.viewObj(i)}>
+                                    <a href="javascript:void(0);" className="btn-link" onClick={() => this.viewObj(i)}>
                                         {obj.contact}
                                     </a>
                                 </td>

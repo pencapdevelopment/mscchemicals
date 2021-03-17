@@ -61,6 +61,7 @@ class View extends Component {
         modalassign: false,
         modalnegatation: false,
         obj: '',
+        activityData:[],
         subObjs: [],
         newSubObj: {},
         orderBy:'id,desc',
@@ -158,12 +159,9 @@ class View extends Component {
         //     });
         // }
     }
-
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
-            this.setState({
-                activeTab: tab
-            });
+            this.setState({activeTab: tab},()=>{if(tab ===0){this.loadActivity(this.props.currentId);}});
         }
     }
     handleDelete = (i) => 
@@ -304,6 +302,23 @@ class View extends Component {
             }
         })
     }
+    loadActivity(id){
+        axios.get(Const.server_url + Const.context_path + "api/activity-log/?parentId="+id+"&type=purchase&sort=id,desc")
+        .then(res => {
+            let resData = res.data._embedded.activityLogs;
+            let activityData = [];
+            resData.map((act,i)=>{
+                activityData.push({
+                    title:act.name,
+                    stage:act.stage,
+                    subtitle:<Moment format="DD MMM YY">{act.creationDate}</Moment>,
+                    avatar:<Avatar alt="" src={`${process.env.PUBLIC_URL}/static/images/face1.jpg`}/>,
+                    body:act.description
+                })
+            });
+            this.setState({activityData});
+        });
+    }
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=purchases_edit').then(res => {
             this.setState({ obj: res.data, users:res.data.users, loading: false});
@@ -333,6 +348,7 @@ class View extends Component {
     //     this.props.onRef(this);
     // }
     componentDidMount() {
+        this.loadActivity(this.props.currentId);
         this.loadObj(this.props.currentId);
         // this.loadSubObjs();
         this.props.onRef(this);
@@ -809,21 +825,21 @@ class View extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                        {
-                                            // this.props.user.role === 'ROLE_ADMIN' &&
-                                            <div className="col-md-4" >
-                                                {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
-                                                    parentObj={this.state.obj} currentId={this.props.currentId}></Assign> */}
-                                                {/* <Timeline
-                                                    title='Period ending 2017'
-                                                    timeline={mockTimeline}
-                                                /> */}
-                                                <ActivityStream
-                                                    title="Activity"
-                                                    stream={mockActivity}
-                                                    
-                                                />
-                                            </div>}
+                                        {this.state.activityData.length !== 0 &&
+                                        // this.props.user.role === 'ROLE_ADMIN' &&
+                                        <div className="col-md-4" >
+                                            {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
+                                                parentObj={this.state.obj} currentId={this.props.currentId}></Assign> */}
+                                            {/* <Timeline
+                                                title='Period ending 2017'
+                                                timeline={mockTimeline}
+                                            /> */}
+                                            <ActivityStream
+                                                style={{marginLeft: 400,}}
+                                                title="Activity"
+                                                stream={this.state.activityData}
+                                            />
+                                        </div>}
                                     </div>
                                 
                                 </TabPanel>
