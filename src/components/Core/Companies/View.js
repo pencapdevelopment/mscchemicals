@@ -14,7 +14,7 @@ import Upload from '../Common/Upload';
 import CompanyContacts from '../CompanyContacts/CompanyContacts';
 import Add from './Add1';
 import Branches from './Branches';
-import SalesList from './SalesList';
+// import SalesList from './SalesList';
 import Products from './Products';
 import EditIcon from '@material-ui/icons/Edit';
 import { Link } from 'react-router-dom';
