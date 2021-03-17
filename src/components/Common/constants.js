@@ -37,8 +37,8 @@ export const APP_MEDIAQUERY = {
 
 
 //Remote Server 
- export const server_url = 'http://139.59.10.206:8080/';
-
+//  export const server_url = 'http://139.59.10.206:8080/';
+ export const server_url = '/';
  //Server Context path
  export const context_path = 'msc-api/';
 

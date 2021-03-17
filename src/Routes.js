@@ -54,24 +54,19 @@ const Products = lazy(() => import('./components/Core/Products/Products'));
 const SalesEnquiry = lazy(() => import('./components/Core/SalesEnquiry/SalesEnquiry'));
 const PbSalesEnquiry = lazy(() => import('./components/Core/PbSalesEnquiry/SalesEnquiry'));
 const PurchaseEnquiry = lazy(() => import('./components/Core/PurchaseEnquiry/PurchaseEnquiry'));
+// const PvPurchaseEnquiry = lazy(() => import('./components/Core/PvPurchaseEnquiry/PurchaseEnquiry'));
 const Followups = lazy(() => import('./components/Core/Followups/Followups'));
-
 const Lead = lazy(() => import('./components/Core/Lead/Lead'));
 const Tracking = lazy(() => import('./components/Core/Tracking/Tracking'));
 const Order = lazy(() => import('./components/Core/Orders/Order'));
 const Event = lazy(() => import('./components/Core/Events/Event'));
 const CostAccount = lazy(() => import('./components/Core/CostAccount'));
 const Approvals = lazy(() => import('./components/Core/Approvals/Approval'));
-
 const Invoices = lazy(() => import('./components/Core/Invoices'));
-
 const Reports = lazy(() => import('./components/Core/Reports'));
 const ProspectiveBuyers = lazy(()=> import('./components/Core/ProspectiveBuyer/ProspectiveBuyer'))
 const ProspectiveVendor = lazy(()=> import('./components/Core/ProspectiveVendors/ProspectiveVendor'))
 // const Sales1 = lazy(()=> import('./components/Core/Sales1/Add1'))
-
-
-
 // List of routes that uses the page layout
 // listed here to Switch between layouts
 // depending on the current pathname
@@ -158,7 +153,7 @@ const Routes = ({ location }) => {
                                     <PrivateRoute path="/branches/:objId" component={waitFor(Branches)} />
                                     <PrivateRoute path="/branches" component={waitFor(Branches)} />
                                     <PrivateRoute path="/company-contact/:objId" component={waitFor(Contacts)} />
-                                 
+                                   
                                     <PrivateRoute path="/company-contact" component={waitFor(Contacts)} />
                                     <PrivateRoute path="/products/:objId" component={waitFor(Products)} />
                                     <PrivateRoute path="/products" component={waitFor(Products)} />
@@ -168,6 +163,8 @@ const Routes = ({ location }) => {
                                     <PrivateRoute path="/pbsales" component={waitFor(PbSalesEnquiry)} />
                                     <PrivateRoute path="/purchases/:objId" component={waitFor(PurchaseEnquiry)} />
                                     <PrivateRoute path="/purchases" component={waitFor(PurchaseEnquiry)} />
+                                    {/* <PrivateRoute path="/pvpurchases/:objId" component={waitFor(PvPurchaseEnquiry)} />
+                                    <PrivateRoute path="/pvpurchases" component={waitFor(PvPurchaseEnquiry)} /> */}
                                     <PrivateRoute path="/followups/:objId" component={waitFor(Followups)} />
                                     <PrivateRoute path="/followups" component={waitFor(Followups)} />
 

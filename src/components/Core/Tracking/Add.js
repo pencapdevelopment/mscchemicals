@@ -349,7 +349,7 @@ class Add extends Component {
                                 <MenuItem value='end'>End</MenuItem>
                             </Select>
                             </fieldset>
-                            {/* <fieldset>
+                            <fieldset>
                            
                                 <FormControl>
                                     <TextField id="assignedTo" name="assignedTo" label="Assigned To" type="text" required={true}
@@ -358,7 +358,7 @@ class Add extends Component {
                                         error={errors?.assignedTo?.length > 0} value={this.state.formWizard.obj.assignedTo}
                                          onChange={e => this.setField("assignedTo", e)} />
                                 </FormControl>
-                            </fieldset> */}
+                            </fieldset>
                             {/* <fieldset>
                                 <TextareaAutosize placeholder="Remarks" fullWidth={true} rowsMin={3} name="remarks"
                                 inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
@@ -521,11 +521,12 @@ class Add extends Component {
                             </fieldset> */}
                             <fieldset>
                                 <FormControl>
-                                    <TextField id="Address" name="Address" label="Address" type="text" required={true}
+                                    <TextField id="Address" name="address" label="address" type="text" required={true}
                                         inputProps={{ maxLength: 100, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
-                                        helperText={errors?.Address?.length > 0 ? errors?.Address[0]?.msg : ""}
-                                        error={errors?.Address?.length > 0} value={this.state.formWizard.obj.address}
-                                         onChange={e => this.setField("address", e)} />
+                                        helperText={errors?.address?.length > 0 ? errors?.address[0]?.msg : ""}
+                                        error={errors?.address?.length > 0} value={this.state.formWizard.obj.address}
+                                         onChange={e => this.setField("address", e)} 
+                                         />
                                 </FormControl>
                             </fieldset>
 

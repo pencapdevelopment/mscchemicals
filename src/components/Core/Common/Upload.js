@@ -118,14 +118,13 @@ class Upload extends Component {
         this.toggleModal();
     }
 
-    editSubObj = (i) => {
+    editSubObj =(i)=>{
         var files = this.props.fileTypes[i];
         var formWizard = this.state.formWizard;
         formWizard.obj = {};
         formWizard.obj.label = files.label;
         formWizard.obj.enableExpiryDate = files.expiryDate;
         formWizard.obj.expiryDate = null;
-
         this.setState({ editSubFlag: true, formWizard: formWizard }, this.toggleModal);
     }
 
@@ -134,7 +133,6 @@ class Upload extends Component {
         this.toggleModal();
         this.loadSubObjs();
     }
-
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
@@ -361,8 +359,8 @@ class Upload extends Component {
                                                     */}
                                                     {/* <img onClick={() => this.editSubObj(i)}  src="img/upload.png" />  */}
                                                
-                                                <td>
-                                                <Button Size="small" disabled={this.props.disabled} variant="contained" color="primary" style={{marginTop: "30px",marginLeft: "-10px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload</Button>
+                                                <td >
+                                                <Button fontSize="small" disabled={this.props.disabled} variant="contained" color="primary" style={{marginLeft: "-10px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload</Button>
                                                     {/* <Button variant="contained" disabled={this.props.disabled} style={{textTransform:"none", marginLeft: "-10px"}} color="warning" size="xs" onClick={() => this.editSubObj(i)} color="primary" startIcon={<CloudUploadIcon />}>Upload  </Button> */}
                                                     {/* <img onClick={() => this.editSubObj(i)}  src="img/upload.png" />  */}
                                                 </td>

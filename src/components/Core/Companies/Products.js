@@ -246,11 +246,13 @@ class Products extends Component {
                 <div className="col-sm-9 mt-4">
                     <span >  Products  </span> {this.state.type}
                 </div>
+              
                 <div className="col-sm-3 mt-4">
                     <h4>
+                    {this.props.user.role === 'ROLE_ADMIN' &&
                     <Button  size="small" style={{textTransform: 'none', fontWeight: "normal"}} className="ml-3" variant="contained" color="white" size="sm" onClick={this.openProducts} title="Add Product">
                         Add/Update
-                    </Button>  
+                    </Button>}
                     </h4>
                 </div>
                 </div>

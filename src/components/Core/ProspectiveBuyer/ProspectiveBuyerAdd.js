@@ -37,6 +37,7 @@ class ProspectiveBuyerAdd extends Component {
         activeStep: 0,
         steps: getSteps(),
         pbProductsUrl: server_url + context_path + "api/buyer-product/",
+        pbContactUrl: server_url + context_path + "api/buyer-contact/",
         formWizard: {
             globalErrors: [],
             msg: '',
@@ -294,7 +295,9 @@ class ProspectiveBuyerAdd extends Component {
         if (!hasError) {
         var newObj = this.state.formWizard.obj;
         let pbProducts  = [...newObj['buyerProduct']];
+        let pbContact  = [...newObj['contact']];
         newObj['buyerProduct'] = [];
+        newObj['contact'] = [];
         this.setState({ loading: true });
         var promise = undefined;
         if (!this.state.editFlag) {
@@ -308,6 +311,7 @@ class ProspectiveBuyerAdd extends Component {
             formWizard.msg = 'successfully Saved';
             this.setState(formWizard);
             this.savePbProducts(pbProducts,formWizard.obj.id,()=>{this.props.onSave(res.data.id);});
+            this.savePbContacts(pbContact,formWizard.obj.id);
         }).finally(() => {
             this.setState({ loading: false });
         }).catch(err => {
@@ -377,6 +381,43 @@ class ProspectiveBuyerAdd extends Component {
                     if(callBack){
                         setTimeout(callBack,3000);
                     }
+                }
+            })
+        }
+    }
+
+    savePbContacts = (contacts,pbId,callBack) => {
+        let pbcontacts = contacts;
+        if(contacts && contacts.length) {
+            this.setState({ loading: true });
+            contacts.forEach((cntct, idx) => {
+                if(cntct.delete) {
+                    axios.delete(this.state.pbContactUrl + cntct.id)
+                    .then(res => {
+                    }).catch(err => {
+                        swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
+                    })
+                } else if(!cntct.id || cntct.updated) {
+                    cntct.buyer = '/prospective-buyer/' + pbId;
+                    var promise = undefined;
+                    if (!cntct.id) {
+                        promise = axios.post(this.state.pbContactUrl, cntct)
+                    } else {
+                        promise = axios.patch(this.state.pbContactUrl + cntct.id, cntct)
+                    }
+                    promise.then(res => {
+                        cntct.id = res.data.id;
+                    }).catch(err => {
+                        swal("Unable to Save!", "Please resolve the errors", "error");
+                    })
+                }
+                if(idx === contacts.length - 1) {
+                    let formWizard = this.state.formWizard;
+                    formWizard.obj.contact = pbcontacts;
+                    this.setState({ formWizard,loading: false });
+                    // if(callBack){
+                    //     setTimeout(callBack,3000);
+                    // }
                 }
             })
         }

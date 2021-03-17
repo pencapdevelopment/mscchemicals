@@ -1261,6 +1261,8 @@ class Add extends Component {
                                                 {this.state.formWizard.obj.selectedCategories.map((obj, i) => {
                                                     return (
                                                         <Chip
+                                                        style={{backgroundColor:"lightgreen"}}
+                                                        fontSize= "small"
                                                             // avatar={
                                                             //     <Avatar>
                                                             //         <AssignmentIndIcon />
@@ -1331,6 +1333,8 @@ class Add extends Component {
                                                     return (
                                                         !compProd.delete?
                                                         <Chip
+                                                        style={{color: "#000",backgroundColor: "#eee342",}}
+                                                        fontSize= "small"
                                                             label={compProd.product.name}
                                                             // onClick={() => this.handleSelectedProducClick(compProd)}
                                                             onDelete={() => this.handleSelectedProductDelete(i)}
@@ -1415,6 +1419,8 @@ class Add extends Component {
                                                 {this.state.formWizard.obj.selectedorganizations.map((obj, i) => {
                                                     return (
                                                         <Chip
+                                                        style={{backgroundColor:"lightgreen"}}
+                                                        fontSize= "small"
                                                             label={obj}
                                                             // onClick={() => this.handleClick(obj)}
                                                             onDelete={() => this.handleAssOrgDelete(i)}

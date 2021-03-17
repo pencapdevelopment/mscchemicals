@@ -174,9 +174,12 @@ class View extends Component {
                             <TabPanel value={this.state.activeTab} index={0}>
                                 <div className="card b">
                                     <div className="card-header">
+                                    {this.props.user.role === 'ROLE_ADMIN' &&
                                         <div className="float-right mt-2">
-                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
-                                        </div>
+                                        <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                    </div>
+                                    }
+                                        
                                         <h4 className="my-2">
                                             <span>{this.state.obj.name}</span>
                                         </h4>
@@ -359,9 +362,12 @@ class View extends Component {
                                                             <td>
                                                                 <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
                                                             </td>
+                                                            {this.props.user.role === 'ROLE_ADMIN' &&
                                                             <td>
+                                                            
                                                                 <Button variant="contained" color="warning" size="xs" onClick={() => this.editSubObj(i)}>Edit</Button>
-                                                            </td>
+                                              
+                                                                </td>}
                                                         </tr>
                                                     )
                                                 })}

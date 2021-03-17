@@ -182,6 +182,18 @@ class View extends Component {
             });
         }
     }
+    getFileName = (type) => {
+        var doc = this.state.formWizard.docs.find(g => g.fileType === type);
+        if (doc) {
+            // return doc.fileName;
+            return <a href="javascript:void(0);" className="btn-link">
+                        {doc.fileName}
+                    </a>
+        } else {
+            return "-NA-";
+        }
+    }
+
     handleGenerateQuote(){
         swal({
             title: "Are you sure?",
@@ -534,7 +546,7 @@ class View extends Component {
                     </ModalHeader>
                     <ModalBody>
                         <fieldset>
-                            <AutoSuggest url="users"
+                            <AutoSuggest url="users/search/roleBasedUsers"
                                 name="userName"
                                 displayColumns="name"
                                 label="User"
@@ -550,7 +562,9 @@ class View extends Component {
                                 projection="user_details_mini"
                                 value={this.state.selectedUser}
                                 onSelect={e => this.setAutoSuggest('user', e?.id)}
-                                queryString="&name" ></AutoSuggest>
+                                queryString="&flowcode=MG_SE_E&name">
+
+                                </AutoSuggest>
                         </fieldset>
                         <div className="text-center">
                             <Button variant="contained" color="primary" onClick={e => this.saveUser()}>Save</Button>
@@ -611,8 +625,6 @@ class View extends Component {
                                                             statusList={this.state.status}  status={this.state.obj.status}
                                                             statusType="Enquiry"></Status>} 
                                                     <div className="float-right ">
-                                                
-
                                                         {/* <div>
                                                             <span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span>
                                                         </div> */}
@@ -738,7 +750,7 @@ class View extends Component {
                                                                 </td>
                                                                 <td>{this.state.obj.source}</td>
                                                             </tr>
-                                                            <tr>
+                                                            {/* <tr>
                                                                 <td>
                                                                     <strong>Enquiry Status</strong>
                                                                 </td>
@@ -748,13 +760,13 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Status Notes</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.statusNotes}</td>
-                                                            </tr>
+                                                                <td>{this.state.obj.statusNotes?this.state.obj.statusNotes:'-NA-'}</td>
+                                                            </tr> */}
                                                             <tr>
                                                                 <td>
                                                                     <strong>Description</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.description}</td>
+                                                                <td>{this.state.obj.description?this.state.obj.description:"-NA-"}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>

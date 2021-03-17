@@ -278,6 +278,7 @@ class Add1 extends Component {
         var hasError = this.checkForError();
         if (!hasError) {
             var newObj = this.state.formWizard.obj;
+            console.log("companies",  newObj.company  )
             newObj.company = '/companies/' + newObj.company;
 
             if (!newObj.products.length) {

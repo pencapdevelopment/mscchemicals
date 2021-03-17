@@ -166,35 +166,69 @@ class View extends Component {
             });
         }
     }
-    handleDelete = (i) => {
-        console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
-        var user = this.state.users[i];
-        swal({
-            title: "Are you sure?",
-            text: "You will not be able to recover this user assignment!",
-            icon: "warning",
-            dangerMode: true,
-            button: {
-                text: "Yes, delete it!",
-                closeModal: true,
-            }
-        })
-        .then(willDelete => {
-            if (willDelete) {
-                axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
-                .then(res => {
-                    var users = this.state.users;
-                    users.splice(i, 1);
-                    this.setState({ users });
-                }).finally(() => {
-                    this.setState({ loading: false });
-                }).catch(err => {
-                    this.setState({ deleteError: err.response.data.globalErrors[0] });
-                    swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
-                })
-            }
-        });
+    handleDelete = (i) => 
+    {
+        if(this.props.user.role === 'ROLE_ADMIN'){
+            console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
+            var user = this.state.users[i];
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this user assignment!",
+                icon: "warning",
+                dangerMode: true,
+                button: {
+                    text: "Yes, delete it!",
+                    closeModal: true,
+                }
+            })
+            .then(willDelete => {
+                if (willDelete) {
+                    axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
+                    .then(res => {
+                        var users = this.state.users;
+                        users.splice(i, 1);
+                        this.setState({ users });
+                    }).finally(() => {
+                        this.setState({ loading: false });
+                    }).catch(err => {
+                        this.setState({ deleteError: err.response.data.globalErrors[0] });
+                        swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
+                    });
+                }
+            });
+        }
     }
+    // handleDelete = (i) => {
+    //     if(this.props.user.role === 'ROLE_ADMIN'){
+    //     console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
+    //     var user = this.state.users[i];
+    //     swal({
+    //         title: "Are you sure?",
+    //         text: "You will not be able to recover this user assignment!",
+    //         icon: "warning",
+    //         dangerMode: true,
+    //         button: {
+    //             text: "Yes, delete it!",
+    //             closeModal: true,
+    //         }
+    //     })
+    //     .then(willDelete => {
+    //         if (willDelete) {
+    //             axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
+    //             .then(res => {
+    //                 var users = this.state.users;
+    //                 users.splice(i, 1);
+    //                 this.setState({ users });
+    //             }).finally(() => {
+    //                 this.setState({ loading: false });
+    //             }).catch(err => {
+    //                 this.setState({ deleteError: err.response.data.globalErrors[0] });
+    //                 swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
+    //             })
+    //         }
+    //     });
+    // }
+    // }
     saveUser() {
         var user = {
             active: true,
@@ -220,9 +254,9 @@ class View extends Component {
         this.setState({ user: val });
     }
     handleClick = (i) => {
-        console.log('You clicked the Chip.', i); // eslint-disable-line no-alert
-        window.location.href = '/users/' + i.user.id;
-        // this.props.history.push('/users/'+i.id);
+        if(this.props.user.role === 'ROLE_ADMIN'){
+            window.location.href = '/users/' + i.user.id;
+        }
     }
     searchSubObj = e => {
         var str = e.target.value;
@@ -488,7 +522,7 @@ class View extends Component {
                         </ModalHeader>
                     <ModalBody>
                         <fieldset>
-                            <AutoSuggest url="users"
+                            <AutoSuggest url="users/search/roleBasedUsers"
                                 name="userName"
                                 displayColumns="name"
                                 label="User"
@@ -502,7 +536,10 @@ class View extends Component {
                                 projection="user_details_mini"
                                 value={this.state.selectedUser}
                                 onSelect={e => this.setAutoSuggest('user', e?.id)}
-                                queryString="&name" ></AutoSuggest>
+                                queryString="&flowcode=MG_PR_E&name"
+                                >
+
+                                </AutoSuggest>
                         </fieldset>
                         <div className="text-center">
                             <Button variant="contained" color="primary" onClick={e => this.saveUser()}>Save</Button>
@@ -566,7 +603,8 @@ class View extends Component {
                                                         </div> */}
                                                         {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
                                                         <button title="Edit" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
-                                                         <button title="Email" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                              {this.props.user.role === 'ROLE_ADMIN' && 
+                                                         <button title="Email" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
                                                         {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
                                                             <button  style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} variant="contained" color="primary" size="small" onClick={this.convertToOrder}><AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>}
                                                         {this.state.obj.order &&
@@ -651,68 +689,68 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Contact Name</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.contactName}</td>
+                                                                <td>{this.state.obj.contactName?this.state.obj.contactName:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Email</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.email}</td>
+                                                                <td>{this.state.obj.email?this.state.obj.email:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Phone</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.phone}</td>
+                                                                <td>{this.state.obj.phone?this.state.obj.phone:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Source</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.source}</td>
+                                                                <td>{this.state.obj.source?this.state.obj.source:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Specification</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.specification}</td>
+                                                                <td>{this.state.obj.specification?this.state.obj.specification:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Port of Landing</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.portOfLanding}</td>
+                                                                <td>{this.state.obj.portOfLanding?this.state.obj.portOfLanding:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Dispatch</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.dispatch}</td>
+                                                                <td>{this.state.obj.dispatch?this.state.obj.dispatch:"-NA-"}</td>
                                                             </tr>
                                                           
                                                             <tr>
                                                                 <td>
                                                                     <strong>FOB</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.fob}</td>
+                                                                <td>{this.state.obj.fob?this.state.obj.fob:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>CIF</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.cif}</td>
+                                                                <td>{this.state.obj.cif?this.state.obj.cif:"-NA-"}</td>
                                                             </tr>   
                                                             <tr>
                                                                 <td>
                                                                     <strong>Payment Terms</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.paymentterms}</td>
+                                                                <td>{this.state.obj.company.paymentTerms?this.state.obj.company.paymentTerms:"-NA-"}</td>
                                                             </tr>                                            
                                                             <tr>
                                                                 <td>
                                                                     <strong>Currency</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.currency}</td>
+                                                                <td>{this.state.obj.currency?this.state.obj.currency:"-NA-"}</td>
                                                             </tr>
                                                             {/* <tr>
                                                                 <td>
@@ -730,7 +768,7 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Description</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.description}</td>
+                                                                <td>{this.state.obj.description?this.state.obj.description:"-NA-"}</td>
                                                             </tr>
                                                         </tbody>
                                             

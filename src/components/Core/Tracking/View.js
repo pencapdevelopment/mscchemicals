@@ -254,16 +254,41 @@ class View extends Component {
                                                 </tr>
                                                 <tr>
                                                     <td>
+                                                        <strong>Email Date</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.emailDate}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Address </strong>
+                                                    </td>
+                                                    <td>{this.state.obj.address}</td>
+                                                </tr>
+                                                {/* <tr>
+                                                    <td>
                                                         <strong>Courier Company</strong>
                                                     </td>
                                                     <td>{this.state.obj.courierCompany}</td>
-                                                </tr>
-                                                <tr>
+                                                </tr> */}
+                                                {/* <tr>
                                                     <td>
                                                         <strong>Dispatch Date</strong>
                                                     </td>
                                                     <td><Moment format="DD MMM YY">{this.state.obj.dispatchDate}</Moment></td>
+                                                </tr> */}
+                                                   <tr>
+                                                    <td>
+                                                        <strong>Phone</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.phone}</td>
                                                 </tr>
+                                                
+                                                <tr>
+                                                    <td>
+                                                        <strong>Email</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.email}</td>
+                                                </tr>           
                                                 <tr>
                                                     <td>
                                                         <strong>Received Date</strong>

@@ -36,6 +36,7 @@ class ProspectiveVendorAdd extends Component {
             globalErrors: [],
             msg: '',
             pvProductsUrl: server_url + context_path + "api/vendor-product/",
+            pvcontactUrl: server_url + context_path + "api/vendor-contact/",
             errors: {},
             obj: {
                 id: 0,
@@ -76,29 +77,29 @@ class ProspectiveVendorAdd extends Component {
             this.setState({ formWizard });
         });
     }
-    // createNewObj() {
-    //     var formWizard = {
-    //         globalErrors: [],
-    //         msg: '',
-    //         errors: {},
-    //         obj: {
-    //             name: '',
-    //             company:'',
-    //             department:'',
-    //             designation:'',
-    //             email:'',
-    //             address: '',
-    //             country:'',
-    //             Province:'',
-    //             category:'',
-    //             phonenumber:'',
-    //             other: '',
-    //             contactName:''
-    //         }
-    //     }
+    createNewObj() {
+        var formWizard = {
+            globalErrors: [],
+            msg: '',
+            errors: {},
+            obj: {
+                name: '',
+                company:'',
+                department:'',
+                designation:'',
+                email:'',
+                address: '',
+                country:'',
+                Province:'',
+                category:'',
+                phonenumber:'',
+                other: '',
+                contactName:''
+            }
+        }
 
-    //     this.setState({ formWizard });
-    // }
+        this.setState({ formWizard });
+    }
     loadDataa() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id+"?projection=prospective_vendor_edit")
             .then(res => {
@@ -309,7 +310,9 @@ class ProspectiveVendorAdd extends Component {
         if (!hasError) {
         var newObj = this.state.formWizard.obj;
         let pvProducts  = [...newObj['vendorProduct']];
+        let pvContact  = [...newObj['contact']];
         newObj['vendorProduct'] = [];
+        newObj['contact'] = [];
         this.setState({ loading: true });
         var promise = undefined;
         if (!this.state.editFlag) {
@@ -323,6 +326,7 @@ class ProspectiveVendorAdd extends Component {
             formWizard.msg = 'successfully Saved';
             this.setState(formWizard);
             this.savePvProducts(pvProducts,formWizard.obj.id,()=>{this.props.onSave(res.data.id);});
+            this.savePvContacts(pvContact,formWizard.obj.id);
         }).finally(() => {
             this.setState({ loading: false });
         }).catch(err => {
@@ -396,7 +400,42 @@ class ProspectiveVendorAdd extends Component {
             })
         }
     }
- 
+    savePvContacts = (contacts,pbId,callBack) => {
+        let pvcontacts = contacts;
+        if(contacts && contacts.length) {
+            this.setState({ loading: true });
+            contacts.forEach((cntct, idx) => {
+                if(cntct.delete) {
+                    axios.delete(this.state.pvcontactUrl + cntct.id)
+                    .then(res => {
+                    }).catch(err => {
+                        swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
+                    })
+                } else if(!cntct.id || cntct.updated) {
+                    cntct.vendor = '/prospective-vendor/' + pbId;
+                    var promise = undefined;
+                    if (!cntct.id) {
+                        promise = axios.post(this.state.pvcontactUrl, cntct)
+                    } else {
+                        promise = axios.patch(this.state.pvcontactUrl + cntct.id, cntct)
+                    }
+                    promise.then(res => {
+                        cntct.id = res.data.id;
+                    }).catch(err => {
+                        swal("Unable to Save!", "Please resolve the errors", "error");
+                    })
+                }
+                if(idx === contacts.length - 1) {
+                    let formWizard = this.state.formWizard;
+                    formWizard.obj.contact = pvcontacts;
+                    this.setState({ formWizard,loading: false });
+                    // if(callBack){
+                    //     setTimeout(callBack,3000);
+                    // }
+                }
+            })
+        }
+    }
     saveDeta() {
         var hasError = this.checkForError();
         if (!hasError) {
@@ -473,7 +512,9 @@ class ProspectiveVendorAdd extends Component {
                                     required={true}
                                     fullWidth={true}
                                     readOnly={true}
-                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    helperText={errors?.name?.length > 0 ? errors?.name[0]?.msg : ""}
+                                    error={errors?.name?.length > 0}
                                     value={this.state.formWizard.obj.name}
                                     onChange={e => this.setField('name', e)} />
                             </fieldset>
@@ -485,7 +526,9 @@ class ProspectiveVendorAdd extends Component {
                                     required={true}
                                     fullWidth={true}
                                     readOnly={true}
-                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    helperText={errors?.companyName?.length > 0 ? errors?.companyName[0]?.msg : ""}
+                                    error={errors?.companyName?.length > 0}
                                     value={this.state.formWizard.obj.companyName}
                                     onChange={e => this.setField('companyName', e)} />
                             </fieldset>
@@ -497,7 +540,9 @@ class ProspectiveVendorAdd extends Component {
                                     required={true}
                                     fullWidth={true}
                                     readOnly={true}
-                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    helperText={errors?.department?.length > 0 ?errors?.department[0]?.msg : ""}
+                                    error={errors?.department?.length > 0}
                                     value={this.state.formWizard.obj.department}
                                     onChange={e => this.setField('department', e)} />
                             </fieldset>
@@ -509,21 +554,12 @@ class ProspectiveVendorAdd extends Component {
                                     required={true}
                                     fullWidth={true}
                                     readOnly={true}
-                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    helperText={errors?.designation?.length > 0 ? errors?.designation[0]?.msg : ""}
+                                    error={errors?.designation?.length > 0}
                                     value={this.state.formWizard.obj.designation}
                                     onChange={e => this.setField('designation', e)} />
-                            </fieldset>
-                     
-                            <fieldset>
-                                <TextField
-                                    name="remarks"
-                                    type="text"
-                                    label="Remarks"                         
-                                    fullWidth={true}
-                                    inputProps={{ minLength: 0, maxLength: 300 }}
-                                    value={this.state.formWizard.obj.remarks}
-                                    onChange={e => this.setField('remarks', e)} />
-                            </fieldset>                        
+                            </fieldset>            
                         </div>
                         <div className="col-md-4">
                              <fieldset>
@@ -532,7 +568,7 @@ class ProspectiveVendorAdd extends Component {
                                         type="text"
                                         label="Country"                                
                                         fullWidth={true}
-                                        inputProps={{ minLength: 0, maxLength: 15, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"15"}]' }}
+                                        inputProps={{maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
                                         helperText={errors?.country?.length > 0 ? errors?.country[0]?.msg : ""}
                                         error={errors?.country?.length > 0}
                                         value={this.state.formWizard.obj.country}
@@ -544,12 +580,13 @@ class ProspectiveVendorAdd extends Component {
                                         type="text"
                                         label="Province"                                           
                                         fullWidth={true}
-                                        inputProps={{ minLength: 0, maxLength: 15, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"15"}]' }}
+                                        inputProps={{maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
                                         helperText={errors?.province?.length > 0 ? errors?.province[0]?.msg : ""}
                                         error={errors?.province?.length > 0}
                                         value={this.state.formWizard.obj.province}
                                         onChange={e => this.setField('province', e)} />
                                 </fieldset>
+                             
                                 <fieldset>
                                 <FormControl>
                                     <InputLabel id="demo-mutiple-checkbox-label">Category</InputLabel>
@@ -571,18 +608,18 @@ class ProspectiveVendorAdd extends Component {
                                     </Select>
                                 </FormControl>
                             </fieldset>
-                            {/* <fieldset>
-                                    <TextField
-                                        name="vendorProduct"
-                                        type="text"
-                                        label="Products Offered"                                            
-                                        fullWidth={true}
-                                        inputProps={{ minLength: 0, maxLength: 15, "data-validate": '[{ "key":"minlen","param":"0"},{ "key":"maxlen","param":"15"}]' }}
-                                        helperText={errors?.vendorProduct?.length > 0 ? errors?.vendorProduct[0]?.msg : ""}
-                                        error={errors?.vendorProduct?.length > 0}
-                                        value={this.state.formWizard.obj.vendorProduct}
-                                        onChange={e => this.setField('vendorProduct', e)} />
-                                </fieldset>                            */}
+                            <fieldset>
+                                <TextField
+                                    name="remarks"
+                                    type="text"
+                                    label="Remarks"                         
+                                    fullWidth={true}
+                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"3"},{"key":"maxlen","param":"30"}]' }}
+                                    helperText={errors?.remarks?.length > 0 ? errors?.remarks[0]?.msg : ""}
+                                    error={errors?.remarks?.length > 0}
+                                    value={this.state.formWizard.obj.remarks}
+                                    onChange={e => this.setField('remarks', e)} />
+                            </fieldset>            
                    </div>
                     </div>
                     <div className="row">

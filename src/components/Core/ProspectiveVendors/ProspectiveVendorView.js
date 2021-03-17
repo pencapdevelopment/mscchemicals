@@ -13,6 +13,7 @@ import EditIcon from '@material-ui/icons/Edit';
 //     ModalBody } from 'reactstrap';
 // import Sorter from '../../Common/Sorter';
 import Followups from '../Followups/Followups';
+import Divider from '@material-ui/core/Divider';
 // import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
 import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
@@ -24,16 +25,12 @@ import 'react-datetime/css/react-datetime.css';
 //     MuiPickersUtilsProvider,
 // } from '@material-ui/pickers';
 // import Event from '@material-ui/icons/Event';
-
 import TabPanel from '../../Common/TabPanel';
-
 //import Add from './Add';
 import ProspectiveVendorAdd from './ProspectiveVendorAdd';
 // import Upload from '../Common/Upload';
 // import AddSub from './AddSub';
-
 // const json2csv = require('json2csv').parse;
-
 class ProspectiveVendorView extends Component {
     state = {
         activeTab: 0,
@@ -121,39 +118,29 @@ class ProspectiveVendorView extends Component {
                 }
             })
     }
-
-
-
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=prospective_vendor_edit').then(res => {
             this.setState({ obj: res.data });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
     }
-
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
         })
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: false },this.loadObj(this.props.currentId));
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
@@ -184,7 +171,7 @@ class ProspectiveVendorView extends Component {
                 <div className="content-heading">Vendors</div>
                 {!this.state.editFlag &&
                     <div className="row">
-                        <div className="col-md-12">
+                        <div className="col-md-10">
                             <AppBar position="static">
                                 <Tabs
                                     className="bg-white"
@@ -195,8 +182,8 @@ class ProspectiveVendorView extends Component {
                                     aria-label="scrollable auto tabs example"
                                     value={this.state.activeTab}
                                     onChange={(e, i) => this.toggleTab(i)} >
-                                    <Tab label="Details" />
-                                    <Tab label="Followups" />
+                                    {/* <Tab label="Details" />
+                                    <Tab label="Followups" /> */}
                                   
                                 </Tabs>
                             </AppBar>
@@ -217,25 +204,25 @@ class ProspectiveVendorView extends Component {
                                                     <td>
                                                         <strong>Name</strong>
                                                     </td>
-                                                    <td>{this.state.obj.name}</td>
+                                                    <td>{this.state.obj.name?this.state.obj.name:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Company Name</strong>
                                                     </td>
-                                                    <td>{this.state.obj.companyName}</td>
+                                                    <td>{this.state.obj.companyName?this.state.obj.companyName:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Department</strong>
                                                     </td>
-                                                    <td>{this.state.obj.department}</td>
+                                                    <td>{this.state.obj.department?this.state.obj.department:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Designation</strong>
                                                     </td>
-                                                    <td>{this.state.obj.designation}</td>
+                                                    <td>{this.state.obj.designation?this.state.obj.designation:"-NA-"}</td>
                                                 </tr>   
                                                 <tr>
                                                     <td>
@@ -247,25 +234,25 @@ class ProspectiveVendorView extends Component {
                                                     <td>
                                                         <strong>Phone</strong>
                                                     </td>
-                                                    <td>{this.state.obj.phone}</td>
+                                                    <td>{this.state.obj.phone?this.state.obj.phone:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Country</strong>
                                                     </td>
-                                                    <td>{this.state.obj.country}</td>
+                                                    <td>{this.state.obj.country?this.state.obj.country:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Province</strong>
                                                     </td>
-                                                    <td>{this.state.obj.province}</td>
+                                                    <td>{this.state.obj.province?this.state.obj.province:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Category</strong>
                                                     </td>
-                                                    <td>{this.state.obj.categories}</td>
+                                                    <td>{this.state.obj.categories?this.state.obj.categories:"-NA-"}</td>
                                                 </tr>
                                                   
                                                 <tr>
@@ -294,10 +281,41 @@ class ProspectiveVendorView extends Component {
                                                     <td>
                                                         <strong>Remarks</strong>
                                                     </td>
-                                                    <td>{this.state.obj.remarks}</td>
+                                                    <td>{this.state.obj.remarks?this.state.obj.remarks:"--"}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        <Divider />
+                                          <div className="mt-2">
+                                        <h4 style={{fontSize: 16}}>Contact Details</h4>
+                                    </div>
+                                    <Divider />
+                              
+                                    <table className="table">
+                                        <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Phone</th>
+                                                    <th>Email</th>
+                                                </tr>
+                                            </thead>     
+                                     {this.state.obj.contact.map((cnt,i) =>{
+                                      return(      
+                                             <tbody>
+                                                  <tr>
+                                                  <td>{i+1}</td>
+                                                      <td>
+                                                          {cnt.name?cnt.name:"-NA-"}
+                                                      </td>
+                                                      <td>{cnt.phone?cnt.phone:"-NA-" }</td>
+                                                      <td>{cnt.email?cnt.phone:"-NA-"}</td>
+                                                  </tr>                                               
+                                              </tbody>
+                                              )})}
+                             
+                                     </table>    
+                                            <Divider />
                                     </div>
                                 </div>
                             </TabPanel>}

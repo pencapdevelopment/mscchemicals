@@ -419,11 +419,11 @@ class View extends Component {
                                         <div className=" mt-2">
                                         <div className="row" >
                                        
-                                        <div className="col-sm-2"><button style={{ border:"1px solid " }} title="status" size="small" variant="contained">Status</button></div>
+                                        <div className="col-sm-2"><button style={{backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} title="status" size="small" variant="contained"><span style={{color:"#fff"}}>Status</span></button></div>
                                             <div className="col-sm-9"></div>
                                             {/* style={{ backgroundColor: "#2b3db6", border:"1px solid " }} */}
                                             {(this.props.user.role !== 'ROLE_ACCOUNTS'&& this.props.user.role !== 'ROLE_INVENTORY' &&
-                                   <div className="col-sm-1" ><button style={{ backgroundColor: "#fff", border:"1px solid " }} variant="contained" size="small"><CloseSharpIcon style={{color:"#fff"}} fontSize="small" /></button></div>
+                                   <div className="col-sm-1" ><button style={{backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} variant="contained" size="small"><CloseSharpIcon style={{color:"#fff"}} fontSize="small" /></button></div>
                                    )}
                                            
 

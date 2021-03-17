@@ -882,7 +882,7 @@ class Add extends Component {
                         <div className="col-3">
                             <fieldset>
                                 <FormControl>
-                                    <AutoSuggest url="users"
+                                    <AutoSuggest url="users/search/roleBasedUsers"
                                         name="usersName"
                                         displayColumns="name"
                                         label="Assign"
@@ -900,7 +900,7 @@ class Add extends Component {
                                         projection="user_details_mini"
                                         value={this.state.assignUser}
                                         onSelect={e => this.setAutoSuggestAssignUser('user', e)}
-                                        queryString="&name" >
+                                        queryString="&flowcode=MG_SE_E&name">
                                     </AutoSuggest>
                                 </FormControl>
                             </fieldset>
@@ -921,11 +921,13 @@ class Add extends Component {
                             {this.state.users.map((u, i) => {
                                 return (
                                     <Chip
-                                        avatar={
-                                            <Avatar>
-                                                <AssignmentIndIcon />
-                                            </Avatar>
-                                        }
+                                    style={{backgroundColor:"lightgreen"}}
+                                    fontSize="small" 
+                                    avatar={
+                                        <Avatar>
+                                            <AssignmentIndIcon  style={{color:"#000"}} fontSize="small" />
+                                        </Avatar>
+                                    }
                                         label={u.user.name}
                                         // onClick={() => this.handleClick(obj)}
                                         onDelete={() => this.handleDelete(i)}

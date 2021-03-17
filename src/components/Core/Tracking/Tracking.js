@@ -81,11 +81,12 @@ class Tracking extends Component {
                             <h4 className="col-10 my-2" onClick={() => this.toggleTab(0)}>
                                 <span>Tracking </span>
                             </h4>
-
-                            <div className="col-2 float-right mt-2">
+                            {(this.props.user.role === 'ROLE_ADMIN'&&  
+                             <div className="col-2 float-right mt-2">
                                 <Button variant="contained" color="warning" size="xs"
                                     onClick={() => this.toggleTab(1)} > + Add Tracking</Button>
-                            </div>
+                            </div>)}
+                         
                         </div>
                         <div className="row">
                             <div className="col-md-12">

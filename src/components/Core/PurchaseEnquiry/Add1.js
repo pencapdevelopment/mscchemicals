@@ -63,7 +63,7 @@ class Add extends Component {
                 portOfLanding:"",
                 fob:'',
                 cif:"",
-                payment:"",
+                paymentTerms:"",
                 currency:"",
                 status: 'On going',
                 description: '',
@@ -88,9 +88,9 @@ class Add extends Component {
             { label: 'Converted', value: 'Converted' },
         ],
         currency: [
-            { label: 'IND', value: 'A' },
-            { label: 'Dollar', value: 'B' },
-            { label: 'EUR', value: 'C' },
+            { label: 'Rupee', value: 'I' },
+            { label: 'Dollar', value: 'D' },
+            { label: 'EUR', value: 'E' },
            
         ],
     }
@@ -669,9 +669,10 @@ class Add extends Component {
                                 {this.state.selectedCompanies.map((comp, i) => {
                                     return (
                                         <Chip
+                                        style={{backgroundColor:"lightgreen"}}
                                             avatar={
                                                 <Avatar>
-                                                    <AssignmentIndIcon />
+                                                    <AssignmentIndIcon  style={{color:"#000"}} />
                                                 </Avatar>
                                             }
                                             label={comp.name}
@@ -986,7 +987,7 @@ class Add extends Component {
                                                             >  
                                                              {this.state.currency.map((e, keyIndex) => {
                                                             return (
-                                                                <MenuItem key={keyIndex} value={e.value}>{e.label}</MenuItem>
+                                                                <MenuItem key={keyIndex} value={e.label}>{e.label}</MenuItem>
                                                             );
                                                         })}                                                      
                                                             {/* <MenuItem value={1}><img src="img/rupee.png"  style={{marginRight: 5}} />IND</MenuItem>                                                        
@@ -1010,7 +1011,7 @@ class Add extends Component {
                         <div className="col-3">
                             <fieldset>
                                 <FormControl>
-                                    <AutoSuggest url="users"
+                                    <AutoSuggest url="users/search/roleBasedUsers"
                                         name="usersName"
                                         displayColumns="name"
                                         label="Assign"
@@ -1028,7 +1029,8 @@ class Add extends Component {
                                         projection="user_details_mini"
                                         value={this.state.assignUser}
                                         onSelect={e => this.setAutoSuggestAssignUser('user', e)}
-                                        queryString="&name" >
+                                        queryString="&flowcode=MG_PR_E&name"
+                                        >
                                     </AutoSuggest>
                                 </FormControl>
                             </fieldset>

@@ -1,29 +1,35 @@
 import { AppBar, Button, Tab, Tabs } from '@material-ui/core';
 import axios from 'axios';
 import queryString from 'query-string';
-import { context_path, defaultDateFilter, server_url } from '../../Common/constants';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import { connect } from 'react-redux';
+import * as Const from '../../Common/constants';
 import Moment from 'react-moment';
 import TabPanel from '../../Common/TabPanel';
 import PageLoader from '../../Common/PageLoader';
+import Sorter from '../../Common/Sorter';
 import Image from '../Common/Image';
 import Upload from '../Common/Upload';
 import CompanyContacts from '../CompanyContacts/CompanyContacts';
 import Add from './Add1';
 import Branches from './Branches';
+import SalesList from './SalesList';
 import Products from './Products';
 import EditIcon from '@material-ui/icons/Edit';
-import { Table } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import { Table } from 'reactstrap';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 // const json2csv = require('json2csv').parse;
 class View extends Component {
     state = {
         loading:false,
+        purchasesobj:[],
         activeTab: 0,
         editFlag: false,
+        salesobj:[],
+        all:[],
         editSubFlag: false,
         modal: false,
         newObj: '',
@@ -82,6 +88,12 @@ class View extends Component {
             { label: '60 days from date of invoice', value: 'DI-60' },
             { label: '75 days from date of invoice', value: 'DI-75' },
             { label: '90 days from date of invoice', value: 'DI-90' }
+        ],
+        status: [
+            { label: 'On going', value: 'On going', badge: 'info' },
+            { label: 'Rejected', value: 'Rejected', badge: 'danger' },
+            { label: 'Partially Rejected', value: 'Partially Rejected', badge: 'warning' },
+            { label: 'Converted', value: 'Converted', badge: 'success' },
         ]
     }
     addSubObj = () => {
@@ -122,7 +134,7 @@ class View extends Component {
     }
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-        var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
+        var url = Const.server_url + Const.context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
@@ -130,7 +142,7 @@ class View extends Component {
         if (this.state.filters.search) {
             url += "&name=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-        url = defaultDateFilter(this.state, url);
+        url = Const.defaultDateFilter(this.state, url);
         axios.get(url)
         .then(res => {
             this.setState({
@@ -141,12 +153,51 @@ class View extends Component {
                 callBack();
             }
         })
+    }  
+    loadSales = (offset) => {
+        if (!offset) offset = 1;
+
+        var url = Const.server_url + Const.context_path + "api/sales?projection=sales_list&page="+(offset - 1)+"&company="+(this.state.newObj.id);
+
+
+        if (this.state.orderBy) {
+            url += '&sort=' + this.state.orderBy;
+        }
+        axios.get(url)
+        .then(res => {
+            this.setState({salesobj: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                page: res.data.page
+            });
+        })
+    }
+    loadPurchases(offset) {
+        if (!offset) offset = 1;
+
+        var urls = Const.server_url + Const.context_path + "api/purchases?projection=purchases_list&page=" + (offset - 1)+"&company="+(this.state.newObj.id);
+
+
+        if (this.state.orderBy) {
+            urls += '&sort=' + this.state.orderBy;
+        }
+        axios.get(urls)
+            .then(res => {  this.setState({
+                purchasesobj: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                page: res.data.page
+            }); 
+            
+            })
     }
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
                 activeTab: tab
             });
+        }
+        if(tab=== 4){
+            this.loadSales();
+        }
+        if(tab=== 5){
+            this.loadPurchases();
         }
     }
     toggleModal = () => {
@@ -155,7 +206,7 @@ class View extends Component {
         });
     }
     loadObj() {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
+        axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
             if (res.data.paymentTerms) {
                 res.data.paymentTerms = this.state.terms.find(g => g.value === res.data.paymentTerms).label;
             }
@@ -250,11 +301,13 @@ class View extends Component {
                                                         <span>{this.state.newObj.name}</span> 
                                                     </h6>
                                                 </div>
-                                                <div className="col-sm-1">
-                                                     <div className=" mt-2">                                                              
-                                                           <button  title="Company Details" style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6", borderRadius: "5px" }} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
-                                                    </div>
-                                                </div> 
+                                                {  this.props.user.role === 'ROLE_ADMIN' &&
+                                                   <div className="col-sm-1">
+                                                   <div className=" mt-2">                                                              
+                                                         <button  title="Company Details" style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6", borderRadius: "5px" }} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>
+                                                  </div>
+                                              </div> }
+                                             
                                             </div>
                                             <div className="" style={{top: -90}}></div>
                                             {/* {/* <Image  onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}
@@ -340,25 +393,25 @@ class View extends Component {
                                                             <td>
                                                                 <strong>Country</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.country}</td>
+                                                            <td>{this.state.newObj.country?this.state.newObj.country:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <strong>Province</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.province}</td>
+                                                            <td>{this.state.newObj.province?this.state.newObj.province:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <strong>City</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.city}</td>
+                                                            <td>{this.state.newObj.city?this.state.newObj.city:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <strong>Zipcode</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.zipcode}</td>
+                                                            <td>{this.state.newObj.zipcode?this.state.newObj.zipcode:"-NA-"}</td>
                                                         </tr>
                                                     </tbody>}
 
@@ -367,32 +420,32 @@ class View extends Component {
                                                         <td>
                                                             <strong>Customer Types</strong>
                                                         </td>
-                                                        <td>{this.state.newObj.customerType}</td>
+                                                        <td>{this.state.newObj.customerType?this.state.newObj.customerType:"-NA-"}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>
                                                             <strong>Turn Over</strong>
                                                         </td>
-                                                        <td>{this.state.newObj.turnOver}</td>
+                                                        <td>{this.state.newObj.turnOver?this.state.newObj.turnOver:"-NA-"}</td>
                                                     </tr>
 
                                                     <tr>
                                                         <td>
                                                             <strong>Rating</strong>
                                                         </td>
-                                                        <td>{this.state.newObj.rating}</td>
+                                                        <td>{this.state.newObj.rating?this.state.newObj.rating:"-NA-"}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>
                                                             <strong>Associated Organizations</strong>
                                                         </td>
-                                                        <td>{this.state.newObj.organizations}</td>
+                                                        <td>{this.state.newObj.organizations?this.state.newObj.organizations:"-NA-"}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>
                                                             <strong>Payment Terms</strong>
                                                         </td>
-                                                        <td>{this.state.newObj.paymentTerms}</td>
+                                                        <td>{this.state.newObj.paymentTerms?this.state.newObj.paymentTerms:"-NA-"}</td>
                                                     </tr>
 
 
@@ -400,14 +453,14 @@ class View extends Component {
                                                         <td>
                                                             <strong>Categories</strong>
                                                         </td>
-                                                        <td>{this.state.newObj.categories}</td>
+                                                        <td>{this.state.newObj.categories?this.state.newObj.categories:"-NA-"}</td>
                                                     </tr>
 
                                                     <tr>
                                                         <td>
                                                             <strong>Categories Interested</strong>
                                                         </td>
-                                                        <td>{this.state.newObj.categoriesInterested}</td>
+                                                        <td>{this.state.newObj.categoriesInterested?this.state.newObj.categoriesInterested:"-NA-"}</td>
                                                     </tr>
 
                                                     {this.state.newObj.type === 'B' &&
@@ -415,7 +468,7 @@ class View extends Component {
                                                             <td>
                                                                 <strong>Agent</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.agent === 'N' ? 'No' : 'Yes'}</td>
+                                                            <td>{this.state.newObj.agent === 'N' ? '-NA-' : 'Yes'}</td>
                                                         </tr>}
                                                 </tbody>
 
@@ -425,50 +478,49 @@ class View extends Component {
                                                             <td>
                                                                 <strong>GST IN</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.gstin}</td>
+                                                            <td>{this.state.newObj.gstin?this.state.newObj.gstin:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <strong>PAN</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.pan}</td>
+                                                            <td>{this.state.newObj.pan?this.state.newObj.pan:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <strong>FSSAI NO</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.fssai}</td>
+                                                            <td>{this.state.newObj.fssai?this.state.newObj.fssai:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <strong>Drug License No</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.drugLicense}</td>
+                                                            <td>{this.state.newObj.drugLicense?this.state.newObj.drugLicense:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <strong>Manufacture license no</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.others}</td>
+                                                            <td>{this.state.newObj.others?this.state.newObj.others:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <strong>MSME</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.msme === 'N' ? 'No' : 'Yes'}</td>
+                                                            <td>{this.state.newObj.msme === 'N' ? '-NA-' : 'Yes'}</td>
                                                         </tr>
                                                         {this.state.newObj.msme === 'Y' && <tr>
                                                             <td>
                                                                 <strong>MSME Id</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.msmeId}</td>
+                                                            <td>{this.state.newObj.msmeId?this.state.newObj.msmeId:"-NA-"}</td>
                                                         </tr>}
                                                     </tbody>}
                                                 </table>
                                              </div>
                                              </div>
                                              </div>
-                                            <Divider />
                                             {this.state.newObj.type === 'B' ?
                                             <div>
                                                 <div className="row">
@@ -501,8 +553,93 @@ class View extends Component {
                                     fileTypes={this.state.newObj.locationType === 'I' ? this.state.fileTypes2 : this.state.fileTypes1}></Upload>
                             </TabPanel>
                             <TabPanel value={this.state.activeTab} index={4}>
+                            <Table hover responsive>
+                                <thead>
+                                    <Sorter columns={[
+                                        { name: '#', sortable: false },
+                                        { name: 'Code', sortable: true, param: 'code' },
+                                        { name: 'Company', sortable: false},
+                                        { name: 'Status', sortable: true, param: 'status' },
+                                        { name: 'Created On', sortable: true, param: 'creationDate' },
+                                    ]}
+                                        onSort={this.onSort.bind(this)} />
+                                </thead>
+                                <tbody>
+                    {this.state.salesobj.map((obj, i) => {
+                        return (
+                            <tr key={obj.id}>
+                                <td>{i + 1}</td>
+                                <td>
+                                    <Link to={`/sales/${obj.id}`}>
+                                        {obj.code}
+                                    </Link>
+                                </td>
+                                <td>
+                                    <Link to={`/companies/${obj.company.id}`}>
+                                        {obj.company.name}
+                                    </Link>
+                                </td>
+                                <td>                                    
+                                    <span className={Const.getStatusBadge(obj.status, this.state.status)}>{obj.status}</span>
+                                </td>
+                                <td>
+                                    <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
+                                </td>
+                                {/* <td>
+                        {  this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button> }
+                                    <Button className="d-none" variant="contained" color="warning" size="xs" onClick={() => this.patchObj(i)}>{obj.active ? 'InActivate' : 'Activate'}</Button>
+                                    {obj.order && 
+                                    <Link to={`/orders/${obj.order}`}>
+                                        <Button variant="contained" color="inverse" size="xs">Order</Button>
+                                    </Link>}
+                                </td> */}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+                          </Table>
+
                             </TabPanel>
                             <TabPanel value={this.state.activeTab} index={5}>
+                            <Table hover responsive>
+                <thead>
+                    <Sorter columns={[
+                        { name: '#', sortable: false },
+                        { name: 'Code', sortable: true, param: 'code' },
+                        { name: 'Company', sortable: false},
+                        { name: 'Status', sortable: true, param: 'status' },
+                        { name: 'Created On', sortable: true, param: 'creationDate' },
+                        ]}
+                        onSort={this.onSort.bind(this)} />
+                </thead>
+                <tbody>
+                    {this.state.purchasesobj.map((obj, i) => {
+                        return (
+                            <tr key={obj.id}>
+                                <td>{i + 1}</td>
+                                <td>
+                                    <Link to={`/purchases/${obj.id}`}>
+                                        {obj.code}
+                                    </Link>
+                                </td>
+                                <td>
+                                    <Link to={`/companies/${obj.company.id}`}>
+                                        {obj.company.name}
+                                    </Link>
+                                </td>
+                                <td>
+                                    <span className={Const.getStatusBadge(obj.status, this.state.status)}>{obj.status}</span>
+                                </td>
+                                <td>
+                                    <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
+                                </td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </Table>
+
+
                             </TabPanel>
                         </div>
                     </div>}

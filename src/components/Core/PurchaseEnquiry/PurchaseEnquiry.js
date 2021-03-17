@@ -84,11 +84,11 @@ class PurchaseEnquiry extends Component {
                             <h4 className="col-9 my-2" onClick={() => this.toggleTab(0)}>
                                 <span>Purchase Enquiry </span>
                             </h4>
-
+                            {this.props.user.role === 'ROLE_ADMIN'&& 
                             <div className="col-3 float-right mt-2">
-                                <Button variant="contained" color="warning" size="xs"
-                                    onClick={() => this.toggleTab(1)} > + Add Purchase</Button>
-                            </div>
+                             <Button variant="contained" color="warning" size="xs"
+                                    onClick={() => this.toggleTab(1)} > + Add Purchase</Button>                          
+                            </div>}
                      </div>
                     <div className="row">
                         <div className="col-md-12">

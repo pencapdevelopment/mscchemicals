@@ -33,7 +33,6 @@ const SidebarItem = ({ item, isActive }) => (
 /** Build a sub menu with items inside and attach collapse behavior */
 const SidebarSubItem = ({ item, isActive, handler, children, isOpen }) => (
     <li className={isActive ? 'active' : ''}>
-        {console.log("item",item,"isopen",isOpen,"isActive",isActive,"childrn",children,"isactive",isActive)}
         <div className="nav-item" onClick={handler}>
             {/* {item.label && <Badge tag="div" className="float-right" color={item.label.color}>{item.label.value}</Badge>} 
                  // &&
@@ -55,7 +54,7 @@ const SidebarSubItem = ({ item, isActive, handler, children, isOpen }) => (
 
 /** Component used to display a header on menu when using collapsed/hover mode */
 const SidebarSubHeader = ({ item }) => (
-    <li className="sidebar-subnav-header">{item.name}</li>
+    <li className="sidebar-subnav-header" style={{hover:"none"}}>{item.name}</li>
 )
 
 class Sidebar extends Component {
@@ -170,9 +169,14 @@ class Sidebar extends Component {
                                                     <SidebarSubItem item={item} isOpen={this.state.collapse[item.name]} handler={this.toggleItemCollapse.bind(this, item.name)} isActive={this.routeActive(this.getSubRoutes(item))} key={i}>
                                                         <SidebarSubHeader item={item} key={i} />
                                                         {
-                                                            item.submenu.map((subitem, i) =>
-                                                                <SidebarItem key={i} item={subitem} isActive={this.routeActive(subitem.path)} />
-                                                            )
+                                                            item.submenu.map((subitem, i) =>{
+                                                                if (this.itemRole(subitem) === true){
+                                                                    return (<SidebarItem key={i} item={subitem} isActive={this.routeActive(subitem.path)} />)
+                                                                }
+                                                                else{
+                                                                    return null;
+                                                                }
+                                                            })
                                                         }
                                                     </SidebarSubItem>
                                                 ]

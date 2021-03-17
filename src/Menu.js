@@ -117,7 +117,7 @@ const Menu = [
         name: 'Prospective Buyer',
         icon: 'fas fa-caret-down',
         role: 'ROLE_ADMIN',
-        permission:"MG_CM",
+        permission:"MG_SE_E,MG_SE_V",
         label:{
             color: '#2b3db6',
             icon:'fas fa-caret-down'
@@ -126,17 +126,22 @@ const Menu = [
             {
                 path:'/ProspectiveBuyer',
                 name:'Prospective Buyers',
-                icon:'fa fa-history'
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN'
             },
             {
                 path:'/pbsales',
                 name:'Sales',
-                icon:'fa fa-history'
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN',
+                permission:'MG_SE_E,MG_SE_V'
             },
             {
                 path:'/Orders',
                 name:'Orders',
-                icon:'fa fa-history'
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN',
+                permission:"MG_OR_E,MG_OR_V_,MG_AC"
             }
         ]
     },
@@ -152,7 +157,8 @@ const Menu = [
         path: '/prospectivevendor',
         icon: 'fas fa-caret-down',
         role: 'ROLE_ADMIN',
-        permission:"MG_CM",
+        // permission:"MG_CM",
+        permission:"MG_PR_E,MG_PR_V",
         label:{
             color: '#2b3db6',
             icon:'fas fa-caret-down'
@@ -161,17 +167,22 @@ const Menu = [
             {
                 path:'/prospectivevendor',
                 name:'Prospective Vendors',
-                icon:'fa fa-history'
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN'
             },
             {
-                path:'/purchases',
+                path:'/pvpurchases',
                 name:'Purchases',
-                icon:'fa fa-history'
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN',
+                permission:"MG_PR_E,MG_PR_V"
             },
             {
                 path:'/Orders',
                 name:'Orders',
-                icon:'fa fa-history'
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN',
+                permission:"MG_OR_E,MG_OR_V_,MG_AC"
             }
         ]
     },
@@ -186,7 +197,7 @@ const Menu = [
         path: '/trackings',
         icon: 'fa fa-search-location',
         role: 'ROLE_ADMIN',
-        permission:"MG_TR"
+        permission:"MG_PR_E,MG_PR_V,MG_SE_E,MG_SE_V"
     },
     {
         name: 'Groups & Contacts',

@@ -533,7 +533,7 @@ class View extends Component {
                     </ModalHeader>
                     <ModalBody>
                         <fieldset>
-                            <AutoSuggest url="users"
+                            <AutoSuggest url="users/search/roleBasedUsersrs"
                                 name="userName"
                                 displayColumns="name"
                                 label="User"
@@ -549,7 +549,7 @@ class View extends Component {
                                 projection="user_details_mini"
                                 value={this.state.selectedUser}
                                 onSelect={e => this.setAutoSuggest('user', e?.id)}
-                                queryString="&name" ></AutoSuggest>
+                                queryString="&flowcode=MG_SE_E&name" ></AutoSuggest>
                         </fieldset>
                         <div className="text-center">
                             <Button variant="contained" color="primary" onClick={e => this.saveUser()}>Save</Button>
@@ -669,7 +669,7 @@ class View extends Component {
                                                                     {this.state.users.map((obj, i) => {
                                                                         return (
                                                                             <Chip
-                                                                               style={{backgroundColor:"lightgreen"}}
+                                                                            style={{backgroundColor:"lightgreen"}}
                                                                                fontSize= "small"
                                                                                avatar={
                                                                                     <Avatar>

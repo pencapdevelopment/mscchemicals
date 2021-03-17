@@ -368,11 +368,11 @@ class ProspectiveBuyerView extends Component {
                                     aria-label="scrollable auto tabs example"
                                     value={this.state.activeTab}
                                     onChange={(e, i) => this.toggleTab(i)} >
-                                    <Tab label="Details" />
-                                    <Tab label="Quotation" />
+                                    {/* <Tab label="Details" /> */}
+                                    {/* <Tab label="Quotation" />
                                     <Tab label="Negotiation" />
                                     <Tab label="Followups" />
-                                    <Tab label="Approvals" />
+                                    <Tab label="Approvals" /> */}
                                     {/* <Tab label="Inventory & Docs" />
                                    <Tab label="Pharma Documents" />
                                     <Tab label="Food Documents" />*/}
@@ -383,33 +383,28 @@ class ProspectiveBuyerView extends Component {
                             <TabPanel value={this.state.activeTab} index={0}>
                                 {this.state.obj &&
                                 <div>
+                                   
                                     <div className="row">
-                                        <div className="col-sm-12">
-                                            <div className="card">
-                                                <div className="card-header">
-                                                      <div className="row">
-                                                          <div className="col-sm-10">
-                                                             <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6" }}  > <span style={{fontSize: 11, textTransform : "none", color:"#fff"}}>Status</span></button>
-                                                          </div>
-                                                          <div className="col-sm-2" >
-                                                          {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
-                                                           <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
-                                                        <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
-                                                           {/* {this.state.isQuoteExists < 1 ? */}
-                                                             <button  style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}}   title=" Generate Quotation"  onClick={() => this.handleGenerateQuote()} > <img style={{width: "20px", height: "20px", color:"#fff" }} src="img/quotei.png" /></button>
-                                                         {/* :'' } */}
-                                                              </div>                                                            
-                                                      </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                     <div className="col-sm-8">
+                                     <div className="col-sm-10">
                                      <div className="card b">
-                                      
+                                   
 
                                       <div className="card-body bb bt">
+                                            <div className="card-header">
+                                                      <div className="row">
+                                                          <div className="col-sm-11">
+                                                             {/* <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6" }}  > <span style={{fontSize: 11, textTransform : "none", color:"#fff"}}>Status</span></button> */}
+                                                          </div>
+                                                          <div className="col-sm-1" >
+                                                          {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
+                                                           <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
+                                                        {/* <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button> */}
+                                                           {/* {this.state.isQuoteExists < 1 ? */}
+                                                             {/* <button  style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}}   title=" Generate Quotation"  onClick={() => this.handleGenerateQuote()} > <img style={{width: "20px", height: "20px", color:"#fff" }} src="img/quotei.png" /></button> */}
+                                                         {/* :'' } */}
+                                                              </div>                                                            
+                                            </div>
+                                        </div>
                                           <table className="table">
                                               <tbody>
                                                   <tr>
@@ -432,7 +427,7 @@ class ProspectiveBuyerView extends Component {
                                                   </tr>
                                                   <tr>
                                                       <td>
-                                                          <strong>Department </strong>
+                                                          <strong>Department</strong>
                                                       </td>
                                                       <td>{this.state.obj.department }</td>
                                                   </tr>
@@ -501,31 +496,34 @@ class ProspectiveBuyerView extends Component {
                                         <h4 style={{fontSize: 16}}>Contact Details</h4>
                                     </div>
                                     <Divider />
-                                          <table className="table">
+                                    <table className="table">
+                                        <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Phone</th>
+                                                    <th>Email</th>
+                                                </tr>
+                                            </thead>
+                                    {this.state.obj.contact.map((cnt,i) =>{
+                                      return(
+                   
                                               <tbody>
                                                   <tr>
+                                                      <td>{i+1}</td>
                                                       <td>
-                                                          <strong>Name</strong>
+                                                          {cnt.name?cnt.name:"-NA-"}
                                                       </td>
-                                                      <td>{this.state.obj.name}</td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
-                                                          <strong>Phone</strong>
-                                                      </td>
-                                                      <td>{this.state.obj.phone}</td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
-                                                          <strong>Email</strong>
-                                                      </td>
-                                                      <td>{this.state.obj.email}</td>
+                                                      <td>{cnt.phone?cnt.phone:"-NA-" }</td>
+                                                      <td>{cnt.email?cnt.phone:"-NA-"}</td>
                                                   </tr>
                                                  
                                                  
                                               </tbody>
-                                          </table>
-                                          <Divider />
+                                         
+                                    )})}
+                                     </table>
+                                            <Divider />
                                           <div className="mt-2">
                                         <h4 style={{fontSize: 16}}>Products</h4>
                                     </div>
@@ -556,21 +554,22 @@ class ProspectiveBuyerView extends Component {
                                      </div>
                                      {
                                             // this.props.user.role === 'ROLE_ADMIN' &&
-                                            <div className="col-md-4" >
-                                                {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
-                                                    parentObj={this.state.obj} currentId={this.props.currentId}></Assign> */}
-                                                {/* <Timeline
-                                                    title='Period ending 2017'
-                                                    timeline={mockTimeline}
-                                                /> */}
-                                                <ActivityStream
-                                                    style={{marginLeft: 400,}}
-                                                    title="Activity"
-                                                    stream={mockActivity}
+                                            // <div className="col-md-4" >
+                                            //     <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
+                                            //         parentObj={this.state.obj} currentId={this.props.currentId}></Assign> 
+                                            //      <Timeline
+                                            //         title='Period ending 2017'
+                                            //         timeline={mockTimeline}
+                                            //     />
+                                            //     <ActivityStream
+                                            //         style={{marginLeft: 400,}}
+                                            //         title="Activity"
+                                            //         stream={mockActivity}
                                              
                                                    
-                                                />
-                                            </div>}
+                                            //     />
+                                            // </div>
+                                            }
                                     </div>
                                 </div>}
                             </TabPanel>}

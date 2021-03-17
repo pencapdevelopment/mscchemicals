@@ -261,9 +261,9 @@ class Branches extends Component {
                             {!this.state.viewFlag &&
                             <div className="card b">
                                 <div className="card-header">
-                                    <div className="float-right mt-2">
+                                {this.props.user.role === 'ROLE_ADMIN' && <div className="float-right mt-2">
                                         <Button variant="contained" color="warning" size="xs" onClick={() => this.addObj()}>Add</Button>
-                                    </div>
+                                    </div>}
                                     <h4 className="my-2">
                                         <span>Branches</span>
                                     </h4>
@@ -300,7 +300,9 @@ class Branches extends Component {
                                                             <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
                                                         </td>
                                                         <td>
+                                                        {this.props.user.role === 'ROLE_ADMIN' && 
                                                             <Button variant="contained" color="warning" size="xs" onClick={() => this.editObj(i)}>Edit</Button>
+                                                        }    
                                                         </td>
                                                     </tr>
                                                 )
@@ -313,11 +315,15 @@ class Branches extends Component {
                             </div>}
                             {this.state.viewFlag &&
                             <div className="card b">
+                            
                                 <div className="card-header">
-                                    <div className="float-right mt-2">
-                                        <Button variant="contained" color="warning" size="xs" onClick={() => this.viewAll()}>View All</Button>
-                                        <Button variant="contained" color="warning" size="xs" onClick={() => this.editObj()}>Edit</Button>
-                                    </div>
+                                {this.props.user.role === 'ROLE_ADMIN' && 
+                                <div className="float-right mt-2">
+                                <Button variant="contained" color="warning" size="xs" onClick={() => this.viewAll()}>View All</Button>
+                                <Button variant="contained" color="warning" size="xs" onClick={() => this.editObj()}>Edit</Button>
+                            </div>
+                                }
+                                    
                                     <h4 className="my-2">
                                         <span>{this.state.newObj.name}</span>
                                     </h4>
@@ -329,56 +335,56 @@ class Branches extends Component {
                                                 <td>
                                                     <strong>Type</strong>
                                                 </td>
-                                                <td>{this.state.newObj.type}</td>
+                                                <td>{this.state.newObj.type?this.state.newObj.type:"-NA-"}</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <strong>street</strong>
                                                 </td>
-                                                <td>{this.state.newObj.street}</td>
+                                                <td>{this.state.newObj.street?this.state.newObj.street:"-NA-"}</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <strong>locality</strong>
                                                 </td>
-                                                <td>{this.state.newObj.locality}</td>
+                                                <td>{this.state.newObj.locality?this.state.newObj.locality:"-NA-"}</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <strong>landmark</strong>
                                                 </td>
-                                                <td>{this.state.newObj.landmark}</td>
+                                                <td>{this.state.newObj.landmark?this.state.newObj.landmark:"-NA-"}</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <strong>city</strong>
                                                 </td>
-                                                <td>{this.state.newObj.city}</td>
+                                                <td>{this.state.newObj.city?this.state.newObj.city:"-NA-"}</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <strong>state</strong>
                                                 </td>
-                                                <td>{this.state.newObj.state}</td>
+                                                <td>{this.state.newObj.state?this.state.newObj.state:"-NA-"}</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <strong>country</strong>
                                                 </td>
-                                                <td>{this.state.newObj.country}</td>
+                                                <td>{this.state.newObj.country?this.state.newObj.country:"-NA-"}</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <strong>pincode</strong>
                                                 </td>
-                                                <td>{this.state.newObj.pincode}</td>
+                                                <td>{this.state.newObj.pincode?this.state.newObj.pincode:"-NA-"}</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <strong>Creation Date</strong>
                                                 </td>
                                                 <td>
-                                                    <Moment format="DD MMM YY HH:mm">{this.state.newObj.creationDate}</Moment>
+                                                    <Moment format="DD MMM YY HH:mm">{this.state.newObj.creationDate?this.state.newObj.creationDate:"-NA-"}</Moment>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -467,9 +473,12 @@ class Branches extends Component {
                                     <div className="text-center mt-4">
                                         <h4>
                                             Contacts
-                                            <Button className="ml-3" variant="outlined" color="primary" size="sm" onClick={this.openContacts} title="Add Contact">
-                                                Add/Update
-                                            </Button>         
+                                            {this.props.user.role === 'ROLE_ADMIN' &&
+                                             <Button className="ml-3" variant="outlined" color="primary" size="sm" onClick={this.openContacts} title="Add Contact">
+                                             Add/Update
+                                         </Button>  
+                                            }
+                                                  
                                         </h4>
                                     </div>
                                     {this.state.newObj.contacts &&
