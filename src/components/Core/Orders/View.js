@@ -395,6 +395,7 @@ class View extends Component {
                                                 : 
                                                     <Tab label="CheckList" /> )
                                                 }
+                                                
                                                 <Tab label="CHA Documents" />
                                                 <Tab label="Accounts" />
                                                 <Tab label="Followups" />
@@ -1185,53 +1186,64 @@ class View extends Component {
                             </TabPanel>
                             )
                             }
+                             {this.state.obj &&  
+                            (this.state.obj.type === "Sales" ? 
                             <TabPanel value={this.state.activeTab} index={1}>
+                             
+                            </TabPanel>: <TabPanel value={this.state.activeTab} index={1}>
                                 <CheckList baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
                                 currentId={this.props.currentId} parentObj={this.state.obj}></CheckList>
-                            </TabPanel>
+                            </TabPanel>)}
+                            {this.state.obj &&  
+                            (this.state.obj.type === "Sales" ?
                             <TabPanel value={this.state.activeTab} index={2}>
-                            <div className="row">
-                                    <div className="col-md-8  offset-md-2">
-                                        <table className="table" >
-                                            <tbody>
-                                            <tr>
-                                                <td>
-                                                <InputLabel>Invoice No</InputLabel>
-                                                </td>
-                                                <td>
+                             </TabPanel>
+                          :
+                          <TabPanel value={this.state.activeTab} index={2}>
+                          <div className="row">
+                                  <div className="col-md-8  offset-md-2">
+                                      <table className="table" >
+                                          <tbody>
+                                          <tr>
+                                              <td>
+                                              <InputLabel>Invoice No</InputLabel>
+                                              </td>
+                                              <td>
+                                        
+                                              </td>                                          
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                              <InputLabel>Packing List</InputLabel>
+                                              </td>
+                                              <td>
+                                        
+                                              </td>                                          
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                              <InputLabel>Coo</InputLabel>
+                                              </td>
+                                              <td>
+                                        
+                                              </td>                                          
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                              <InputLabel>Bill of Landing </InputLabel>
+                                              </td>
+                                              <td>
+                                        
+                                              </td>                                          
+                                          </tr>
+                                          </tbody>
+                                          </table>
+                                  </div>   
                                           
-                                                </td>                                          
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                <InputLabel>Packing List</InputLabel>
-                                                </td>
-                                                <td>
-                                          
-                                                </td>                                          
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                <InputLabel>Coo</InputLabel>
-                                                </td>
-                                                <td>
-                                          
-                                                </td>                                          
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                <InputLabel>Bill of Landing </InputLabel>
-                                                </td>
-                                                <td>
-                                          
-                                                </td>                                          
-                                            </tr>
-                                            </tbody>
-                                            </table>
-                                    </div>   
-                                            
-                                </div>
-                            </TabPanel>
+                              </div>
+                          </TabPanel>
+                    
+                          )}
                             <TabPanel value={this.state.activeTab} index={3}>
                                 <Accounts baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)} 
                                 currentId={this.props.currentId}  parentObj={this.state.obj}></Accounts>

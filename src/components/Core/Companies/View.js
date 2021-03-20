@@ -14,7 +14,10 @@ import Upload from '../Common/Upload';
 import CompanyContacts from '../CompanyContacts/CompanyContacts';
 import Add from './Add1';
 import Branches from './Branches';
+<<<<<<< Updated upstream
 // import SalesList from './SalesList';
+=======
+>>>>>>> Stashed changes
 import Products from './Products';
 import EditIcon from '@material-ui/icons/Edit';
 import { Link } from 'react-router-dom';
@@ -158,8 +161,9 @@ class View extends Component {
         if (!offset) offset = 1;
 
         var url = Const.server_url + Const.context_path + "api/sales?projection=sales_list&page="+(offset - 1)+"&company="+(this.state.newObj.id);
-
-
+        if( this.props.user.role !== 'ROLE_ADMIN') {
+            url += "&uid=" + this.props.user.id;
+        }
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
@@ -175,7 +179,9 @@ class View extends Component {
 
         var urls = Const.server_url + Const.context_path + "api/purchases?projection=purchases_list&page=" + (offset - 1)+"&company="+(this.state.newObj.id);
 
-
+        if( this.props.user.role !== 'ROLE_ADMIN') {
+            urls += "&uid=" + this.props.user.id;
+        }
         if (this.state.orderBy) {
             urls += '&sort=' + this.state.orderBy;
         }

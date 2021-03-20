@@ -637,8 +637,8 @@ class View extends Component {
                                                        
                                                             <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
                                                             </Fab> */}
-                                                      
-                                                         {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+{/*                                                       
+                                                         {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
                                                             <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
@@ -695,13 +695,13 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Code</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.code}</td>
+                                                                <td>{this.state.obj.code?this.state.obj.code:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Enquiry Date</strong>
                                                                 </td>
-                                                                <td><Moment format="DD MMM YY">{this.state.obj.enquiryDate}</Moment></td>
+                                                                <td><Moment format="DD MMM YY">{this.state.obj.enquiryDate?this.state.obj.enquiryDate:"-NA-"}</Moment></td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
@@ -717,25 +717,25 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Contact Name</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.contactName}</td>
+                                                                <td>{this.state.obj.contactName?this.state.obj.contactName:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Email</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.email}</td>
+                                                                <td>{this.state.obj.email?this.state.obj.email:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Phone</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.phone}</td>
+                                                                <td>{this.state.obj.phone?this.state.obj.phone:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Source</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.source}</td>
+                                                                <td>{this.state.obj.source?this.state.obj.source:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
@@ -747,13 +747,13 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Status Notes</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.statusNotes}</td>
+                                                                <td>{this.state.obj.statusNotes?this.state.obj.statusNotes:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Description</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.description}</td>
+                                                                <td>{this.state.obj.description?this.state.obj.description:"-NA-"}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>

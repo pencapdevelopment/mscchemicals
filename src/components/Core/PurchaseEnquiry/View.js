@@ -321,8 +321,9 @@ class View extends Component {
     }
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=purchases_edit').then(res => {
+        
             this.setState({ obj: res.data, users:res.data.users, loading: false});
-          
+            console.log("response date",res.data)
         });
     }
     loadAssignedUsers(id){
@@ -580,7 +581,7 @@ class View extends Component {
                                     <Tab label="Negotiation" />
                                     <Tab label="Followups" />                                  
                                     <Tab label="Approvals" />
-                                    <Tab label="Order" />
+                                    {/* <Tab label="Order" /> */}
                                    {/* <Tab label="Pharma Documents" />
                                     <Tab label="Food Documents" />*/}
                                 </Tabs>
@@ -622,10 +623,10 @@ class View extends Component {
                                                               {this.props.user.role === 'ROLE_ADMIN' && 
                                                          <button title="Email" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
                                                         {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
-                                                            <button  style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} variant="contained" color="primary" size="small" onClick={this.convertToOrder}><AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>}
+                                                            <button   title="convert order" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} variant="contained" color="primary" size="small" onClick={this.convertToOrder}><AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
-                                                                <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}}><span style={{  textTransform: 'none', fontWeight: 'normal'}}> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></span></button>
+                                                                <button  title="convert order" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}}><span style={{  textTransform: 'none', fontWeight: 'normal'}}> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></span></button>
                                                             </Link>}
                                                     </div>
                                                     <h4 className="my-2">
@@ -683,13 +684,13 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Code</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.code}</td>
+                                                                <td>{this.state.obj.code?this.state.obj.code:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Enquiry Date</strong>
                                                                 </td>
-                                                                <td><Moment format="DD MMM YY">{this.state.obj.enquiryDate}</Moment></td>
+                                                                <td><Moment format="DD MMM YY">{this.state.obj.enquiryDate?this.state.obj.enquiryDate:"-NA-"}</Moment></td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
@@ -697,7 +698,7 @@ class View extends Component {
                                                                 </td>
                                                                 <td>
                                                                     <Link to={`/companies/${this.state.obj.company.id}`}>
-                                                                        {this.state.obj.company.name}
+                                                                        {this.state.obj.company.name?this.state.obj.company.name:"-NA-"}
                                                                     </Link>
                                                                 </td>
                                                             </tr>
@@ -858,18 +859,7 @@ class View extends Component {
                             <TabPanel value={this.state.activeTab} index={4}>
                                 <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Approval> 
                             </TabPanel>
-                            {/* <TabPanel  index={4}>
-                          </TabPanel> */}
-                          <TabPanel value={this.state.activeTab} index={5}>
-                                <Order baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}
-                                    currentId={this.props.currentId} parentObj={this.state.obj}></Order>
-                            </TabPanel>
-                            {/*<TabPanel value={this.state.activeTab} index={3}>
-                                <Upload onRef={ref => (this.pharmauploadRef = ref)} fileFrom={this.props.baseUrl + '_Pharma'} currentId={this.props.currentId} fileTypes={this.state.pharmaFileTypes}></Upload>
-                            </TabPanel>
-                            <TabPanel value={this.state.activeTab} index={4}>
-                                <Upload onRef={ref => (this.fooduploadRef = ref)} fileFrom={this.props.baseUrl + '_Food'} currentId={this.props.currentId} fileTypes={this.state.foodFileTypes}></Upload>
-                            </TabPanel>*/}
+                          
                         </div>
                     </div>}
                     {this.state.editFlag &&

@@ -1,5 +1,5 @@
 import MomentUtils from '@date-io/moment';
-import { Button, TextField } from '@material-ui/core';
+import { Button, TextField,FormControl } from '@material-ui/core';
 import Event from '@material-ui/icons/Event';
 import {
     DatePicker,
@@ -20,15 +20,16 @@ import { context_path, server_url } from '../../Common/constants';
 import Sorter from '../../Common/Sorter';
 import ContentWrapper from '../../Layout/ContentWrapper';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-
-
+import AutoSuggest from '../../Common/AutoSuggest';
+import UOM from '../Common/UOM';
+import { Link } from 'react-router-dom';
 
 
 
 // const json2csv = require('json2csv').parse;
 
 
-class Upload extends Component {
+class Uploadp extends Component {
     state = {
         activeTab: 0,
         editFlag: false,
@@ -42,6 +43,7 @@ class Upload extends Component {
                 expiryDate: null,
             }
         },
+        product:["Testing","Testing2"],
         subObjs: [],
         newSubObj: {},
         subPage: {
@@ -311,13 +313,15 @@ class Upload extends Component {
                                 </fieldset>
                                 <span>*Please upload .doc,.docx,.pdf,.png,.jpg files only</span>
                                 {this.state.formWizard.obj.enableExpiryDate && <fieldset>
-                                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                                        <MuiPickersUtilsProvider utils={MomentUtils}
+                                            className="col-md-6">
                                             <DatePicker 
                                             autoOk
                                             clearable
                                             // variant="inline"
                                             label="Expiry Date"
                                             format="DD/MM/YYYY"
+                                        
                                             value={this.state.formWizard.obj.expiryDate} 
                                             onChange={e => this.setDateField('expiryDate', e)} 
                                             TextFieldComponent={(props) => (
@@ -339,7 +343,61 @@ class Upload extends Component {
                                             )} />
                                         </MuiPickersUtilsProvider>
                                 </fieldset>}
-                                <div className="text-center">
+                              
+                                <Table style={{marginTop:"-40px"}}>
+                                        <tbody  >                                                
+                                        <tr>                                                  
+                                                        <td className="">
+                                                            <fieldset>
+                                                                <FormControl   style={{marginTop:"30px"}}>
+                                                                     <Link to={`/products/${this.state.product[0]}`}>
+                                                                            {this.state.product[0]}
+                                                                    </Link>
+                                                                </FormControl>
+                                                            </fieldset>
+                                                        </td>                                                
+                                                        <td   >
+                                                            <fieldset >
+                                                                <TextField type="number" name="amount" label="Amount" required={true}
+                                                                
+                                                                className="col-md-6"
+                                                                    // inputProps={{ readOnly: true }}
+                                                                    //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
+                                                                    // error={errors?.amount?.length > 0}
+                                                                    // value={this.state.obj2.amount} onChange={(e)=>this.saveProduct(e)} 
+                                                                    />
+                                                            </fieldset>
+                                                        </td>
+                                                    </tr>                                         
+                                                    <tr   style={{marginTop:"-60px",marginBottom:"90px"}}>                                                  
+                                                        <td className="">
+                                                            <fieldset>
+                                                                <FormControl   style={{marginTop:"-20px"}}>
+                                                                     <Link to={`/products/${this.state.product[1]}`}>
+                                                                            {this.state.product[1]}
+                                                                    </Link>
+                                                                </FormControl>
+                                                            </fieldset>
+                                                        </td>                                                
+                                                        <td   >
+                                                            <fieldset >
+                                                                <TextField type="number" name="amount" label="Amount" required={true}
+                                                                style={{marginTop:"-50px"}}
+                                                                className="col-md-6"
+                                                                    // inputProps={{ readOnly: true }}
+                                                                    //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                                                    // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
+                                                                    // error={errors?.amount?.length > 0}
+                                                                    // value={this.state.obj2.amount} onChange={(e)=>this.saveProduct(e)} 
+                                                                    />
+                                                            </fieldset>
+                                                        </td>
+                                                    </tr>                              
+                                        </tbody>
+                                    </Table>
+                             
+                                    <div className="text-center">
                                     <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Save</Button>
                                 </div>
                             </ModalBody>
@@ -349,7 +407,7 @@ class Upload extends Component {
                                 <thead>
                                     <Sorter columns={[
                                         { name: 'File Type', sortable: false },
-                                        // { name: 'File Type', sortable: false },
+                                        // { name: 'File Type', sortable:true },
                                         { name: 'Action', sortable: false },
                                         { name: 'File Name', sortable: false },
                                         { name: 'Expiry Date', sortable: false },
@@ -361,10 +419,10 @@ class Upload extends Component {
                                     {this.props.fileTypes.map((obj, i) => {
                                         return (
                                             <tr key={obj.label} className={obj.noshow ? 'd-none' : ''}>
-                                                <td>{obj.label}</td>
-                                            
-
-                                                
+                                                <td>{obj.label}</td>                                                  
+                                                {/* <td>
+                                                    <Button fontSize="small" disabled={this.isFileExists(obj.label)} variant="contained" color="primary" style={{marginLeft: "-10px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload COA</Button>
+                                                </td>                                                */}
                                                 <td>
                                                     <Button fontSize="small" disabled={this.isFileExists(obj.label)} variant="contained" color="primary" style={{marginLeft: "-10px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload</Button>
                                                 </td>
@@ -398,4 +456,4 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps
-)(Upload);
+)(Uploadp);

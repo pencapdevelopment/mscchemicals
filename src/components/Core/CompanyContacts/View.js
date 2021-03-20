@@ -193,7 +193,7 @@ class View extends Component {
                                                     </td>
                                                     <td>
                                                         <Image onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}
-                                                        parentObj={this.state.obj}></Image>
+                                                        parentObj={this.state.obj?this.state.obj:"-NA-"}></Image>
                                                     </td>
                                                 </tr>
                                                 {this.state.obj.type ==='C' && <tr>
@@ -202,7 +202,7 @@ class View extends Component {
                                                     </td>
                                                     <td>
                                                         <Link to={`/companies/${this.state.obj.company.id}`}>
-                                                            {this.state.obj.company.name}
+                                                            {this.state.obj.company.name?this.state.obj.company.name:"-NA-"}
                                                         </Link>
                                                     </td>
                                                 </tr>}
@@ -215,19 +215,19 @@ class View extends Component {
                                                     <td>
                                                         <strong>Name</strong>
                                                     </td>
-                                                    <td>{this.state.obj.name}</td>
+                                                    <td>{this.state.obj.name?this.state.obj.name:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Email</strong>
                                                     </td>
-                                                    <td>{this.state.obj.email}</td>
+                                                    <td>{this.state.obj.email?this.state.obj.email:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Phone</strong>
                                                     </td>
-                                                    <td>{this.state.obj.phone}</td>
+                                                    <td>{this.state.obj.phone?this.state.obj.phone:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
@@ -239,55 +239,55 @@ class View extends Component {
                                                     <td>
                                                         <strong>Department</strong>
                                                     </td>
-                                                    <td>{this.state.obj.department}</td>
+                                                    <td>{this.state.obj.department?this.state.obj.department:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>About Work</strong>
                                                     </td>
-                                                    <td>{this.state.obj.aboutWork}</td>
+                                                    <td>{this.state.obj.aboutWork?this.state.obj.aboutWork:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Reports To</strong>
                                                     </td>
-                                                    <td>{this.state.obj.reportsTo}</td>
+                                                    <td>{this.state.obj.reportsTo?this.state.obj.reportsTo:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>First Met</strong>
                                                     </td>
-                                                    <td>{this.state.obj.firstMet}</td>
+                                                    <td>{this.state.obj.firstMet?this.state.obj.firstMet:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Whats App</strong>
                                                     </td>
-                                                    <td>{this.state.obj.whatsapp}</td>
+                                                    <td>{this.state.obj.whatsapp?this.state.obj.whatsapp:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Wechat</strong>
                                                     </td>
-                                                    <td>{this.state.obj.wechat}</td>
+                                                    <td>{this.state.obj.wechat?this.state.obj.wechat:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>QQ</strong>
                                                     </td>
-                                                    <td>{this.state.obj.qq}</td>
+                                                    <td>{this.state.obj.qq?this.state.obj.qq:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>LinkedIn</strong>
                                                     </td>
-                                                    <td>{this.state.obj.linkedin}</td>
+                                                    <td>{this.state.obj.linkedin?this.state.obj.linkedin:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Previous Company</strong>
                                                     </td>
-                                                    <td>{this.state.obj.previousCompany}</td>
+                                                    <td>{this.state.obj.previousCompany?this.state.obj.previousCompany:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>

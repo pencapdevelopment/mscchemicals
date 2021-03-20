@@ -110,7 +110,7 @@ class List extends Component {
             url += '&sort=' + this.state.orderBy;
         }
 
-        if( this.props.user.permissions.indexOf(Const.MG_AC) ===-1) {
+        if( this.props.user.role !== 'ROLE_ADMIN') {
             url += "&uid=" + this.props.user.id;
         }
 
@@ -329,7 +329,7 @@ class List extends Component {
                                     <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
                                 </td>
                                 <td>
-                        {  this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button> }
+                        {this.props.user.role === 'ROLE_ADMIN' &&  this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button> }
                                     <Button className="d-none" variant="contained" color="warning" size="xs" onClick={() => this.patchObj(i)}>{obj.active ? 'InActivate' : 'Activate'}</Button>
                                     {obj.order && 
                                     <Link to={`/orders/${obj.order}`}>

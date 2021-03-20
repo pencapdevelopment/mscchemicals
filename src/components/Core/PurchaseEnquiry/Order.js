@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import MomentUtils from '@date-io/moment';
 import * as Const from '../../Common/constants';
-
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import {  FormControl, TextField} from '@material-ui/core';
 import {
      Modal,
@@ -242,7 +242,7 @@ class Order extends Component {
                         <fieldset>
                             <Button
                                 variant="contained"
-                                component="label"> Sales Contract Upload
+                                component="label" color="primary"> Sales Contract Upload
                                     <input type="file" id="fileUpload"
                                     name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
                                     onChange={e => this.fileSelected('fileUpload', e)}
@@ -253,7 +253,7 @@ class Order extends Component {
                         <fieldset>
                             <Button
                                 variant="contained"
-                                component="label"> Perform Invoice Upload
+                                component="label" color="primary"> Perform Invoice Upload
                                     <input type="file" id="fileUpload"
                                     name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
                                     onChange={e => this.fileSelected('fileUpload', e)}
@@ -278,7 +278,7 @@ class Order extends Component {
                                     autoOk
                                     clearable
                                     // variant="inline"
-                                    label="Po Date"
+                                    label="PO Date"
                                     format="DD/MM/YYYY"
                                     value={this.state.formWizard.obj.expiryDate}
                                     onChange={e => this.setDateField('expiryDate', e)}
@@ -336,7 +336,7 @@ class Order extends Component {
                                 <tr>
                                     <td></td>
                                     <td></td>
-                                    <td>   <img title=""onClick={e => this.toggleModal('GST')}  src="img/upload.png" /></td>
+                                    <td>        <Button  title="upload Po" variant="contained" color="primary" onClick={e => this.toggleModal('GST')} startIcon={<CloudUploadIcon />} style={{textTransform :"none", marginLeft: -30}}>Upload Po</Button></td>
                                 </tr>      
                                        
                         </tbody>           

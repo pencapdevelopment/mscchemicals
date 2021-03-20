@@ -231,7 +231,7 @@ class Order extends Component {
                         <fieldset>
                             <Button
                                 variant="contained"
-                                component="label"> Select File
+                                component="label" color="primary"> Select File
                                     <input type="file" id="fileUpload"
                                     name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
                                     onChange={e => this.fileSelected('fileUpload', e)}

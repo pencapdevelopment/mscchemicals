@@ -769,6 +769,7 @@ class Reports extends Component {
                                             
                                                 </div>
                                             </div>
+                               
                                 </div>
                                 <div className="card-body">
 
@@ -993,49 +994,69 @@ class Reports extends Component {
                         <div className="col-sm-12">
                             <div classname="card b">
                                 <div className="card-header">
-                                            <div className="row">
-                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
-                                                    <FormControl    >
-                                                        {/* <InputLabel> Period</InputLabel> */}
-                                                        <Select
-                                                            
-
-                                                            >                                                        
-                                                            <MenuItem value={1}>10</MenuItem>                                                        
-                                                            <MenuItem value={3} >20</MenuItem>                                                           
-                                                            <MenuItem value={5}>30</MenuItem>
-                                                            <MenuItem value={6}>40</MenuItem>
-                                                            <MenuItem value={7}>50</MenuItem>
-                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                                            
-                                                            </Select>
-                                                     </FormControl>
-                                            
-                                                </div>
+                                <div className="row">
+                                              
                                                
-                                                    <div className="col-sm-2">
-                                                    {/* <h1 style={{ textAlign: 'center' }}>
-                                                        Buy Movies{' '}
-                                                        <span role="img" aria-label="Movie projector">
-                                                        
-                                                        </span>
-                                                    </h1> */}
-                                                    
-                                                    <Dropdown title="" items={items} multiSelect />
-                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
-                                                       <Button></Button>
-                                                        <Button><img src="img/refresh.png"/></Button>
+                                              <div className="col-sm-2">
+                                              {/* <h1 style={{ textAlign: 'center' }}>
+                                                  Buy Movies{' '}
+                                                  <span role="img" aria-label="Movie projector">
+                                                  
+                                                  </span>
+                                              </h1> */}
+                                              
+                                              <Dropdown title="" items={items} multiSelect />
+                                               {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                 <Button></Button>
+                                                  <Button><img src="img/refresh.png"/></Button>
+                                                
+                                              </ButtonGroup>   */}                                                    
+                                               </div>
+                                                                                          
+                                      
+                                          <div className="col-sm-1" style={{right: 102}}>
+                                               <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                  <Button><img src="img/refresh.png"/></Button>                                                     
+                                              </ButtonGroup> 
+                                              </div>     
+                                              <div className="col-sm-7" style={{marginTop: "-20px"}}>
+                                              {/* <FormControl    >
+                                                  <InputLabel>Pages </InputLabel>
+                                                  <Select
                                                       
-                                                    </ButtonGroup>   */}                                                    
-                                                     </div>
-                                                                                                
-                                            
-                                                <div className="col-sm-1" style={{right: 102}}>
-                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
-                                                        <Button><img src="img/refresh.png"/></Button>                                                     
-                                                    </ButtonGroup> 
-                                                    </div>     
-                                            </div>
+
+                                                      >                                                        
+                                                      <MenuItem value={1}>10</MenuItem>                                                        
+                                                      <MenuItem value={3} >20</MenuItem>                                                           
+                                                      <MenuItem value={5}>30</MenuItem>
+                                                      <MenuItem value={6}>40</MenuItem>
+                                                      <MenuItem value={7}>50</MenuItem>
+                                                      
+                                                      
+                                                      </Select>
+                                               </FormControl>
+                                       */}
+                                          </div>
+                                              <div className="col-sm-2" style={{marginTop: "-20px"}}>
+                                              <FormControl  >
+                                                  <InputLabel>Pages </InputLabel>
+                                                  <Select
+                                                      
+
+                                                      >                                                        
+                                                      <MenuItem value={1}>10</MenuItem>                                                        
+                                                      <MenuItem value={3} >20</MenuItem>                                                           
+                                                      <MenuItem value={5}>30</MenuItem>
+                                                      <MenuItem value={6}>40</MenuItem>
+                                                      <MenuItem value={7}>50</MenuItem>
+                                                      {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                      
+                                                      </Select>
+                                               </FormControl>
+                                      
+                                          </div>
+                                      </div>
+                         
                                 </div>
                                 <div className="card-body">
 
@@ -1260,49 +1281,69 @@ class Reports extends Component {
                         <div className="col-sm-12">
                             <div classname="card b">
                                 <div className="card-header">
-                                            <div className="row">
-                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
-                                                    <FormControl    >
-                                                        {/* <InputLabel> Period</InputLabel> */}
-                                                        <Select
-                                                            
-
-                                                            >                                                        
-                                                            <MenuItem value={1}>10</MenuItem>                                                        
-                                                            <MenuItem value={3} >20</MenuItem>                                                           
-                                                            <MenuItem value={5}>30</MenuItem>
-                                                            <MenuItem value={6}>40</MenuItem>
-                                                            <MenuItem value={7}>50</MenuItem>
-                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                                            
-                                                            </Select>
-                                                     </FormControl>
-                                            
-                                                </div>
+                                <div className="row">
+                                              
                                                
-                                                    <div className="col-sm-2">
-                                                    {/* <h1 style={{ textAlign: 'center' }}>
-                                                        Buy Movies{' '}
-                                                        <span role="img" aria-label="Movie projector">
-                                                        
-                                                        </span>
-                                                    </h1> */}
-                                                    
-                                                    <Dropdown title="" items={items} multiSelect />
-                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
-                                                       <Button></Button>
-                                                        <Button><img src="img/refresh.png"/></Button>
+                                              <div className="col-sm-2">
+                                              {/* <h1 style={{ textAlign: 'center' }}>
+                                                  Buy Movies{' '}
+                                                  <span role="img" aria-label="Movie projector">
+                                                  
+                                                  </span>
+                                              </h1> */}
+                                              
+                                              <Dropdown title="" items={items} multiSelect />
+                                               {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                 <Button></Button>
+                                                  <Button><img src="img/refresh.png"/></Button>
+                                                
+                                              </ButtonGroup>   */}                                                    
+                                               </div>
+                                                                                          
+                                      
+                                          <div className="col-sm-1" style={{right: 102}}>
+                                               <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                  <Button><img src="img/refresh.png"/></Button>                                                     
+                                              </ButtonGroup> 
+                                              </div>     
+                                              <div className="col-sm-7" style={{marginTop: "-20px"}}>
+                                              {/* <FormControl    >
+                                                  <InputLabel>Pages </InputLabel>
+                                                  <Select
                                                       
-                                                    </ButtonGroup>   */}                                                    
-                                                     </div>
-                                                                                                
-                                            
-                                                <div className="col-sm-1" style={{right: 102}}>
-                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
-                                                        <Button><img src="img/refresh.png"/></Button>                                                     
-                                                    </ButtonGroup> 
-                                                    </div>     
-                                            </div>
+
+                                                      >                                                        
+                                                      <MenuItem value={1}>10</MenuItem>                                                        
+                                                      <MenuItem value={3} >20</MenuItem>                                                           
+                                                      <MenuItem value={5}>30</MenuItem>
+                                                      <MenuItem value={6}>40</MenuItem>
+                                                      <MenuItem value={7}>50</MenuItem>
+                                                      
+                                                      
+                                                      </Select>
+                                               </FormControl>
+                                       */}
+                                          </div>
+                                              <div className="col-sm-2" style={{marginTop: "-20px"}}>
+                                              <FormControl  >
+                                                  <InputLabel>Pages </InputLabel>
+                                                  <Select
+                                                      
+
+                                                      >                                                        
+                                                      <MenuItem value={1}>10</MenuItem>                                                        
+                                                      <MenuItem value={3} >20</MenuItem>                                                           
+                                                      <MenuItem value={5}>30</MenuItem>
+                                                      <MenuItem value={6}>40</MenuItem>
+                                                      <MenuItem value={7}>50</MenuItem>
+                                                      {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                      
+                                                      </Select>
+                                               </FormControl>
+                                      
+                                          </div>
+                                      </div>
+                         
                                 </div>
                                 <div className="card-body">
 
@@ -1527,49 +1568,69 @@ class Reports extends Component {
                         <div className="col-sm-12">
                             <div classname="card b">
                                 <div className="card-header">
-                                            <div className="row">
-                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
-                                                    <FormControl    >
-                                                        {/* <InputLabel> Period</InputLabel> */}
-                                                        <Select
-                                                            
-
-                                                            >                                                        
-                                                            <MenuItem value={1}>10</MenuItem>                                                        
-                                                            <MenuItem value={3} >20</MenuItem>                                                           
-                                                            <MenuItem value={5}>30</MenuItem>
-                                                            <MenuItem value={6}>40</MenuItem>
-                                                            <MenuItem value={7}>50</MenuItem>
-                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                                            
-                                                            </Select>
-                                                     </FormControl>
-                                            
-                                                </div>
+                                <div className="row">
+                                              
                                                
-                                                    <div className="col-sm-2">
-                                                    {/* <h1 style={{ textAlign: 'center' }}>
-                                                        Buy Movies{' '}
-                                                        <span role="img" aria-label="Movie projector">
-                                                        
-                                                        </span>
-                                                    </h1> */}
-                                                    
-                                                    <Dropdown title="" items={items} multiSelect />
-                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
-                                                       <Button></Button>
-                                                        <Button><img src="img/refresh.png"/></Button>
+                                              <div className="col-sm-2">
+                                              {/* <h1 style={{ textAlign: 'center' }}>
+                                                  Buy Movies{' '}
+                                                  <span role="img" aria-label="Movie projector">
+                                                  
+                                                  </span>
+                                              </h1> */}
+                                              
+                                              <Dropdown title="" items={items} multiSelect />
+                                               {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                 <Button></Button>
+                                                  <Button><img src="img/refresh.png"/></Button>
+                                                
+                                              </ButtonGroup>   */}                                                    
+                                               </div>
+                                                                                          
+                                      
+                                          <div className="col-sm-1" style={{right: 102}}>
+                                               <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                  <Button><img src="img/refresh.png"/></Button>                                                     
+                                              </ButtonGroup> 
+                                              </div>     
+                                              <div className="col-sm-7" style={{marginTop: "-20px"}}>
+                                              {/* <FormControl    >
+                                                  <InputLabel>Pages </InputLabel>
+                                                  <Select
                                                       
-                                                    </ButtonGroup>   */}                                                    
-                                                     </div>
-                                                                                                
-                                            
-                                                <div className="col-sm-1" style={{right: 102}}>
-                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
-                                                        <Button><img src="img/refresh.png"/></Button>                                                     
-                                                    </ButtonGroup> 
-                                                    </div>     
-                                            </div>
+
+                                                      >                                                        
+                                                      <MenuItem value={1}>10</MenuItem>                                                        
+                                                      <MenuItem value={3} >20</MenuItem>                                                           
+                                                      <MenuItem value={5}>30</MenuItem>
+                                                      <MenuItem value={6}>40</MenuItem>
+                                                      <MenuItem value={7}>50</MenuItem>
+                                                      
+                                                      
+                                                      </Select>
+                                               </FormControl>
+                                       */}
+                                          </div>
+                                              <div className="col-sm-2" style={{marginTop: "-20px"}}>
+                                              <FormControl  >
+                                                  <InputLabel>Pages </InputLabel>
+                                                  <Select
+                                                      
+
+                                                      >                                                        
+                                                      <MenuItem value={1}>10</MenuItem>                                                        
+                                                      <MenuItem value={3} >20</MenuItem>                                                           
+                                                      <MenuItem value={5}>30</MenuItem>
+                                                      <MenuItem value={6}>40</MenuItem>
+                                                      <MenuItem value={7}>50</MenuItem>
+                                                      {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                      
+                                                      </Select>
+                                               </FormControl>
+                                      
+                                          </div>
+                                      </div>
+                         
                                 </div>
                                 <div className="card-body">
 
@@ -1793,49 +1854,69 @@ class Reports extends Component {
                         <div className="col-sm-12">
                             <div classname="card b">
                                 <div className="card-header">
-                                            <div className="row">
-                                                <div className="col-sm-1" style={{marginTop: "-5px"}}>
-                                                    <FormControl    >
-                                                        {/* <InputLabel> Period</InputLabel> */}
-                                                        <Select
-                                                            
-
-                                                            >                                                        
-                                                            <MenuItem value={1}>10</MenuItem>                                                        
-                                                            <MenuItem value={3} >20</MenuItem>                                                           
-                                                            <MenuItem value={5}>30</MenuItem>
-                                                            <MenuItem value={6}>40</MenuItem>
-                                                            <MenuItem value={7}>50</MenuItem>
-                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                                            
-                                                            </Select>
-                                                     </FormControl>
-                                            
-                                                </div>
+                                <div className="row">
+                                              
                                                
-                                                    <div className="col-sm-2">
-                                                    {/* <h1 style={{ textAlign: 'center' }}>
-                                                        Buy Movies{' '}
-                                                        <span role="img" aria-label="Movie projector">
-                                                        
-                                                        </span>
-                                                    </h1> */}
-                                                    
-                                                    <Dropdown title="" items={items} multiSelect />
-                                                     {/* <ButtonGroup size="small" aria-label="small outlined button group" >
-                                                       <Button></Button>
-                                                        <Button><img src="img/refresh.png"/></Button>
+                                              <div className="col-sm-2">
+                                              {/* <h1 style={{ textAlign: 'center' }}>
+                                                  Buy Movies{' '}
+                                                  <span role="img" aria-label="Movie projector">
+                                                  
+                                                  </span>
+                                              </h1> */}
+                                              
+                                              <Dropdown title="" items={items} multiSelect />
+                                               {/* <ButtonGroup size="small" aria-label="small outlined button group" >
+                                                 <Button></Button>
+                                                  <Button><img src="img/refresh.png"/></Button>
+                                                
+                                              </ButtonGroup>   */}                                                    
+                                               </div>
+                                                                                          
+                                      
+                                          <div className="col-sm-1" style={{right: 102}}>
+                                               <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
+                                                  <Button><img src="img/refresh.png"/></Button>                                                     
+                                              </ButtonGroup> 
+                                              </div>     
+                                              <div className="col-sm-7" style={{marginTop: "-20px"}}>
+                                              {/* <FormControl    >
+                                                  <InputLabel>Pages </InputLabel>
+                                                  <Select
                                                       
-                                                    </ButtonGroup>   */}                                                    
-                                                     </div>
-                                                                                                
-                                            
-                                                <div className="col-sm-1" style={{right: 102}}>
-                                                     <ButtonGroup size="medium" aria-label="small outlined button group" >                                   
-                                                        <Button><img src="img/refresh.png"/></Button>                                                     
-                                                    </ButtonGroup> 
-                                                    </div>     
-                                            </div>
+
+                                                      >                                                        
+                                                      <MenuItem value={1}>10</MenuItem>                                                        
+                                                      <MenuItem value={3} >20</MenuItem>                                                           
+                                                      <MenuItem value={5}>30</MenuItem>
+                                                      <MenuItem value={6}>40</MenuItem>
+                                                      <MenuItem value={7}>50</MenuItem>
+                                                      
+                                                      
+                                                      </Select>
+                                               </FormControl>
+                                       */}
+                                          </div>
+                                              <div className="col-sm-2" style={{marginTop: "-20px"}}>
+                                              <FormControl  >
+                                                  <InputLabel>Pages </InputLabel>
+                                                  <Select
+                                                      
+
+                                                      >                                                        
+                                                      <MenuItem value={1}>10</MenuItem>                                                        
+                                                      <MenuItem value={3} >20</MenuItem>                                                           
+                                                      <MenuItem value={5}>30</MenuItem>
+                                                      <MenuItem value={6}>40</MenuItem>
+                                                      <MenuItem value={7}>50</MenuItem>
+                                                      {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                                      
+                                                      </Select>
+                                               </FormControl>
+                                      
+                                          </div>
+                                      </div>
+                         
                                 </div>
                                 <div className="card-body">
 

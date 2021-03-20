@@ -440,7 +440,9 @@ class View extends Component {
             swal("Unable to Convert!", "Please get Admin approval", "error");
             return;
         }
+        console.log("products",this.state.obj.products)
         if (this.state.obj.products.length === 0) {
+       
             swal("Unable to Convert!", "Please add atleast one product", "error");
             return;
         }
@@ -633,7 +635,7 @@ class View extends Component {
                                                                 <tbody>
                                                                     <tr>
                                                                         <td>
-                                                                             {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
+                                                                             {(this.props.user.role === 'ROLE_ADMIN'&&this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
                                                         
                                                         <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff'}} fontSize="small" /></button>}
                                                                         </td>
@@ -651,12 +653,13 @@ class View extends Component {
                                                             <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
                                                             </Fab> */}
                                                       
-                                                         {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+                                                          {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
                                                             <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
                                                                 <Button title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Convert Order</span></Button>
-                                                            </Link>}  */}
+                                                            </Link>}   */}
+
                                                     </div>
                                                     <h4 className="my-2">
                                                         <span>{this.state.obj.name}</span>
@@ -708,7 +711,7 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Code</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.code}</td>
+                                                                <td>{this.state.obj.code?this.state.obj.code:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
@@ -730,25 +733,25 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Contact Name</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.contactName}</td>
+                                                                <td>{this.state.obj.contactName?this.state.obj.contactName:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Email</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.email}</td>
+                                                                <td>{this.state.obj.email?this.state.obj.email:"-NA-"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Phone</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.phone}</td>
+                                                                <td>{this.state.obj.phone?this.state.obj.phone:"-NA"}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
                                                                     <strong>Source</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.source}</td>
+                                                                <td>{this.state.obj.source?this.state.obj.source:"-NA-"}</td>
                                                             </tr>
                                                             {/* <tr>
                                                                 <td>

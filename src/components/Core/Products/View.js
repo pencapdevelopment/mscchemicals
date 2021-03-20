@@ -214,34 +214,34 @@ class View extends Component {
                                                     <td>
                                                         <strong>Code</strong>
                                                     </td>
-                                                    <td>{this.state.obj.code}</td>
+                                                    <td>{this.state.obj.code?this.state.obj.code:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Categories</strong>
                                                     </td>
-                                                    <td>{this.state.obj.category}</td>
+                                                    <td>{this.state.obj.category?this.state.obj.category:"-NA-"}</td>
                                                 </tr>
                                                 {this.state.obj.subCategory &&
                                                 <tr>
                                                     <td>
                                                         <strong>Sub Categories</strong>
                                                     </td>
-                                                    <td>{this.state.obj.subCategory}</td>
+                                                    <td>{this.state.obj.subCategory?this.state.obj.subCategory:"-NA-"}</td>
                                                 </tr>}
                                                 {this.state.obj.type==='Registered' && this.state.obj.specification &&
                                                 <tr>
                                                     <td>
                                                         <strong>Specification</strong>
                                                     </td>
-                                                    <td>{this.state.obj.specification}</td>
+                                                    <td>{this.state.obj.specification?this.state.obj.specification:"-NA-"}</td>
                                                 </tr>}
                                                 {this.state.obj.type==='Registered' && this.state.obj.make &&
                                                 <tr>
                                                     <td>
                                                         <strong>Makes</strong>
                                                     </td>
-                                                    <td>{this.state.obj.make}</td>
+                                                    <td>{this.state.obj.make?this.state.obj.make:"-NA-"}</td>
                                                 </tr>}
                                                 <tr>
                                                     <td>
@@ -254,7 +254,7 @@ class View extends Component {
                                                     <td>
                                                         <strong>Country Of Origin</strong>
                                                     </td>
-                                                    <td>{this.state.obj.countryOfOrigin}</td>
+                                                    <td>{this.state.obj.countryOfOrigin?this.state.obj.countryOfOrigin:"--NA"}</td>
                                                 </tr>}
                                                 {/* <tr>
                                                     <td>

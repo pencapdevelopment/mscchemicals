@@ -318,7 +318,7 @@ class Quotation extends Component {
                                 <div className="card-header">
                                     <div className="">
                                         <div className="row">
-                                            <div className="col-sm-9">
+                                            <div className="col-sm-10">
                                                   
                                             <table>
                                                             <tbody>

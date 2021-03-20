@@ -1628,7 +1628,7 @@ class Add extends Component {
                                                                 variant="contained"
                                                                 color="primary"
                                                                 onClick={e => this.toggleModal('Drug License')}
-                                                                className={this.state.classes.button + " col-md-3 p-0"}
+                                                                className={this.state.classes.button + " col-md-3 p-2"}
                                                                 startIcon={<CloudUploadIcon />}
                                                             >
                                                                 Upload </Button>

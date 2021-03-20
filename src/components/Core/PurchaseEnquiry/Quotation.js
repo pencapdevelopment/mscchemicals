@@ -9,12 +9,10 @@ import { Table } from 'reactstrap';
 import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
 import Upload from '../Common/Upload';
+import Uploadp from './Uploadp';
 import AddQuotation from './AddQuotation';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
-
-
-
 // const json2csv = require('json2csv').parse;
 
 class Quotation extends Component {
@@ -25,17 +23,20 @@ class Quotation extends Component {
         obj: '',
         baseUrl: 'sales-quotation',
         currentId: '',
+        fileTypes2: [
+            { label: 'Quotation', expiryDate: true },
+            { label: 'COA', expiryDate: true },],
     }
 
 
     loadObj(id) {
-        axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
-            var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
+    //     axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
+    //         var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
 
-            if(list.length) {
-                this.setState({ obj: list[0], currentId: list[0].id });
-            }
-        });
+    //         if(list.length) {
+    //             this.setState({ obj: list[0], currentId: list[0].id });
+    //         }
+    //     });
     }
 
     componentWillUnmount() {
@@ -100,12 +101,13 @@ class Quotation extends Component {
 
                                  </div> */}
                              </div>
-                            <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
-                            currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload>
-                              <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
-                            currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload>
+                           
+                                <Uploadp onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl} currentId={this.props.currentId}
+                                    fileTypes={this.state.fileTypes2}></Uploadp>
+                                     {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
+                            currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
 
-                            {this.state.obj &&
+                            {/* {this.state.obj && */}
                             <div className="card b">
                                 <div className="card-header">
                                     <div className="float-right mt-2">
@@ -129,9 +131,9 @@ class Quotation extends Component {
                                                     <strong>Company</strong>
                                                 </td>
                                                 <td>
-                                                    <Link to={`/companies/${this.state.obj.company.id}`}>
+                                                    {/* <Link to={`/companies/${this.state.obj.company.id}`}>
                                                         {this.state.obj.company.name}
-                                                    </Link>
+                                                    </Link> */}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -226,7 +228,7 @@ class Quotation extends Component {
                                     </Table>
                                
                                 </div>
-                            </div>}
+                            </div>
                             {/* {!this.state.obj &&
                             <div className="text-center">
                                 {this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Generate Quotation</Button>}
