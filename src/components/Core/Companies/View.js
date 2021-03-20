@@ -14,10 +14,6 @@ import Upload from '../Common/Upload';
 import CompanyContacts from '../CompanyContacts/CompanyContacts';
 import Add from './Add1';
 import Branches from './Branches';
-<<<<<<< Updated upstream
-// import SalesList from './SalesList';
-=======
->>>>>>> Stashed changes
 import Products from './Products';
 import EditIcon from '@material-ui/icons/Edit';
 import { Link } from 'react-router-dom';
@@ -507,7 +503,7 @@ class View extends Component {
                                                             <td>
                                                                 <strong>Manufacture license no</strong>
                                                             </td>
-                                                            <td>{this.state.newObj.others?this.state.newObj.others:"-NA-"}</td>
+                                                            <td>{this.state.newObj.manufactureLicenseNo?this.state.newObj.manufactureLicenseNo:"-NA-"}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>

@@ -35,6 +35,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
 import PageLoader from '../../Common/PageLoader';
+import { instanceOf } from 'prop-types';
 function getSteps() {
     return ['Basic Details', 'Branches', 'Contacts'];
 }
@@ -100,6 +101,7 @@ class Add extends Component {
                 drugLicense: '',
                 customerDeclaration:'',
                 others: '',
+                manufactureLicenseNo:'',
                 msme: 'N',
                 turnOver: '',
                 creditLimit:'',
@@ -432,6 +434,31 @@ class Add extends Component {
         formWizard.tempbranch[field] = input.value;
         this.setState({ formWizard });
     }
+    isUniqueDocument = (input,formWizard) => {
+        let controller = (this.state.formWizard.editFlag?'isRegCompExists?id='+this.state.formWizard.obj.id+'&':'isCompExists?');
+        axios.get(server_url + context_path + 'api/companies/search/'+controller+'field='+input.value+'&projection=company_auto_suggest').
+        then(res => {
+            let companies = res.data._embedded[Object.keys(res.data._embedded)];
+            if(companies.length){
+                if(Array.isArray(formWizard.errors[input.name])){
+                    formWizard.errors[input.name].push({key:'unique',msg:'this '+input.name+' is already exists with other company'});
+                }
+                else{
+                    formWizard.errors[input.name] = [{key:'unique',msg:'this '+input.name+' is already exists with other company'}];
+                }
+            }
+            else{
+                if(Array.isArray(formWizard.errors[input.name])){
+                    let idx = formWizard.errors[input.name].findIndex(el => el.key === 'unique');
+                    if(idx > -1){
+                        delete formWizard.errors[input.name][idx];
+                    }
+                }
+            }
+            this.setState({formWizard});
+        });
+    }
+
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
         var input = e.target;
@@ -442,11 +469,36 @@ class Add extends Component {
         this.setState({ formWizard });
         if (!noValidate) {
             const result = FormValidator.validate(input);
-            if((input.name === 'fssai' || input.name=== 'drugLicense' || input.name=== 'customerDeclaration') && (formWizard.obj['fssai'] !=='' || formWizard.obj['drugLicense'] !=='' || formWizard.obj['customerDeclaration'] !=='')){
-                delete formWizard.errors['fssai'];
-                delete formWizard.errors['drugLicense'];
-                delete formWizard.errors['customerDeclaration'];
-                if(input.name === 'customerDeclaration'){
+            if((input.name === 'fssai' || input.name=== 'drugLicense' || input.name=== 'customerDeclaration')){
+                if(formWizard.obj['fssai'] !=='' || formWizard.obj['drugLicense'] !=='' || formWizard.obj['customerDeclaration'] !==''){
+
+                    // delete formWizard.errors['fssai'];
+                    // delete formWizard.errors['drugLicense'];
+                    // delete formWizard.errors['customerDeclaration'];
+
+                    if(formWizard.errors.hasOwnProperty('fssai') && Array.isArray(formWizard.errors['fssai']) && formWizard.errors['fssai'].length>0){
+                        let idx = formWizard.errors['fssai'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                        delete formWizard.errors['fssai'][idx];
+                        formWizard.errors['fssai'] = formWizard.errors['fssai'].filter(g =>g);
+                    }
+
+                    if(formWizard.errors.hasOwnProperty('drugLicense') && Array.isArray(formWizard.errors['drugLicense']) && formWizard.errors['drugLicense'].length>0){
+                        let idx = formWizard.errors['drugLicense'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                        delete formWizard.errors['drugLicense'][idx];
+                        formWizard.errors['drugLicense'] = formWizard.errors['drugLicense'].filter(g =>g);
+                    }
+
+                    if(formWizard.errors.hasOwnProperty('customerDeclaration') && Array.isArray(formWizard.errors['customerDeclaration']) && formWizard.errors['customerDeclaration'].length>0){
+                        let idx = formWizard.errors['customerDeclaration'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                        delete formWizard.errors['customerDeclaration'][idx];
+                        formWizard.errors['customerDeclaration'] = formWizard.errors['customerDeclaration'].filter(g =>g);
+                    }
+
+                    if(input.name === 'customerDeclaration'){
+                        formWizard.showCustDec = true;
+                    }
+                }
+                if(formWizard.obj['fssai'] ==='' && formWizard.obj['drugLicense'] ===''){
                     formWizard.showCustDec = true;
                 }
                 formWizard.showCustDec = formWizard.showCustDec?true:false;
@@ -457,6 +509,10 @@ class Add extends Component {
             this.setState({
                 formWizard
             });
+        }
+        //Uniqueness validation
+        if(input.value !== '' && (input.name === 'gstin' || input.name === 'pan' || input.name === 'fssai' || input.name === 'drugLicense' || input.name === 'manufactureLicenseNo' || input.name === 'msmeId')){
+            this.isUniqueDocument(input,formWizard);
         }
         if(this.state.formWizard.obj.locationType=='I'){
             formWizard.obj.province = 'province'
@@ -471,9 +527,28 @@ class Add extends Component {
         if (!noValidate) {
             const result = FormValidator.validate(input);
             if((formWizard.obj['fssai'] !=='' || formWizard.obj['drugLicense'] !=='' || formWizard.obj['customerDeclaration'] !=='')){
-                delete formWizard.errors['fssai'];
-                delete formWizard.errors['drugLicense'];
-                delete formWizard.errors['customerDeclaration'];
+                // delete formWizard.errors['fssai'];
+                // delete formWizard.errors['drugLicense'];
+                // delete formWizard.errors['customerDeclaration'];
+
+                if(formWizard.errors.hasOwnProperty('fssai') && Array.isArray(formWizard.errors['fssai']) && formWizard.errors['fssai'].length>0){
+                    let idx = formWizard.errors['fssai'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                    delete formWizard.errors['fssai'][idx];
+                    formWizard.errors['fssai'] = formWizard.errors['fssai'].filter(g =>g);
+                }
+
+                if(formWizard.errors.hasOwnProperty('drugLicense') && Array.isArray(formWizard.errors['drugLicense']) && formWizard.errors['drugLicense'].length>0){
+                    let idx = formWizard.errors['drugLicense'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                    delete formWizard.errors['drugLicense'][idx];
+                    formWizard.errors['drugLicense'] = formWizard.errors['drugLicense'].filter(g =>g);
+                }
+
+                if(formWizard.errors.hasOwnProperty('customerDeclaration') && Array.isArray(formWizard.errors['customerDeclaration']) && formWizard.errors['customerDeclaration'].length>0){
+                    let idx = formWizard.errors['customerDeclaration'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                    delete formWizard.errors['customerDeclaration'][idx];
+                    formWizard.errors['customerDeclaration'] = formWizard.errors['customerDeclaration'].filter(g =>g);
+                }
+
                 if(input.name === 'customerDeclaration'){
                     formWizard.showCustDec = true;
                 }
@@ -541,14 +616,38 @@ class Add extends Component {
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
         formWizard.errors = errors;
+        const uniqueInputs = [].slice.call(tabPane.querySelectorAll('.unique > div > input'));
+        uniqueInputs.forEach((fld)=>{
+            if(fld.value !== '' && (fld.name === 'gstin' || fld.name === 'pan' || fld.name === 'fssai' || fld.name === 'drugLicense' || fld.name === 'manufactureLicenseNo' || fld.name === 'msmeId')){
+                this.isUniqueDocument(fld,formWizard);
+            }
+        });
         if((formWizard.obj['fssai'] !=='' || formWizard.obj['drugLicense'] !=='' || formWizard.obj['customerDeclaration'] !=='')){
-            delete formWizard.errors['fssai'];
-            delete formWizard.errors['drugLicense'];
-            delete formWizard.errors['customerDeclaration'];
+            // delete formWizard.errors['fssai'];
+            // delete formWizard.errors['drugLicense'];
+            // delete formWizard.errors['customerDeclaration'];
+
+            if(formWizard.errors.hasOwnProperty('fssai') && Array.isArray(formWizard.errors['fssai']) && formWizard.errors['fssai'].length>0){
+                let idx = formWizard.errors['fssai'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                delete formWizard.errors['fssai'][idx];
+                formWizard.errors['fssai'] = formWizard.errors['fssai'].filter(g =>g);
+            }
+
+            if(formWizard.errors.hasOwnProperty('drugLicense') && Array.isArray(formWizard.errors['drugLicense']) && formWizard.errors['drugLicense'].length>0){
+                let idx = formWizard.errors['drugLicense'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                delete formWizard.errors['drugLicense'][idx];
+                formWizard.errors['drugLicense'] = formWizard.errors['drugLicense'].filter(g =>g);
+            }
+
+            if(formWizard.errors.hasOwnProperty('customerDeclaration') && Array.isArray(formWizard.errors['customerDeclaration']) && formWizard.errors['customerDeclaration'].length>0){
+                let idx = formWizard.errors['customerDeclaration'].findIndex(g => (g && g instanceof Object && g.key === 'required'));
+                delete formWizard.errors['customerDeclaration'][idx];
+                formWizard.errors['customerDeclaration'] = formWizard.errors['customerDeclaration'].filter(g =>g);
+            }
         }
-        this.setState({ formWizard });
+        this.setState({ formWizard ,loading:true});
         let hserr = false;
-        let errKeys = Object.keys(errors);
+        let errKeys = Object.keys(formWizard.errors);
         for(var i=0;i<errKeys.length;i++){
             if(errors[errKeys[i]].length){
                 hserr = true;break;
@@ -1542,7 +1641,7 @@ class Add extends Component {
                                                                 helperText={errors?.gstin?.length > 0 ? errors?.gstin[0]?.msg : ""}
                                                                 error={errors?.gstin?.length > 0}
                                                                 value={this.state.formWizard.obj.gstin}
-                                                                className="col-md-9"
+                                                                className="col-md-9 unique"
                                                                 onChange={e => this.setField('gstin', e)} />
                                                             <Button
                                                                 variant="contained"
@@ -1567,7 +1666,7 @@ class Add extends Component {
                                                             inputProps={{ minLength: 10, maxLength: 10, "data-validate": '[{ "key":"pan"},{ "key":"maxlen","param":"10"}]' }}
                                                             helperText={errors?.pan?.length > 0 ? errors?.pan[0]?.msg : ""}
                                                             error={errors?.pan?.length > 0}
-                                                            className="col-md-9"
+                                                            className="col-md-9 unique"
                                                             value={this.state.formWizard.obj.pan}
                                                             onChange={e => this.setField('pan', e)} /> 
                                                              <Button
@@ -1593,7 +1692,7 @@ class Add extends Component {
                                                                 helperText={errors?.fssai?.length > 0 ? errors?.fssai[0]?.msg : ''}
                                                                 error={errors?.fssai?.length > 0}
                                                                 value={this.state.formWizard.obj.fssai}
-                                                                className="col-md-9"
+                                                                className="col-md-9 unique"
                                                                 onBlur={e => this.optionalValidator('fssai', e)}
                                                                 onChange={e => this.setField('fssai', e)} /> 
                                                                 <Button
@@ -1620,7 +1719,7 @@ class Add extends Component {
                                                                 {"data-validate": '[{ "key":"required","msg":"Drug License is required"}]'}}
                                                                 helperText={errors?.drugLicense?.length > 0 ? errors?.drugLicense[0]?.msg : ''}
                                                                 error={errors?.drugLicense?.length > 0}
-                                                                className="col-md-9"
+                                                                className="col-md-9 unique"
                                                                 value={this.state.formWizard.obj.drugLicense}
                                                                 onBlur={e => this.optionalValidator('drugLicense', e)}
                                                                 onChange={e => this.setField('drugLicense', e)} />
@@ -1687,13 +1786,16 @@ class Add extends Component {
                                                     </fieldset> */}
                                                     <fieldset>
                                                         <TextField
-                                                            name="Others"
+                                                            name="manufactureLicenseNo"
                                                             type="text"
                                                             label="Manufacture license no"
+                                                            className="unique"
                                                             fullWidth={true}
                                                             inputProps={{ minLength: 0, maxLength: 50 }}
-                                                            value={this.state.formWizard.obj.others}
-                                                            onChange={e => this.setField('others', e)} />
+                                                            value={this.state.formWizard.obj.manufactureLicenseNo}
+                                                            helperText={errors?.manufactureLicenseNo?.length > 0 ? errors?.manufactureLicenseNo[0]?.msg : ''}
+                                                            error={errors?.manufactureLicenseNo?.length > 0}
+                                                            onChange={e => this.setField('manufactureLicenseNo', e)} />
                                                     </fieldset>
                                                     <fieldset>
                                                         <FormControl>
@@ -1722,11 +1824,13 @@ class Add extends Component {
                                                                 name="msmeId"
                                                                 type="text"
                                                                 label="MSME Registration Id"
-                                                                className="col-md-11"
+                                                                className="col-md-11 unique"
                                                                 required={false}
                                                                 fullWidth={true}
                                                                 inputProps={{ minLength: 0, maxLength: 35 }}
                                                                 value={this.state.formWizard.obj.msmeId}
+                                                                helperText={errors?.msmeId?.length > 0 ? errors?.msmeId[0]?.msg : ''}
+                                                                error={errors?.msmeId?.length > 0}
                                                                 onChange={e => this.setField('msmeId', e)} />
                                                           <img onClick={e => this.toggleModal('MSME')} className="col-sm-1 p-2"   src="img/upload.png" />
                                                         </div>
