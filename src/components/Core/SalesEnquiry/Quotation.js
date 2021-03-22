@@ -50,6 +50,7 @@ class Quotation extends Component {
         editFlag: false,
         modal: false,
         modalproduct: false,
+        modalproduct1: false,
         ngTracking : [],
         statusObj:'',
         obj: '',
@@ -157,6 +158,7 @@ class Quotation extends Component {
             modalproduct: !this.state.modalproduct
         });
     };
+
     toggleModal = (label) => {
         this.setState({
             modal: !this.state.modal,
@@ -261,12 +263,98 @@ class Quotation extends Component {
         this.setField(field, e, true);
     }
 
+    cartEdit= () => {
+        this.setState({modalproduct1: false});
+    }
+
+    cartEdit1 = () =>{
+        this.setState({modalproduct1:!this.state.modalproduct1 });
+    }
 
     render() { 
         const errors = this.state.formWizard.errors;
         const readOnly=this.state.readOnly;  
         return (
             <div>  
+                             <Modal isOpen={this.state.modalproduct1} backdrop="static" toggle={this.cartEdit} size={'md'}>
+                    <ModalHeader toggle={this.cartEdit}>
+                      <h3>Approved Products</h3>
+                    </ModalHeader>
+                    <ModalBody>
+                    
+                    <div className="row">
+                                        <div className="col-sm-12">
+                                        <Table  hover responsive>
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                   
+                                                </tr>
+                                            </thead>
+                                         
+                                            <tbody>
+                                            {this.state.ngTracking.map((product,i) => {
+                                             if(product.status === 'Approved'){
+                                                return (
+                                                    
+                                                    <tr key={i}>
+                                                        <td className="va-middle">{i + 1}</td>
+                                                        <td>
+                                                            <Link to={`/products/${product.product.id}`}>
+                                                                {product.product.name}
+                                                            </Link>
+                                                        </td>
+                                                        <td>{product.quantity}</td>
+                                                        <td>{product.amount}</td>
+
+                                                        {this.state.ngTracking.map((ng) => {
+                                                        return (<div>
+                                                            {product.product.id===ng.product.id && <div>
+                                                       <td>
+                                                       {ng.status===null ? <div>
+                                                        <span className="badge badge-secondary">Pending</span></div> :<div>
+                                                            {product.status === 'Rejected' ? <div>
+                                                            <span className="badge badge-danger">{product.status}</span></div>:<div>
+                                                            <span className="badge badge-success">{product.status}</span></div>
+                                                    }
+                                                    </div>
+                                                    }                                                  
+                                                    </td>
+                                                    </div>}</div>)})}
+                                                    
+                                                    <div>
+                                                   
+                                                    </div>
+                                                    </tr> 
+                                                   )
+                                             }
+                                             else{
+                                                 return null;  }
+                                            })}
+                                            </tbody>
+                                        </Table>
+                                        {this.state.ngTracking.map((product) => {  
+                                            if(product.status === 'Approved'){  
+                                                return(                              
+                                                    <div style={{ textAlign: 'center',}} >
+                                                    <Button  variant="contained" color="primary" size="small" onClick={this.props.convertOrder}>Convert To Order</Button>
+                                                    </div>
+                                                )}
+                                                else{
+                                                    return null;
+                                                }
+                                            })}
+                                              
+                                       
+                                
+                                    </div>
+                                </div>
+                    </ModalBody>
+                </Modal>
                <Modal isOpen={this.state.modalproduct} backdrop="static" toggle={this.closetoggleModalProduct} size={'md'}>
                     <ModalHeader toggle={this.closetoggleModalProduct}>
                         Convert To Order
@@ -367,7 +455,7 @@ class Quotation extends Component {
                                                     <EditIcon style={{ color: '#fff', }} fontSize="small" /></button>)}
 
                                                     <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
-                                                    <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px"}} color="primary" variant="contained"> <ShoppingCartIcon   style={{ color: '#fff', }} fontSize="small"/></button>
+                                                    <button onClick={()=>this.cartEdit1()}  style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px"}} color="primary" variant="contained"> <ShoppingCartIcon   style={{ color: '#fff', }} fontSize="small"/></button>
                                               
                                                 </buttonGroup>
                                                    
