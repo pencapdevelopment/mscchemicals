@@ -63,6 +63,7 @@ class Negotiation extends Component {
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            console.log("negotiation list data==>",list)
             if(list.length) {
                 this.setState({ obj: list[0], currentId: list[0].id });
             }

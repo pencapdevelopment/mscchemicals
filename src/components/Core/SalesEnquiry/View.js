@@ -35,102 +35,110 @@ import UOM from '../Common/UOM';
 import AutoSuggest from '../../Common/AutoSuggest';
 // const json2csv = require('json2csv').parse;
 class View extends Component {
-    state = {
-        loading: false,
-        activeTab: 0,
-        editFlag: false,
-        editSubFlag: false,
-        modal1: false,
-        modal2: false,
-        modal: false,
-        modalassign: false,
-        modalnegatation: false,
-        isQuoteExists:0,
-        obj: '',
-        activityData:[],
-        subObjs: [],
-        newSubObj: {},
-        orderBy: 'id,desc',
-        subPage: {
-            number: 0,
-            size: 20,
-            totalElements: 0,
-            totalPages: 0
-        },
-        filters: {
-            search: '',
-            fromDate: null,
-            toDate: null,
-        },
-        currentProd: {},
-        currentProdId: '',
-        status: [
-            { label: 'On going', value: 'On going', badge: 'info' },
-            { label: 'Rejected', value: 'Rejected', badge: 'danger' },
-            { label: 'Partially Rejected', value: 'Partially Rejected', badge: 'warning' },
-            { label: 'Converted', value: 'Converted', badge: 'success' },
-        ],
-        pharmaFileTypes: [
-            { label: 'Sample with COA', expiryDate: false },
-            { label: 'Working standard with COA', expiryDate: false },
-            { label: 'Process Flow Chart', expiryDate: false },
-            { label: 'Specifications', expiryDate: false },
-            { label: 'MOA', expiryDate: false },
-            { label: 'Declaration of Material origin', expiryDate: false },
-            { label: 'Stability Study Data', expiryDate: false },
-            { label: 'Shelf LifeResidual Solvents', expiryDate: false },
-            { label: 'Heavy Metals', expiryDate: false },
-            { label: 'NOTS', expiryDate: false },
-            { label: 'Aflatoxins', expiryDate: false },
-            { label: 'Residual Pesticides', expiryDate: false },
-            { label: 'Functional Trial by R&D', expiryDate: false },
-            { label: 'TSE/BE Declaration', expiryDate: false },
-            { label: 'Gluten free Certificate', expiryDate: false },
-            { label: 'GMO Certificate', expiryDate: false },
-            { label: 'Dioxin Certificate', expiryDate: false },
-            { label: 'Melanin', expiryDate: false },
-            { label: 'MSDS', expiryDate: false },
-            { label: 'GMP certificate', expiryDate: false },
-            { label: 'Chromatograph', expiryDate: false },
-            { label: 'ISO', expiryDate: false },
-        ],
-        foodFileTypes: [
-            { label: 'Sample with COA', expiryDate: false },
-            { label: 'Working standard with COA', expiryDate: false },
-            { label: 'Process Flow Chart', expiryDate: false },
-            { label: 'Specifications', expiryDate: false },
-            { label: 'MOA', expiryDate: false },
-            { label: 'Declaration on Material Origin', expiryDate: false },
-            { label: 'Stability study Data', expiryDate: false },
-            { label: 'Shelf life', expiryDate: false },
-            { label: 'Residual solvents', expiryDate: false },
-            { label: 'Heavy Metals', expiryDate: false },
-            { label: 'NOTS', expiryDate: false },
-            { label: 'Aflatoxins', expiryDate: false },
-            { label: 'Residual Pesticides', expiryDate: false },
-            { label: 'Functional Trial by R&D', expiryDate: false },
-            { label: 'TSE/BSE Certificate', expiryDate: false },
-            { label: 'Gluten Free Certificate', expiryDate: false },
-            { label: 'GMO Certificate', expiryDate: false },
-            { label: 'GMP certificate', expiryDate: false },
-            { label: 'Dioxin certificate', expiryDate: false },
-            { label: 'Melanin Certificate', expiryDate: false },
-            { label: 'MSDS', expiryDate: false },
-            { label: 'Kosher Certificate', expiryDate: false },
-            { label: 'Halal Certificate', expiryDate: false },
-            { label: 'ISOUSFDA', expiryDate: false },
-            { label: 'Other Country certificate', expiryDate: false },
-        ],
-        users: [],
-        page: {
-            number: 0,
-            size: 20,
-            totalElements: 0,
-            totalPages: 0
-        },
-        user: '',
-        selectedUser: '',
+    constructor(props) {
+        super(props)
+      
+        this.state = {
+            loading: false,
+            activeTab: 0,
+            editFlag: false,
+            editSubFlag: false,
+            modal1: false,
+            modal2: false,
+            modal: false,
+            modalassign: false,
+            modalnegatation: false,
+            isQuoteExists:0,
+            obj: '',
+            activityData:[],
+            subObjs: [],
+            newSubObj: {},
+            orderBy: 'id,desc',
+            subPage: {
+                number: 0,
+                size: 20,
+                totalElements: 0,
+                totalPages: 0
+            },
+            filters: {
+                search: '',
+                fromDate: null,
+                toDate: null,
+            },
+            currentProd: {},
+            currentProdId: '',
+            status: [
+                { label: 'On going', value: 'On going', badge: 'info' },
+                { label: 'Rejected', value: 'Rejected', badge: 'danger' },
+                { label: 'Partially Rejected', value: 'Partially Rejected', badge: 'warning' },
+                { label: 'Converted', value: 'Converted', badge: 'success' },
+            ],
+            pharmaFileTypes: [
+                { label: 'Sample with COA', expiryDate: false },
+                { label: 'Working standard with COA', expiryDate: false },
+                { label: 'Process Flow Chart', expiryDate: false },
+                { label: 'Specifications', expiryDate: false },
+                { label: 'MOA', expiryDate: false },
+                { label: 'Declaration of Material origin', expiryDate: false },
+                { label: 'Stability Study Data', expiryDate: false },
+                { label: 'Shelf LifeResidual Solvents', expiryDate: false },
+                { label: 'Heavy Metals', expiryDate: false },
+                { label: 'NOTS', expiryDate: false },
+                { label: 'Aflatoxins', expiryDate: false },
+                { label: 'Residual Pesticides', expiryDate: false },
+                { label: 'Functional Trial by R&D', expiryDate: false },
+                { label: 'TSE/BE Declaration', expiryDate: false },
+                { label: 'Gluten free Certificate', expiryDate: false },
+                { label: 'GMO Certificate', expiryDate: false },
+                { label: 'Dioxin Certificate', expiryDate: false },
+                { label: 'Melanin', expiryDate: false },
+                { label: 'MSDS', expiryDate: false },
+                { label: 'GMP certificate', expiryDate: false },
+                { label: 'Chromatograph', expiryDate: false },
+                { label: 'ISO', expiryDate: false },
+            ],
+            foodFileTypes: [
+                { label: 'Sample with COA', expiryDate: false },
+                { label: 'Working standard with COA', expiryDate: false },
+                { label: 'Process Flow Chart', expiryDate: false },
+                { label: 'Specifications', expiryDate: false },
+                { label: 'MOA', expiryDate: false },
+                { label: 'Declaration on Material Origin', expiryDate: false },
+                { label: 'Stability study Data', expiryDate: false },
+                { label: 'Shelf life', expiryDate: false },
+                { label: 'Residual solvents', expiryDate: false },
+                { label: 'Heavy Metals', expiryDate: false },
+                { label: 'NOTS', expiryDate: false },
+                { label: 'Aflatoxins', expiryDate: false },
+                { label: 'Residual Pesticides', expiryDate: false },
+                { label: 'Functional Trial by R&D', expiryDate: false },
+                { label: 'TSE/BSE Certificate', expiryDate: false },
+                { label: 'Gluten Free Certificate', expiryDate: false },
+                { label: 'GMO Certificate', expiryDate: false },
+                { label: 'GMP certificate', expiryDate: false },
+                { label: 'Dioxin certificate', expiryDate: false },
+                { label: 'Melanin Certificate', expiryDate: false },
+                { label: 'MSDS', expiryDate: false },
+                { label: 'Kosher Certificate', expiryDate: false },
+                { label: 'Halal Certificate', expiryDate: false },
+                { label: 'ISOUSFDA', expiryDate: false },
+                { label: 'Other Country certificate', expiryDate: false },
+            ],
+            users: [],
+            page: {
+                number: 0,
+                size: 20,
+                totalElements: 0,
+                totalPages: 0
+            },
+            user: '',
+            selectedUser: '',
+
+        }
+        this.convertOrder = this.convertOrder.bind(this)
+     
     }
+  
     setProductField(i, field, e, noValidate) {
         var obj = this.state.obj;
         console.log(e.target.value)
@@ -336,6 +344,7 @@ class View extends Component {
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit')
         .then(res => {
+            console.log("view.js obj data==>>",res.data);
             this.setState({ obj: res.data, users:res.data.users, loading: false},()=>{
             if(this.props?.location?.search && this.props?.location?.search?.indexOf('approval')){
                 this.toggleTab(4);
@@ -447,6 +456,10 @@ class View extends Component {
             return;
         }
         createOrder('Sales', this.state.obj, this.props.baseUrl);
+    }
+
+    convertOrder(){
+        this.toggleTab(5);
     }
     render() {
         return (
@@ -653,12 +666,12 @@ class View extends Component {
                                                             <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
                                                             </Fab> */}
                                                       
-                                                          {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+                                                          {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
                                                             <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
                                                                 <Button title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Convert Order</span></Button>
-                                                            </Link>}   */}
+                                                            </Link>}  
 
                                                     </div>
                                                     <h4 className="my-2">
@@ -827,7 +840,7 @@ class View extends Component {
                                 </TabPanel>}
                                 <TabPanel value={this.state.activeTab} index={1}>
                                 <Quotation baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}
-                                    currentId={this.props.currentId} parentObj={this.state.obj}></Quotation>
+                                    currentId={this.props.currentId} parentObj={this.state.obj} convertOrder = {this.convertOrder}></Quotation>
                             </TabPanel>
                             <TabPanel value={this.state.activeTab} index={2}>
                                 <Negotiation baseUrl={this.props.baseUrl} onRef={ref => (this.quotationTemplateRef = ref)}
