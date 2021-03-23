@@ -12,9 +12,9 @@ import 'react-datetime/css/react-datetime.css';
 import { connect } from 'react-redux';
 import {
     Form, Modal,
-
     ModalBody, ModalHeader, Table
 } from 'reactstrap';
+import FormValidator from '../../Forms/FormValidator';
 import swal from 'sweetalert';
 import { context_path, server_url } from '../../Common/constants';
 import Sorter from '../../Common/Sorter';
@@ -23,12 +23,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import AutoSuggest from '../../Common/AutoSuggest';
 import UOM from '../Common/UOM';
 import { Link } from 'react-router-dom';
-
-
-
 // const json2csv = require('json2csv').parse;
-
-
 class Uploadp extends Component {
     state = {
         activeTab: 0,
@@ -41,9 +36,10 @@ class Uploadp extends Component {
             obj: {
                 label: '',
                 expiryDate: null,
-            }
+            },
+            products:[],
+            errors:[]
         },
-        product:["Testing","Testing2"],
         subObjs: [],
         newSubObj: {},
         subPage: {
@@ -65,21 +61,14 @@ class Uploadp extends Component {
             'jpg': 'image/jpeg',
         }
     }
-
     toggleModal = () => {
-        this.setState({
-            modal: !this.state.modal
-        });
+        this.setState({modal: !this.state.modal});
     }
-
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
-            this.setState({
-                activeTab: tab
-            });
+            this.setState({activeTab: tab});
         }
     }
-
     loadObj() {
         axios.get(server_url + context_path + "api/docs?parent=" + this.props.currentId + "&active=true&fileFrom=" + this.props.fileFrom).then(res => {
             var formWizard = this.state.formWizard;
@@ -87,39 +76,35 @@ class Uploadp extends Component {
             this.setState({ formWizard });
         });
     }
-
+    loadProducts = (enqId,callback) =>{
+        axios.get(server_url + context_path + "api/purchases-products?reference.id=" + enqId+"&projection=purchases-product").then(res => {
+            callback(res.data._embedded[Object.keys(res.data._embedded)[0]]);
+        });
+    }
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         // console.log('upload component did mount');
         // console.log(this.props.currentId);
         this.loadObj();
-
         this.props.onRef(this);
     }
-
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
         })
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: false });
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
     addSubObj = () => {
         this.setState({ editSubFlag: false });
-
         this.toggleModal();
     }
-
     editSubObj =(i)=>{
         var files = this.props.fileTypes[i];
         var formWizard = this.state.formWizard;
@@ -127,9 +112,17 @@ class Uploadp extends Component {
         formWizard.obj.label = files.label;
         formWizard.obj.enableExpiryDate = files.expiryDate;
         formWizard.obj.expiryDate = null;
-        this.setState({ editSubFlag: true, formWizard: formWizard }, this.toggleModal);
+        if(files.label === 'Quotation'){
+            this.loadProducts(this.props.currentId,(products)=>{
+                formWizard.products = products;
+                this.setState({ editSubFlag: true, formWizard: formWizard }, this.toggleModal);
+            });
+        }
+        else{
+            formWizard.products = [];
+            this.setState({ editSubFlag: true, formWizard: formWizard }, this.toggleModal);
+        }
     }
-
     saveObjSuccess(id) {
         this.setState({ editSubFlag: true });
         this.toggleModal();
@@ -138,23 +131,18 @@ class Uploadp extends Component {
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if(e) {
             filters[field + 'Date'] = e.format();
         } else {
             filters[field + 'Date'] = null;
         }
-
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
-
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadSubObjs)
@@ -163,51 +151,66 @@ class Uploadp extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
-    fileSelected(name, e) {
+    fileSelected(name, e, noValidate) {
         var file = e.target.files[0];
-        var sizeinMb = file.size / (1024 * 1024);
-        if (sizeinMb > 3) {
-            var error = this.state.error;
-            error[name] = 'File is > 3MB'
-            this.setState({ error });
+        if(file){
+            var sizeinMb = file.size / (1024 * 1024);
+            if (sizeinMb > 3) {
+                var error = this.state.error;
+                error[name] = 'File is > 3MB'
+                this.setState({ error });
+            }
+            this.setState({ name: file.name });
         }
-        this.setState({ name: file.name });
+        else{
+            this.setState({ name: '' });
+        }
+        if (!noValidate) {
+            let input = e.target;
+            let formWizard = this.state.formWizard;
+            const result = FormValidator.validate(input);
+            formWizard.errors[input.name] = result;
+            this.setState({formWizard});
+        }
     }
-
     uploadFiles() {
-        var formData = new FormData();
-        var imagefile = document.querySelector('#fileUpload');
-        formData.append("file", imagefile.files[0]);
-        formData.append("from", this.props.fileFrom);
-        formData.append("parent", this.props.currentId);
-        formData.append("fileType", this.state.formWizard.obj.label);
-        if (this.state.formWizard.obj.enableExpiryDate && this.state.formWizard.obj.expiryDate) {
-            formData.append("expiryDate", this.state.formWizard.obj.expiryDate);
+        var hasError = this.checkForError();
+        if (!hasError) {
+            var formData = new FormData();
+            var imagefile = document.querySelector('#fileUpload');
+            formData.append("file", imagefile.files[0]);
+            formData.append("from", this.props.fileFrom);
+            formData.append("parent", this.props.currentId);
+            formData.append("fileType", this.state.formWizard.obj.label);
+            if (this.state.formWizard.obj.enableExpiryDate && this.state.formWizard.obj.expiryDate) {
+                formData.append("expiryDate", this.state.formWizard.obj.expiryDate);
+            }
+            axios.post(server_url + context_path + 'docs/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(res => {
+                if (res.data.uploaded === 1) {
+                    this.toggleModal();
+                    this.loadObj();
+                    if(this.state.formWizard.obj.label === 'Quotation'){
+                        this.props.generateQuote(this.state.formWizard.obj.expiryDate,this.state.formWizard.products);
+                    }                    
+                    swal("Uploaded!", "File Uploaded", "success");
+                } else {
+                    swal("Unable to Upload!", "Upload Failed", "error");
+                }
+            }).catch(err => {
+                var msg = "Select File";
+                
+                if(err.response.data.globalErrors && err.response.data.globalErrors[0]) {
+                    msg = err.response.data.globalErrors[0];
+                }
+
+                swal("Unable to Upload!", msg, "error");
+            })
         }
-        axios.post(server_url + context_path + 'docs/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).then(res => {
-            if (res.data.uploaded === 1) {
-                this.toggleModal();
-                this.loadObj();
-                swal("Uploaded!", "File Uploaded", "success");
-            } else {
-                swal("Unable to Upload!", "Upload Failed", "error");
-            }
-        }).catch(err => {
-            var msg = "Select File";
-            
-            if(err.response.data.globalErrors && err.response.data.globalErrors[0]) {
-                msg = err.response.data.globalErrors[0];
-            }
-
-            swal("Unable to Upload!", msg, "error");
-        })
     }
-
     getFileName = (type) => {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
         if (doc) {
@@ -219,7 +222,6 @@ class Uploadp extends Component {
             return "-NA-";
         }
     }
-
     isFileExists = (type) => {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
         if(this.props.user.role === 'ROLE_ADMIN') return false;
@@ -229,7 +231,6 @@ class Uploadp extends Component {
             return false;
         }
     }
-
     getExpiryDate = (type) => {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
         if (doc && doc.expiryDate) {
@@ -238,7 +239,6 @@ class Uploadp extends Component {
             return "-NA-";
         }
     }
-
     getCreationDate = (type) => {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
         if (doc && doc.creationDate) {
@@ -247,27 +247,43 @@ class Uploadp extends Component {
             return "-NA-";
         }
     }
-
     setField(field, e) {
         var formWizard = this.state.formWizard;
-
         // var input = e.target;
         formWizard.obj[field] = e.target.value;
         this.setState({ formWizard });
     }
-
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
-
         if(e) {
             formWizard.obj[field] = e.format();
         } else {
             formWizard.obj[field] = null;
         }
-
         this.setState({ formWizard });
     }
-
+    setProductField(i,field,e,noValidate){
+        var formWizard = this.state.formWizard;
+        let input = e.target;
+        formWizard.products[i][field] = input.value;
+        if (!noValidate) {
+            const result = FormValidator.validate(input);
+            formWizard.errors[input.name] = result;
+            this.setState({formWizard});
+        }
+        this.setState({formWizard});
+    }
+    checkForError() {
+        // const form = this.formWizardRef;
+        const tabPane = document.getElementById('saveForm');
+        const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
+        const { errors, hasError } = FormValidator.bulkValidate(inputs);
+        var formWizard = this.state.formWizard;
+        console.log("form errors from add company are ",errors);
+        formWizard.errors = errors;
+        this.setState({ formWizard });
+        return hasError;
+    }
     downloadFile = (e, type) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
@@ -288,118 +304,93 @@ class Uploadp extends Component {
             link.click();
         });
     }
-
     render() {
+        const errors = this.state.formWizard.errors;
         return (<ContentWrapper>
-            <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
-
                 <div className="row">
                     <div className="col-md-12">
                         <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModal} size={'md'}>
                             <ModalHeader toggle={this.toggleModal}>
-                            <CloudUploadIcon />
-                                - {this.state.formWizard.obj.label}
+                                <CloudUploadIcon /> - {this.state.formWizard.obj.label}
                             </ModalHeader>
                             <ModalBody>
-                                <fieldset>
-                                    <Button
-                                        variant="contained"
-                                        component="label" color="primary"> Select File
-                                    <input type="file" id="fileUpload"
-                                            name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
-                                            onChange={e => this.fileSelected('fileUpload', e)}
-                                            style={{ display: "none" }} />
-                                    </Button>{this.state.name}
-                                </fieldset>
-                                <span>*Please upload .doc,.docx,.pdf,.png,.jpg files only</span>
-                                {this.state.formWizard.obj.enableExpiryDate && <fieldset>
-                                        <MuiPickersUtilsProvider utils={MomentUtils}
-                                            className="col-md-6">
-                                            <DatePicker 
-                                            autoOk
-                                            clearable
-                                            // variant="inline"
-                                            label="Expiry Date"
-                                            format="DD/MM/YYYY"
-                                        
-                                            value={this.state.formWizard.obj.expiryDate} 
-                                            onChange={e => this.setDateField('expiryDate', e)} 
-                                            TextFieldComponent={(props) => (
-                                                <TextField
-                                                type="text"
-                                                name="expiryDate"
-                                                id={props.id}
-                                                label={props.label}
-                                                onClick={props.onClick}
-                                                value={props.value}
-                                                disabled={props.disabled}
-                                                {...props.inputProps}
-                                                InputProps={{
-                                                    endAdornment: (
-                                                        <Event />
-                                                    ),
-                                                }}
-                                                />
-                                            )} />
-                                        </MuiPickersUtilsProvider>
-                                </fieldset>}
-                              
-                                <Table style={{marginTop:"-40px"}}>
-                                        <tbody  >                                                
-                                        <tr>                                                  
-                                                        <td className="">
-                                                            <fieldset>
-                                                                <FormControl   style={{marginTop:"30px"}}>
-                                                                     <Link to={`/products/${this.state.product[0]}`}>
-                                                                            {this.state.product[0]}
-                                                                    </Link>
-                                                                </FormControl>
-                                                            </fieldset>
-                                                        </td>                                                
-                                                        <td   >
-                                                            <fieldset >
-                                                                <TextField type="number" name="amount" label="Amount" required={true}
-                                                                
-                                                                className="col-md-6"
-                                                                    // inputProps={{ readOnly: true }}
-                                                                    //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                                    // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
-                                                                    // error={errors?.amount?.length > 0}
-                                                                    // value={this.state.obj2.amount} onChange={(e)=>this.saveProduct(e)} 
-                                                                    />
-                                                            </fieldset>
-                                                        </td>
-                                                    </tr>                                         
-                                                    <tr   style={{marginTop:"-60px",marginBottom:"90px"}}>                                                  
-                                                        <td className="">
-                                                            <fieldset>
-                                                                <FormControl   style={{marginTop:"-20px"}}>
-                                                                     <Link to={`/products/${this.state.product[1]}`}>
-                                                                            {this.state.product[1]}
-                                                                    </Link>
-                                                                </FormControl>
-                                                            </fieldset>
-                                                        </td>                                                
-                                                        <td   >
-                                                            <fieldset >
-                                                                <TextField type="number" name="amount" label="Amount" required={true}
-                                                                style={{marginTop:"-50px"}}
-                                                                className="col-md-6"
-                                                                    // inputProps={{ readOnly: true }}
-                                                                    //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                                    // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
-                                                                    // error={errors?.amount?.length > 0}
-                                                                    // value={this.state.obj2.amount} onChange={(e)=>this.saveProduct(e)} 
-                                                                    />
-                                                            </fieldset>
-                                                        </td>
-                                                    </tr>                              
+                                <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
+                                    <fieldset>
+                                        <Button
+                                            variant="contained"
+                                            component="label" color="primary"> Select File
+                                            <input type="file" id="fileUpload" name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg' required={true}
+                                                helperText={errors?.fileUpload?.length > 0?errors["fileUpload"][0]["msg"]:""}
+                                                error={errors?.fileUpload?.length > 0}
+                                                onChange={e => this.fileSelected('fileUpload', e)}
+                                                style={{ display: "none" }}
+                                            />
+                                            </Button>{this.state.name}<br/>
+                                            <span style={{color:"red"}}>{errors?.fileUpload?.length > 0?errors["fileUpload"][0]["msg"]:""}</span>        
+                                    </fieldset>
+                                    <span>*Please upload .doc,.docx,.pdf,.png,.jpg files only</span>
+                                    {this.state.formWizard.obj.enableExpiryDate && 
+                                        <fieldset>
+                                            <MuiPickersUtilsProvider utils={MomentUtils}
+                                                className="col-md-6">
+                                                <DatePicker 
+                                                    autoOk
+                                                    clearable
+                                                    // variant="inline"
+                                                    label="Expiry Date"
+                                                    format="DD/MM/YYYY"
+                                                    value={this.state.formWizard.obj.expiryDate} 
+                                                    onChange={e => this.setDateField('expiryDate', e)} 
+                                                    TextFieldComponent={(props) => (
+                                                    <TextField
+                                                        type="text"
+                                                        name="expiryDate"
+                                                        id={props.id}
+                                                        label={props.label}
+                                                        onClick={props.onClick}
+                                                        value={props.value}
+                                                        disabled={props.disabled}
+                                                        {...props.inputProps}
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                                <Event />
+                                                            ),
+                                                        }}
+                                                    />
+                                                )} />
+                                            </MuiPickersUtilsProvider>
+                                        </fieldset>
+                                    }
+                                    {this.state.formWizard.products.length>0 &&
+                                    <Table style={{marginTop:"-40px"}}>
+                                        <tbody>
+                                            {this.state.formWizard.products.map((prod,i)=>{
+                                                return (<tr>                                                  
+                                                    <td className="">
+                                                        <fieldset>
+                                                            <FormControl style={{marginTop:"30px"}}>
+                                                                <Link to={'/products/'+prod.product.id}>{prod.product.name}</Link>
+                                                            </FormControl>
+                                                        </fieldset>
+                                                    </td>                                                
+                                                    <td>
+                                                        <fieldset >
+                                                        <TextField type="number" name={"amount"+i} label="Amount" required={true} className="col-md-6"
+                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required","msg":"Amount is required"},{"key":"maxlen","param":"10"}]' }}
+                                                            helperText={errors && errors.hasOwnProperty("amount"+i) && errors["amount"+i].length > 0?errors["amount"+i][0]["msg"]:""}
+                                                            error={errors && errors.hasOwnProperty("amount"+i) && errors["amount"+i].length > 0}
+                                                            value={this.state.formWizard.products[i].amount} onChange={e => this.setProductField(i,"amount",e)}
+                                                        />
+                                                        </fieldset>
+                                                    </td>
+                                                </tr>)
+                                            })}
                                         </tbody>
-                                    </Table>
-                             
+                                    </Table>}
                                     <div className="text-center">
-                                    <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Save</Button>
-                                </div>
+                                        <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Save</Button>
+                                    </div>
+                                </Form>
                             </ModalBody>
                         </Modal>
                         <div className="card-body bb bt">
@@ -424,7 +415,7 @@ class Uploadp extends Component {
                                                     <Button fontSize="small" disabled={this.isFileExists(obj.label)} variant="contained" color="primary" style={{marginLeft: "-10px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload COA</Button>
                                                 </td>                                                */}
                                                 <td>
-                                                    <Button fontSize="small" disabled={this.isFileExists(obj.label)} variant="contained" color="primary" style={{marginLeft: "-10px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload</Button>
+                                                    <Button fontSize="small" disabled={this.isFileExists(obj.label)} variant="contained" color="primary" style={{marginLeft: "-10px",textTransform :"none", }} startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload</Button>
                                                 </td>
                                                 <td>
                                                     {this.getFileName(obj.label)}
@@ -444,16 +435,13 @@ class Uploadp extends Component {
                         </div>
                     </div>
                 </div>
-            </Form>
         </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Uploadp);

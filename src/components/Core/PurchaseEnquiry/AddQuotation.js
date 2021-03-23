@@ -64,7 +64,7 @@ class AddQuotation extends Component {
     }
 
     loadData() {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=sales_quotation_edit')
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=purchases_quotation_edit')
             .then(res => {
                 var formWizard = this.state.formWizard;
                 formWizard.obj = res.data;
@@ -74,11 +74,10 @@ class AddQuotation extends Component {
                 formWizard.obj.enquiry = res.data.enquiry.id
                 this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
 
-                formWizard.obj.products.forEach((p, idx) => {
-                    formWizard.selectedProducts[idx] = p;
-                    this.productASRef.push(''); //this.productASRef[idx].setInitialField(p);
-                });
-
+                // formWizard.obj.products.forEach((p, idx) => {
+                //     formWizard.selectedProducts[idx] = p;
+                //     this.productASRef.push(''); //this.productASRef[idx].setInitialField(p);
+                // });
                 this.setState({ formWizard });
             });
     }

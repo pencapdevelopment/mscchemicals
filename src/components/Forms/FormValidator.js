@@ -19,7 +19,10 @@ const FormValidator = {
         if (!name) throw new Error('Input name must not be empty.');
         // use getAttribute to support IE10+
          const validations = JSON.parse(element.getAttribute('data-validate'));
-        let result = []
+        let result = [];
+        if(element.type === 'file' && element.required && element.files.length < 1){
+            result.push({key:'required',msg:'Please select a file'});
+        }
         if(validations && validations.length) {
             /*  Result of each validation must be true if the input is invalid
                 and false if valid. */
@@ -41,13 +44,18 @@ const FormValidator = {
                             result.push({key:m.key,msg:'Please enter valid email'});
                         }
                         break;
+                    case 'file':
+                        if(element.files.length<1){
+                            result.push({key:m.key,msg:m.msg?m.msg:'please select a file'});
+                        }
+                        console.log("file error is",element.files);
+                        break;
                     case 'gstin':
                         if(isCheckbox ? value === false : validator.isEmpty(value)){
                             result.push({key:m.key,msg:'please enter valid gstin number'});
                         }
                         break;
                     case 'pan':
-
                         if(isCheckbox ? value === false : validator.isEmpty(value)){
                             result.push({key:m.key,msg:'please enter valid pan number'});
                         }

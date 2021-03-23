@@ -21,22 +21,20 @@ class Quotation extends Component {
         editFlag: false,
         modal: false,
         obj: '',
-        baseUrl: 'sales-quotation',
+        baseUrl: 'purchases-quotation',
         currentId: '',
         fileTypes2: [
             { label: 'Quotation', expiryDate: true },
             { label: 'COA', expiryDate: true },],
     }
 
-
     loadObj(id) {
-    //     axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
-    //         var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
-
-    //         if(list.length) {
-    //             this.setState({ obj: list[0], currentId: list[0].id });
-    //         }
-    //     });
+        axios.get(Const.server_url + Const.context_path + "api/purchases-quotation?enquiry.id=" + id + '&projection=purchases_quotation_edit&sort=id,desc').then(res => {
+            var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            if(list.length) {
+                this.setState({ obj: list[0], currentId: list[0].id });
+            }
+        });
     }
 
     componentWillUnmount() {
@@ -45,9 +43,7 @@ class Quotation extends Component {
 
     componentDidMount() {
         // console.log('quotation component did mount');
-        console.log(this.props.currentId);
-
-       
+        console.log(this.props.currentId);   
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
     }
@@ -76,38 +72,63 @@ class Quotation extends Component {
         var prod = this.props.parentObj.products[i];
 
         axios.patch(Const.server_url + Const.context_path + "quotations/" + obj.id + "/products/" + prod.id)
-            .then(res => {
-                prod.status = 'Email Sent';
-                this.setState({ obj });
-                swal("Sent Quotation!", 'Succesfully sent quotation mail.', "success");
+        .then(res => {
+            prod.status = 'Email Sent';
+            this.setState({ obj });
+            swal("Sent Quotation!", 'Succesfully sent quotation mail.', "success");
+        }).finally(() => {
+            this.setState({ loading: false });
+        }).catch(err => {
+            swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
+        })
+    }
+
+    generateQuote = (expiryDate,products)=>{
+        console.log("expiry date is",expiryDate);
+        let PE = this.props.parentObj;
+        axios.get(Const.server_url+Const.context_path+'api/companies/'+PE.company.id).then(compRes => {
+            var newObj = {
+                code: Const.getUniqueCode('PQ'),
+                company: "/companies/"+compRes.data.id,
+                gst: '',
+                amount: '',
+                transportationCharges: '',
+                terms: compRes.data.paymentTerms,
+                deliveryPeriod: '',
+                enquiry: '/purchases/'+PE.id,
+                validTill: expiryDate,
+            };
+            axios.post(Const.server_url + Const.context_path + "api/purchases-quotation", newObj).then(res =>{
+                this.setState({ loading: false });
             }).finally(() => {
                 this.setState({ loading: false });
             }).catch(err => {
-                swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
-            })
+                this.setState({ loading: false });
+                swal("Upload Quotation Error!", "Unable to Upload Quotation!", "error");
+            });
+        }).finally(()=>{
+            this.setState({ loading: false });
+        }).catch(err =>{
+            this.setState({ loading: false });
+            swal("Company Not found!", "Unable to find the selected Company", "error");
+        });
     }
 
     render() {
         return (
             <div>
-                {!this.state.editFlag &&
-                 
-
-            
+                {!this.state.editFlag &&            
                     <div className="row">
                         <div className="col-md-12">
                              <div className="card b">
                                  {/* <div className="card-header">
-
                                  </div> */}
                              </div>
-                           
                                 <Uploadp onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl} currentId={this.props.currentId}
-                                    fileTypes={this.state.fileTypes2}></Uploadp>
-                                     {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
-                            currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
-
-                            {/* {this.state.obj && */}
+                                    fileTypes={this.state.fileTypes2} products={this.props.parentObj.products} generateQuote={(expiryDate) => this.generateQuote(expiryDate)}></Uploadp>
+                                    {/* <Upload onRef={ref => (this.uploadRef = ref)} fileFrom={this.props.baseUrl + '-quotation'} 
+                                    currentId={this.props.currentId} fileTypes={[{label: 'Attachment', expiryDate: true }]}></Upload> */}
+                                    {/* {this.state.obj && */}
                             <div className="card b">
                                 <div className="card-header">
                                     <div className="float-right mt-2">
@@ -183,7 +204,7 @@ class Quotation extends Component {
                                                 <td>
                                                     <strong>Valid Till</strong>
                                                 </td>
-                                                <td><Moment format="DD MMM YY">{this.state.obj.valiTill}</Moment></td>
+                                                <td>{this.state.obj.validTill?<Moment format="DD MMM YY">`{this.state.obj.validTill}`</Moment>:'-NA-'}</td>
                                             </tr>
                                         </tbody>
                                     </table>
