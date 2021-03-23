@@ -23,6 +23,7 @@ import {
 } from '@material-ui/pickers';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import AddQuotation from './AddQuotation';
+import { createOrder } from '../Orders/Create';
 
 
 
@@ -38,6 +39,13 @@ class Order extends Component {
         activeTab: 0,
         editFlag: false,
         modal: false,
+        orderData:{
+            poNumber:'',
+            instructions:'',
+            poDate:''
+
+        },
+        prodData:'',
         obj: '',
         baseUrl: 'sales-quotation',
         currentId: '',
@@ -183,6 +191,50 @@ class Order extends Component {
 
         this.setState({ formWizard });
     }
+    componentDidUpdate(){
+        console.log("orderData==>", this.state.orderData)
+    }
+
+    componentDidMount(){
+        console.log("componentDidMount() method");
+        axios.get(server_url + context_path + "api/sales/" + this.props.parentObj.id+ '?projection=sales_edit').then(res => {
+            this.setState({ prodData: res.data })
+            console.log("sales-products data==>>", res.data);
+        });
+
+    }
+    
+        setDateField(field, e) {
+            var orderData = this.state.orderData;
+    
+            if (e) {
+                orderData[field] = e.format().toLocaleString();
+            } else {
+                orderData[field] = null;
+            }
+    
+            this.setState({ orderData });
+        }
+
+        Instructions=(e)=>{
+            console.log("Instructions");
+            var orderData=this.state.orderData;
+            var input=e.target;
+            orderData.instructions=input.value ;
+            this.setState({
+                orderData
+            });
+        }
+        poNumber=(e)=>{
+            console.log("poNumber");
+            var orderData=this.state.orderData;
+            var input=e.target;
+            orderData.poNumber=input.value ;
+            this.setState({
+                orderData
+            });
+        }
+
     uploadFiles() {
         var formData = new FormData();
         var imagefile = document.querySelector('#fileUpload');
@@ -216,6 +268,27 @@ class Order extends Component {
 
             swal("Unable to Upload!", msg, "error");
         })
+        this.convertToOrder();
+
+    }
+
+    convertToOrder = () => {
+        if (this.props.parentObj.adminApproval !== 'Y' && this.props.user.role !== 'ROLE_ADMIN') {
+            swal("Unable to Convert!", "Please get Admin approval", "error");
+            return;
+        }
+        console.log("products",this.props.parentObj.products)
+        if (this.props.parentObj.products.length === 0) {
+       
+            swal("Unable to Convert!", "Please add atleast one product", "error");
+            return;
+        }
+        var orderData=this.state.orderData;
+        var orderData1=this.props.parentObj;
+        orderData1.poNumber=orderData.poNumber;
+        orderData1.instructions=orderData.instructions;
+        orderData1.poDate=orderData.poDate;
+        createOrder('Sales', orderData1, this.props.baseUrl);
     }
 
   
@@ -247,6 +320,7 @@ class Order extends Component {
                                         // helperText={errors?.contactName?.length > 0 ? errors?.contactName[0]?.msg : ""}
                                         // error={errors?.contactName?.length > 0} value={this.state.formWizard.obj.contactName}
                                         // defaultValue={this.state.formWizard.obj.contactName} onChange={e => this.setField("contactName", e)}
+                                        value={this.state.orderData.poNumber} onChange={this.poNumber}
                                          />
                                 </FormControl>
                             </fieldset>
@@ -258,8 +332,8 @@ class Order extends Component {
                                     // variant="inline"
                                     label="Po Date"
                                     format="DD/MM/YYYY"
-                                    value={this.state.formWizard.obj.expiryDate}
-                                    onChange={e => this.setDateField('expiryDate', e)}
+                                    value={this.state.orderData.poDate}
+                                    onChange={e => this.setDateField('poDate', e)}
                                     TextFieldComponent={(props) => (
                                         <TextField
                                             type="text"
@@ -286,6 +360,7 @@ class Order extends Component {
                                     // helperText={errors?.description?.length > 0 ? errors?.description[0]?.msg : ""}
                                     // error={errors?.description?.length > 0}
                                     // value={this.state.formWizard.obj.description} onChange={e => this.setField("description", e)} 
+                                    value={this.state.orderData.instructions} onChange={this.Instructions}
                                     />
                             </fieldset>
                         {/*  } */}

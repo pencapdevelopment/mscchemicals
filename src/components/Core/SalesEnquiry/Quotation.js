@@ -337,17 +337,11 @@ class Quotation extends Component {
                                             })}
                                             </tbody>
                                         </Table>
-                                        {this.state.ngTracking.map((product) => {  
-                                            if(product.status === 'Approved'){  
-                                                return(                              
-                                                    <div style={{ textAlign: 'center',}} >
-                                                    <Button  variant="contained" color="primary" size="small" onClick={this.props.convertOrder}>Convert To Order</Button>
-                                                    </div>
-                                                )}
-                                                else{
-                                                    return null;
-                                                }
-                                            })}
+                                        {this.state.ngTracking.some(prod => prod.status === 'Approved') &&
+                                            <div style={{ textAlign: 'center',}} >
+                                                <Button  variant="contained" color="primary" size="small" onClick={this.props.convertOrder}>Convert To Order</Button>
+                                            </div>
+                                        }
                                               
                                        
                                 

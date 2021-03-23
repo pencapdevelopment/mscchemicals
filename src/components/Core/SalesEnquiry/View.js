@@ -344,6 +344,7 @@ class View extends Component {
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit')
         .then(res => {
+            console.log("view.js obj data==>>",res.data);
             this.setState({ obj: res.data, users:res.data.users, loading: false},()=>{
             if(this.props?.location?.search && this.props?.location?.search?.indexOf('approval')){
                 this.toggleTab(4);
@@ -665,12 +666,12 @@ class View extends Component {
                                                             <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
                                                             </Fab> */}
                                                       
-                                                          {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+                                                          {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
                                                             <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
                                                                 <Button title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Convert Order</span></Button>
-                                                            </Link>}   */}
+                                                            </Link>}  
 
                                                     </div>
                                                     <h4 className="my-2">
