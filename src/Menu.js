@@ -71,7 +71,7 @@ const Menu = [
     // },
     {
         name: 'Purchases',
-        path: '/purchases',
+        path: '/purchase',
         icon: 'fa fa-shopping-cart',
         role: 'ROLE_ADMIN',
         permission:"MG_PR_E,MG_PR_V"

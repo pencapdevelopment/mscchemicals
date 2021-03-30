@@ -2,7 +2,6 @@ import { Button } from '@material-ui/core';
 import axios from 'axios';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
-
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
@@ -23,16 +22,7 @@ import {
 } from '@material-ui/pickers';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import AddQuotation from './AddQuotation';
-
-
-
-
-
-
-
-
 // const json2csv = require('json2csv').parse;
-
 class Order extends Component {
     state = {
         activeTab: 0,
@@ -83,7 +73,6 @@ class Order extends Component {
                 selectedCustomerTypes: [],
                 selectedorganizations: [],
                 msmeId: '',
-                
             },
             tempproduct: {
                 code: getUniqueCode('PD'),
@@ -106,7 +95,6 @@ class Order extends Component {
                 selectedMakes: [],
                 selectedTypes: [],
             },
-
             tempbranch: {
                 name: getUniqueCode('CB'),
                 type: '',
@@ -171,16 +159,13 @@ class Order extends Component {
         }
         this.setState({ name: file.name });
     }
-    
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
-
         if (e) {
             formWizard.obj[field] = e.format();
         } else {
             formWizard.obj[field] = null;
         }
-
         this.setState({ formWizard });
     }
     uploadFiles() {
@@ -209,16 +194,12 @@ class Order extends Component {
             }
         }).catch(err => {
             var msg = "Select File";
-
             if (err.response.data.globalErrors && err.response.data.globalErrors[0]) {
                 msg = err.response.data.globalErrors[0];
             }
-
             swal("Unable to Upload!", msg, "error");
         })
     }
-
-  
     render() {
         return (
             <div>
@@ -318,27 +299,21 @@ class Order extends Component {
                 </Modal>
                 <div className="row">
                     <div className="col-sm-8">
-                    <div className="card b">
-                      
+                    <div className="card b">                      
                     <Table className="card-header" hover responsive>
                          <thead>
-                                            <tr>
-                                                <th>Company Name</th>
-                                                <th>Status of Order</th>
-                                                <th>Action</th>
-                                              
-                                                
-                                            </tr>
-                        </thead>
-                  
-                                
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Status of Order</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>   
                          <tbody className="card-body bb bt" hover responsive>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td>        <Button  title="upload Po" variant="contained" color="primary" onClick={e => this.toggleModal('GST')} startIcon={<CloudUploadIcon />} style={{textTransform :"none", marginLeft: -30}}>Upload Po</Button></td>
-                                </tr>      
-                                       
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td><Button  title="upload Po" variant="contained" color="primary" onClick={e => this.toggleModal('GST')} startIcon={<CloudUploadIcon />} style={{textTransform :"none", marginLeft: -30}}>Upload Po</Button></td>
+                            </tr>
                         </tbody>           
                     </Table>
                             </div>    
@@ -347,33 +322,26 @@ class Order extends Component {
                 <div className="row">
                     <div className="col-sm-8">
                     <div className="card b">
-                      
                     <Table className="card-header" hover responsive>
                          <thead>
-                                            <tr>
-                                                <th>File Name</th>
-                                                <th>Po Number</th>
-                                                <th>Po Date </th>
-                                                <th>Instructons</th>
-                                              
-                                                
-                                            </tr>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Po Number</th>
+                                <th>Po Date </th>
+                                <th>Instructons</th>
+                            </tr>
                         </thead>
-                  
-                                
                          <tbody className="card-body bb bt" hover responsive>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>      
-                                       
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>  
                         </tbody>           
                     </Table>
-                            </div>    
+                </div>    
                     </div>
                 </div>
-               
                 {this.state.editFlag &&
                     <div className="card b">
                         <div className="card-body bb bt">
@@ -384,12 +352,10 @@ class Order extends Component {
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Order);

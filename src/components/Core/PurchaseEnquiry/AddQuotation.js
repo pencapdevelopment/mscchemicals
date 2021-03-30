@@ -9,7 +9,6 @@ import * as Const from '../../Common/constants';
 import { Link } from 'react-router-dom';
 import { server_url, context_path, getUniqueCode, } from '../../Common/constants';
 import { Button, TextField, FormControl, } from '@material-ui/core';
-
 import 'react-datetime/css/react-datetime.css';
 import MomentUtils from '@date-io/moment';
 import {
@@ -17,22 +16,15 @@ import {
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import Event from '@material-ui/icons/Event';
-
 import { Table } from 'reactstrap';
 import FormValidator from '../../Forms/FormValidator';
 import { Form } from 'reactstrap';
-
 // import Radio from '@material-ui/core/Radio';
 // import RadioGroup from '@material-ui/core/RadioGroup';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
 // import FormLabel from '@material-ui/core/FormLabel';
-
-
 // const json2csv = require('json2csv').parse;
-
-
 class AddQuotation extends Component {
-
     state = {
         editFlag: false,
         status: [],
@@ -62,41 +54,33 @@ class AddQuotation extends Component {
             selectedProducts: [],
         }
     }
-
     loadData() {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=purchases_quotation_edit')
-            .then(res => {
-                var formWizard = this.state.formWizard;
-                formWizard.obj = res.data;
-
-                formWizard.obj.selectedCompany = res.data.company;
-                formWizard.obj.company = res.data.company.id;
-                formWizard.obj.enquiry = res.data.enquiry.id
-                this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
-
-                // formWizard.obj.products.forEach((p, idx) => {
-                //     formWizard.selectedProducts[idx] = p;
-                //     this.productASRef.push(''); //this.productASRef[idx].setInitialField(p);
-                // });
-                this.setState({ formWizard });
-            });
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=purchase_quotation_edit')
+        .then(res => {
+            var formWizard = this.state.formWizard;
+            formWizard.obj = res.data;
+            formWizard.obj.selectedCompany = res.data.company;
+            formWizard.obj.company = res.data.company.id;
+            formWizard.obj.enquiry = res.data.enquiry.id;
+            this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
+            // formWizard.obj.products.forEach((p, idx) => {
+            //     formWizard.selectedProducts[idx] = p;
+            //     this.productASRef.push(''); //this.productASRef[idx].setInitialField(p);
+            // });
+            this.setState({ formWizard });
+        });
     }
-
     updateObj(id) {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
         formWizard.editFlag = true;
-
         this.setState({ formWizard }, this.loadData);
     }
-
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.obj[field] = e.target.value;
         this.setState({ formWizard });
-
         if (!noValidate) {
             const result = FormValidator.validate(input);
             formWizard.errors[input.name] = result;
@@ -105,41 +89,29 @@ class AddQuotation extends Component {
             });
         }
     }
-
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
-
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
-
         if (e) {
             formWizard.obj[field] = e.format();
         } else {
             formWizard.obj[field] = null;
         }
-
         this.setState({ formWizard });
     }
-
     setAutoSuggest(field, val) {
         var formWizard = this.state.formWizard;
         formWizard.obj[field] = val;
         formWizard['selected' + field] = val;
         this.setState({ formWizard });
     }
-
-
-
-
-
     setProductField(i, field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.obj.products[i][field] = e.target.value;
         this.setState({ formWizard });
-
         if (!noValidate) {
             const result = FormValidator.validate(input);
             formWizard.errors[input.name] = result;
@@ -148,24 +120,17 @@ class AddQuotation extends Component {
             });
         }
     }
-
     setProductAutoSuggest(idx, val) {
         var formWizard = this.state.formWizard;
-
         var products = formWizard.obj.products;
         var selectedProducts = formWizard.selectedProducts;
-
         products[idx].product = val;
         selectedProducts[idx] = { id: val };
-
         products[idx].updated = true;
-
         this.setState({ formWizard });
     }
-
     addProduct = () => {
         var formWizard = this.state.formWizard;
-
         var products = formWizard.obj.products;
         var idx = products.length;
         products.push({
@@ -174,69 +139,51 @@ class AddQuotation extends Component {
             email: ''
         })
         formWizard.selectedProducts.push('');
-
         this.setState({ formWizard }, o => {
             this.productASRef[idx].setInitialField(formWizard.selectedProducts[idx]);
         });
     }
-
     deleteProduct = (i) => {
         var formWizard = this.state.formWizard;
-
         var products = formWizard.obj.products;
-
         if (products[i].id) {
             products[i].delete = true;
         } else {
             products.splice(i, 1);
             formWizard.selectedProducts.splice(i, 1);
         }
-
         this.setState({ formWizard });
     }
-
-
-
-
     checkForError() {
         // const form = this.formWizardRef;
-
         const tabPane = document.getElementById('salesQuoteForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
         formWizard.errors = errors;
         this.setState({ formWizard });
-        console.log(errors);
-
         return hasError;
     }
-
     saveDetails() {
         var hasError = this.checkForError();
         if (!hasError) {
-            var newObj = this.state.formWizard.obj;
+            var newObj = {...this.state.formWizard.obj};
             newObj.company = '/companies/' + newObj.company;
             newObj.enquiry = '/sales/' + newObj.enquiry;
-
-            if (!newObj.products.length) {
-                swal("Unable to Save!", "Please add atleast one product", "error");
-                return;
-            }
-
-            var products = newObj.products;
+            // if (!newObj.products.length) {
+            //     swal("Unable to Save!", "Please add atleast one product", "error");
+            //     return;
+            // }
+            // var products = newObj.products;
             newObj.products = null;
-
             var promise = undefined;
-
             if (!this.state.formWizard.editFlag) {
                 promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
             } else {
                 promise = axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id, newObj)
             }
-
             promise.then(res => {
-                newObj.products = products;
+                // newObj.products = products;
                 this.setState({ loading: false });
                 this.props.onSave(res.data.id);
                 /*saveProducts(this.props.baseUrl, res.data.id, products, () => {
@@ -255,7 +202,6 @@ class AddQuotation extends Component {
                         formWizard.globalErrors.push(e);
                     });
                 }
-
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
@@ -281,36 +227,23 @@ class AddQuotation extends Component {
         }
         return true;
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.productASRef = [];
         this.props.onRef(this);
         this.setState({ loding: false })
-
-        console.log("hello");
-
         if (!this.props.currentId && this.props.parentObj) {
             var formWizard = this.state.formWizard;
-          
-
             formWizard.obj.enquiry = this.props.parentObj.id;
-
             formWizard.obj.selectedCompany = this.props.parentObj.company;
             formWizard.obj.company = this.props.parentObj.company.id;
             this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
-            
-            console.log(this.props.parentObj);
-
             this.props.parentObj.products.forEach((p, idx) => {
                 p.id = null;
             });
-
             formWizard.obj.products = this.props.parentObj.products;
-
             axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + this.props.parentObj.id + '?projection=sales_edit').then(res => {
                 // this.setState({ obj: res.data });
                 res.data.products.forEach((p, idx) => {
@@ -318,20 +251,15 @@ class AddQuotation extends Component {
                     p.product = p.product.id;
                     this.productASRef.push(formWizard.selectedProducts[idx]); //this.productASRef[idx].setInitialField(p);
                 });
-    
                 this.setState({ formWizard });
             });
-           
         }
     }
-
     render() {
         const errors = this.state.formWizard.errors;
-
         return (
             <ContentWrapper>
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="salesQuoteForm">
-
                     <div className="row">
                         <div className="col-md-6 offset-md-3">
                             <fieldset>
@@ -360,11 +288,10 @@ class AddQuotation extends Component {
                                         queryString="&name" ></AutoSuggest>
                                 </FormControl>
                             </fieldset>
-                            <fieldset>
+                            {/* <fieldset>
                                 <TextField type="text" name="specification" label="Specification" required={true} fullWidth={true} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
                                     helperText={errors?.specification?.length > 0 ? errors?.specification[0]?.msg : ""}
                                     error={errors?.specification?.length > 0}
-
                                     value={this.state.formWizard.obj.specification} onChange={e => this.setField("specification", e)} />
                             </fieldset>
                             <fieldset>
@@ -375,7 +302,7 @@ class AddQuotation extends Component {
                                     error={errors?.make?.length > 0}
                                     value={this.state.formWizard.obj.make}
                                     onChange={e => this.setField("make", e)} />
-                            </fieldset>
+                            </fieldset> */}
                             <fieldset>
                                 <TextField type="text" name="terms" label="Payment Terms" required={true}
                                     fullWidth={true}
@@ -403,8 +330,6 @@ class AddQuotation extends Component {
                                     value={this.state.formWizard.obj.packing}
                                     onChange={e => this.setField("packing", e)} />
                             </fieldset>
-                           
-
                             <fieldset>
                                 <TextField type="number" name="deliveryPeriod" label="Delivery Period" required={true} fullWidth={true}
                                     value={this.state.formWizard.obj.deliveryPeriod} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
@@ -449,8 +374,7 @@ class AddQuotation extends Component {
                             </fieldset>
                         </div>
                     </div>
-
-                    <div className="text-center mt-4">
+                    {/* <div className="text-center mt-4">
                         <h4>
                             Products
                             <Button className="ml-2 d-none" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
@@ -458,13 +382,12 @@ class AddQuotation extends Component {
                             </Button>
                         </h4>
                     </div>
-
-                    {this.state.formWizard.obj.products && this.state.formWizard.obj.products.length &&
+                    {this.state.formWizard.obj.enquiry.products && this.state.formWizard.obj.enquiry.products.length &&
                         <div className="row">
                             <div className="col-md-12">
                                 <Table hover responsive>
                                     <tbody>
-                                        {this.state.formWizard.obj.products.map((prod, i) => {
+                                        {this.state.formWizard.obj.enquiry.products.map((prod, i) => {
                                             return (
                                                 <tr key={i}>
                                                     <td className="va-middle">{i + 1}</td>
@@ -486,7 +409,6 @@ class AddQuotation extends Component {
                                                                         error={errors?.productName_auto_suggest?.length > 0}
                                                                         inputProps={{ "data-validate": '[{ "key":"required"}]' }}
                                                                         onRef={ref => (this.productASRef[i] = ref)}
-
                                                                         projection="product_auto_suggest"
                                                                         value={this.state.formWizard.selectedProducts[i]}
                                                                         onSelect={e => this.setProductAutoSuggest(i, e?.id)}
@@ -526,23 +448,19 @@ class AddQuotation extends Component {
                                     </tbody>
                                 </Table>
                             </div> 
-                        </div>}
-
+                        </div>} */}
                     <div className="text-center mt-4">
                         <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
                         <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save</Button>
                     </div>
-
                 </Form>
             </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(AddQuotation);

@@ -41,9 +41,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import UOM from '../Common/UOM';
 import PageLoader from '../../Common/PageLoader';
 // const json2csv = require('json2csv').parse;
-
 class Add extends Component {
-
     state = {
         formWizard: {
             editFlag: false,
@@ -104,6 +102,7 @@ class Add extends Component {
             formWizard.obj.email = res.data.email;
             formWizard.obj.phone = res.data.phone;
             formWizard.obj.contactName = res.data.name;
+            formWizard.obj.paymentTerms = res.data.paymentTerms;
             if (res.data.products) {
                 res.data.products.forEach(p => {
                     // formWizard.obj.products = [];
@@ -116,7 +115,6 @@ class Add extends Component {
                     }
                 })
             }
-
             this.setState({ formWizard }, o => {
                 if (res.data.products) {
                     res.data.products.forEach((p, idx) => {
@@ -126,7 +124,6 @@ class Add extends Component {
                     });
                 }
             });
-
             axios.get(server_url + context_path + "api/company-contact?sort=id,asc&projection=company_contact_name&page=0&size=1&company=" + companyId)
             .then(res => {
                 if (res.data._embedded['company-contact'] && res.data._embedded['company-contact'].length) {
@@ -137,13 +134,13 @@ class Add extends Component {
             });
         });
     }
-
     loadData() {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=purchases_edit')
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=purchase_edit')
         .then(res => {
             var formWizard = this.state.formWizard;
             formWizard.obj = res.data;
             formWizard.obj.selectedCompany = res.data.company;
+            formWizard.obj.paymentTerms = res.data.company.paymentTerms;
             formWizard.obj.company = res.data.company.id;
             this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
             formWizard.obj.products.forEach((p, idx) => {
@@ -170,14 +167,12 @@ class Add extends Component {
             this.setState({ formWizard , selectedCompanies,users});
         });
     }
-
     updateObj(id) {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
         formWizard.editFlag = true;
         this.setState({ formWizard }, this.loadData);
     }
-
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
         var input = e.target;
@@ -191,11 +186,9 @@ class Add extends Component {
             });
         }
     }
-
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
-
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
         if (e) {
@@ -205,21 +198,16 @@ class Add extends Component {
         }
         this.setState({ formWizard });
     }
-
     setAutoSuggestAssignProduct(field, val) {
         var assignProduct=this.state.assignProduct;
         assignProduct=val;
         this.setState({assignProduct})
-    
     }
-
     setAutoSuggestAssignUser(field, val) {
         var assignUser=this.state.assignUser;
         assignUser=val;
         this.setState({assignUser})
-     
     }
-
     setAutoSuggest(field, val) {
         var formWizard = this.state.formWizard;
         formWizard.obj[field] = val;
@@ -229,23 +217,19 @@ class Add extends Component {
             this.loadCompany(val)
         }
     }
-
     setAutoSuggest1(field, val) {
         this.setState({ user: val });
     }
-
     checkForAddCompError() {
         // const form = this.formWizardRef;
         const tabPane = document.getElementById('companyvalidatorDiv');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
-        console.log("form errors from add company are ",errors);
         formWizard.errors = errors;
         this.setState({ formWizard });
         return hasError;
     }
-
     addCompany = () => {
         var hasError = this.checkForAddCompError();
         if (!hasError) {
@@ -270,6 +254,7 @@ class Add extends Component {
                         portOfLanding:formWizard.obj.portOfLanding,
                         fob:formWizard.obj.fob,
                         cif:formWizard.obj.cif,
+                        paymentTerms:formWizard.obj.paymentTerms,
                         currency:formWizard.obj.currency
                     });
                 }
@@ -282,6 +267,7 @@ class Add extends Component {
                         phone:formWizard.obj.phone,
                         contactName:formWizard.obj.contactName,
                         source:formWizard.obj.source,
+                        paymentTerms:formWizard.obj.paymentTerms,
                         description:formWizard.obj.description
                     }
                 }
@@ -292,12 +278,12 @@ class Add extends Component {
                 formWizard.obj.contactName = '';
                 formWizard.obj.source = '';
                 formWizard.obj.description = '';
+                formWizard.obj.paymentTerms = '';
                 this.companyASRef.setInitialField({name:''});
                 this.setState({formWizard,selectedCompanies});
             }
         }
     }
-
     onSelectCompChip = (comp) => {
         var formWizard = this.state.formWizard;
         formWizard.selectedcompany = comp.companyId;
@@ -311,11 +297,11 @@ class Add extends Component {
         formWizard.obj.portOfLanding = comp.portOfLanding;
         formWizard.obj.fob = comp.fob;
         formWizard.obj.cif = comp.cif;
+        formWizard.obj.paymentTerms = comp.paymentTerms;
         formWizard.obj.currency = comp.currency;
         this.companyASRef.setInitialField(comp);
         this.setState({formWizard});
     }
-
     removeCompany = (i) => {
         swal({
             title: "Are you sure?",
@@ -335,7 +321,6 @@ class Add extends Component {
             }
         });
     }
-
     toggleModalAssign = () => {
         var users = this.state.users;
         if(Object.keys(this.state.assignUser).length !== 0 && users.findIndex(u => u.user.id === this.state.assignUser.id) === -1){
@@ -345,13 +330,11 @@ class Add extends Component {
         assignUser='';
         this.setState({ users,assignUser});
     }
-
     saveUser() {
         var users = this.state.users;
         users.push({user:this.state.user});
         this.setState({ users, modalassign: !this.state.modalassign });
     }
-
     handleDelete = (i) => {
         swal({
             title: "Are you sure?",
@@ -371,7 +354,6 @@ class Add extends Component {
             }
         });
     }
-
     setProductField(i, field, e, noValidate) {
         var formWizard = this.state.formWizard;
         var input = e.target;
@@ -383,7 +365,6 @@ class Add extends Component {
             this.setState({formWizard});
         }
     }
-
     setProductAutoSuggest(idx, val) {
         var formWizard = this.state.formWizard;
         var products = formWizard.obj.products;
@@ -392,9 +373,7 @@ class Add extends Component {
         selectedProducts[idx] = { id: val };
         products[idx].updated = true;
         this.setState({ formWizard });
-    }
-
-  
+    }  
     addProduct = () => {
         var formWizard = this.state.formWizard;
         var products = formWizard.obj.products;
@@ -408,7 +387,6 @@ class Add extends Component {
         }
         // this.setProductAutoSuggest(idx, this.state.assignProduct.id);
     }
-
     deleteProduct = (i) => {
         var formWizard = this.state.formWizard;
         var products = formWizard.obj.products;
@@ -426,7 +404,6 @@ class Add extends Component {
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
-        console.log("form errors are ",errors);
         if(this.state.users.length>0 && errors.hasOwnProperty('usersName_auto_suggest')){
             errors.usersName_auto_suggest = [];
         }
@@ -449,7 +426,6 @@ class Add extends Component {
         }
         return hserr;
     }
-
     saveDetails() {
         var hasError = this.checkForError();
         if (!hasError) {
@@ -501,7 +477,6 @@ class Add extends Component {
                 }).catch(err => {
                     // this.toggleTab(0);
                     //this.setState({ addError: err.response.data.globalErrors[0] });
-                    console.log(err);
                     var formWizard = this.state.formWizard;
                     formWizard.globalErrors = [];
                     if (err.response.data.globalErrors) {   
@@ -535,17 +510,14 @@ class Add extends Component {
         }
         return true;
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.productASRef = [];
         this.props.onRef(this);
         this.setState({ loding: false });
     }
-
     render() {
         const errors = this.state.formWizard.errors;
         return (
@@ -660,7 +632,6 @@ class Add extends Component {
                                             />
                                         </RadioGroup>
                                     </FormControl>
-                                
                                 </fieldset>
                             </div>
                         </div>
@@ -948,64 +919,58 @@ class Add extends Component {
                    </div>
                     <div classname="row">
                         <div classname="col-sm-12">
-                        <div className="row">    
-                      
-                        <div className="col-md-3   " >
-                            
-                        <fieldset>
-                                <TextField type="text" name="cif" label=" CIF" required={true} fullWidth={true}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.cif?.length > 0 ? errors?.cif[0]?.msg : ""}
-                                    error={errors?.cif?.length > 0}
-                                    value={this.state.formWizard.obj.cif} onChange={e => this.setField("cif", e)} />
-                            </fieldset>
+                            <div className="row">    
+                                <div className="col-md-3">
+                                    <fieldset>
+                                        <TextField type="text" name="cif" label=" CIF" required={true} fullWidth={true}
+                                            inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
+                                            helperText={errors?.cif?.length > 0 ? errors?.cif[0]?.msg : ""}
+                                            error={errors?.cif?.length > 0}
+                                            value={this.state.formWizard.obj.cif} onChange={e => this.setField("cif", e)} />
+                                    </fieldset>
+                                </div>
+                                <div className="col-md-3  ">
+                                    <fieldset>
+                                        <TextField type="text" name="paymentTerms" label="Payment termsss" required={true} fullWidth={true}
+                                            inputProps={{readOnly: true, maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
+                                            helperText={errors?.paymentTerms?.length > 0 ? errors?.paymentTerms[0]?.msg : ""}
+                                            error={errors?.paymentTerms?.length > 0}
+                                            value={this.state.formWizard.obj.paymentTerms} onChange={e => this.setField("paymentTerms", e)} />
+                                    </fieldset>
+                                </div>
+                                <div className="col-md-3  ">
+                                    <fieldset>
+                                        <FormControl    >
+                                            <InputLabel > Currency</InputLabel>
+                                            <Select
+                                                name="currency"
+                                                helperText={errors?.currency?.length > 0 ? errors?.currency[0]?.msg : ""}
+                                                inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
+                                                error={errors?.currency?.length > 0}
+                                                value={this.state.formWizard.obj.currency} 
+                                                required={true} 
+                                                fullWidth={true}  
+                                                onChange={e => this.setSelectField('currency', e)}
+                                            >  
+                                                {this.state.currency.map((e, keyIndex) => {
+                                            return (
+                                                <MenuItem key={keyIndex} value={e.label}>{e.label}</MenuItem>
+                                            );
+                                        })}                                                      
+                                            {/* <MenuItem value={1}><img src="img/rupee.png"  style={{marginRight: 5}} />IND</MenuItem>                                                        
+                                            <MenuItem value={3} > <img src="img/eur.png" style={{marginRight: 7}} />EUR</MenuItem>                                                           
+                                            <MenuItem value={5}><img src="img/dollar.png" style={{marginRight: 5}} />DOLLAR</MenuItem> */}
+                                            {/* <MenuItem value={6}>40</MenuItem>
+                                            <MenuItem value={7}>50</MenuItem> */}
+                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
+                                            
+                                            </Select>
+                                        </FormControl>
+                                    </fieldset>
+                                </div>
+                            </div>
                         </div>
-                        <div className="col-md-3  ">
-                            
-                            <fieldset>
-                                    <TextField type="text" name="payment" label="Payment terms " required={true} fullWidth={true}
-                                        inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
-                                        helperText={errors?.payment?.length > 0 ? errors?.payment[0]?.msg : ""}
-                                        error={errors?.payment?.length > 0}
-                                        value={this.state.formWizard.obj.payment} onChange={e => this.setField("payment", e)} />
-                                </fieldset>
-                            </div>
-                            <div className="col-md-3  ">
-                            
-                            <fieldset>
-                                                <FormControl    >
-                                                        <InputLabel > Currency</InputLabel>
-                                                        <Select
-                                                              name="currency"
-                                                              helperText={errors?.currency?.length > 0 ? errors?.currency[0]?.msg : ""}
-                                                              inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
-                                                              error={errors?.currency?.length > 0}
-                                                              value={this.state.formWizard.obj.currency} 
-                                                              required={true} 
-                                                              fullWidth={true}  
-                                                              onChange={e => this.setSelectField('currency', e)}
-                                                            >  
-                                                             {this.state.currency.map((e, keyIndex) => {
-                                                            return (
-                                                                <MenuItem key={keyIndex} value={e.label}>{e.label}</MenuItem>
-                                                            );
-                                                        })}                                                      
-                                                            {/* <MenuItem value={1}><img src="img/rupee.png"  style={{marginRight: 5}} />IND</MenuItem>                                                        
-                                                            <MenuItem value={3} > <img src="img/eur.png" style={{marginRight: 7}} />EUR</MenuItem>                                                           
-                                                            <MenuItem value={5}><img src="img/dollar.png" style={{marginRight: 5}} />DOLLAR</MenuItem> */}
-                                                            {/* <MenuItem value={6}>40</MenuItem>
-                                                            <MenuItem value={7}>50</MenuItem> */}
-                                                            {/* <MenuItem value={30}>Rejected</MenuItem> */}
-                                                            
-                                                            </Select>
-                                                     </FormControl>
-                                </fieldset>
-                            </div>
                     </div>
-                 
-                         </div>
-                    </div>
-                  
                     <Divider />
                     <div className="row" style={{marginTop:"10px"}}>
                         <div className="col-3">
@@ -1077,12 +1042,10 @@ class Add extends Component {
         )
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Add);

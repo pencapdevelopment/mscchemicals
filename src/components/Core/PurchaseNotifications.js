@@ -11,24 +11,17 @@ import Sorter from '../Common/Sorter';
 import TabPanel from '../Common/TabPanel';
 import Approval from './Approvals/Approval';
 import FileDownload from '../Common/FileDownload';
-
-
 import CustomPagination from '../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../Common/constants';
-
 import { Button, TextField, Select, MenuItem, InputLabel, FormControl,  } from '@material-ui/core';
-
 import MomentUtils from '@date-io/moment';
 import {
     DatePicker,
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import Event from '@material-ui/icons/Event';
-
 const json2csv = require('json2csv').parse;
-
 class PurchaseNotifications extends Component {
-
     state = {
         activeStep: 0,
         loading: true,
@@ -52,17 +45,13 @@ class PurchaseNotifications extends Component {
         ],
         orderBy:'id,desc',
         patchError: '',
-
     }
-
     searchObject = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadObjects() });
     }
-
     searchCategory(e) {
         var filters = this.state.filters;
         filters.category = e.target.value;
@@ -70,19 +59,15 @@ class PurchaseNotifications extends Component {
             this.loadObjects();
         });
     };
-
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if(e) {
             filters[field + 'Date'] = e.format();
         } else {
             filters[field + 'Date'] = null;
         }
-
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
-
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadObjects)
@@ -91,90 +76,72 @@ class PurchaseNotifications extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadObjects);
         }
     }
-
     loadObjects(offset, all, callBack) {
         if (!offset) offset = 1;
-
-        var url = server_url + context_path + "api/notifications?url=%25%2Fpurchases%2F%25&type=NEW_APPROVAL";
-
-
+        var url = server_url + context_path + "api/notifications?url=%25%2Fpurchase%2F%25&type=NEW_APPROVAL";
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&uid=" + this.props.user.id;
-
         if (this.state.filters.search) {
             url += "&description=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         if (this.state.filters.category) {
             url += "&type=NEW_APPROVAL" + this.state.filters.category;
         }
-
         url = defaultDateFilter(this.state, url);
-
         if (all) {
             url += "&size=100000";
         }
-
         axios.get(url)
-            .then(res => {
-                if (all) {
-                    this.setState({
-                        all: res.data._embedded[Object.keys(res.data._embedded)[0]]
-                    });
-                } else {
-                    this.setState({
-                        objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                        page: res.data.page
-                    }, () => console.log("salesnotifications",this.state.objects));
+        .then(res => {
+            if (all) {
+                this.setState({
+                    all: res.data._embedded[Object.keys(res.data._embedded)[0]]
+                });
+            } else {
+                this.setState({
+                    objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                    page: res.data.page
+                }, () => console.log("salesnotifications",this.state.objects));
 
-                }
-
-                if (callBack) {
-                    callBack();
-                }
-            })
+            }
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
     componentDidMount() {
         this.loadObjects();
         this.setState({ loading: false });
     }
-
     patchObj(idx) {
         var obj = this.state.objects[idx];
-
         axios.patch(server_url + context_path + "api/" + this.state.baseUrl + "/" + obj.id)
-            .then(res => {
-                var objects = this.state.objects;
-                objects[idx].active = !objects[idx].active;
-                this.setState({ objects });
-            }).finally(() => {
-                this.setState({ loading: false });
-            }).catch(err => {
-                this.setState({ patchError: err.response.data.globalErrors[0] });
-                swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
-            })
+        .then(res => {
+            var objects = this.state.objects;
+            objects[idx].active = !objects[idx].active;
+            this.setState({ objects });
+        }).finally(() => {
+            this.setState({ loading: false });
+        }).catch(err => {
+            this.setState({ patchError: err.response.data.globalErrors[0] });
+            swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
+        })
     }
-
     printReport() {
         this.loadObjects(this.state.offset, true, () => {
             window.print();
         });
     }
-
     downloadReport = () => {
         const fields = ['id', 'name', 'email', 'mobile', 'creationDate'];
         const opts = { fields };
-
         this.loadObjects(this.state.offset, true, () => {
             var csv = json2csv(this.state.all, opts);
             FileDownload.download(csv, 'reports.csv', 'text/csv');
         });
     }
-
     render() {
         return (<ContentWrapper>
             {this.state.loading && <PageLoader />}
@@ -293,12 +260,11 @@ class PurchaseNotifications extends Component {
                                             <tr key={obj.id}>
                                                 <td>{i + 1}</td>
                                                 <td>
-                                                {/* <TabPanel value={this.state.activeTab} index={4}>
-                                                
-                                <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)}></Approval>
-                            </TabPanel> */}
-                            {/* approvals?projection=followup_details&page=0&sort=id,desc&reference=1388&repository=sales */}
-                            <Link to={`${obj.url}`}>
+                                                    {/* <TabPanel value={this.state.activeTab} index={4}>                                           
+                                                        <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)}></Approval>
+                                                    </TabPanel> */}
+                                                    {/* approvals?projection=followup_details&page=0&sort=id,desc&reference=1388&repository=sales */}
+                                                    <Link to={`${obj.url+'?approval'} `} >
                                                         {obj.description}
                                                     </Link>
                                                 </td>
@@ -316,9 +282,7 @@ class PurchaseNotifications extends Component {
                                     })}
                                 </tbody>
                             </Table>
-
                             <CustomPagination page={this.state.page} onChange={(x) => this.loadObjects(x)} />
-
                             <Table id="printSection" responsive>
                                 <thead>
                                     <tr>
@@ -348,12 +312,10 @@ class PurchaseNotifications extends Component {
         </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(PurchaseNotifications );

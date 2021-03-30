@@ -147,7 +147,6 @@ class View extends Component {
     }
     setProductField(i, field, e, noValidate) {
         var obj = this.state.obj;
-        console.log(e.target.value)
         // var input = e.target;
         obj.products[i][field] = e.target.value;
         this.setState({ obj });
@@ -167,7 +166,7 @@ class View extends Component {
     handleDelete = (i) => 
     {
         if(this.props.user.role === 'ROLE_ADMIN'){
-            console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
+            // eslint-disable-line no-alert
             var user = this.state.users[i];
             swal({
                 title: "Are you sure?",
@@ -198,7 +197,7 @@ class View extends Component {
     }
     // handleDelete = (i) => {
     //     if(this.props.user.role === 'ROLE_ADMIN'){
-    //     console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
+    // eslint-disable-line no-alert
     //     var user = this.state.users[i];
     //     swal({
     //         title: "Are you sure?",
@@ -234,16 +233,13 @@ class View extends Component {
             reference: "/" + this.props.baseUrl + "/" + this.props.currentId
         };
         this.setState({ loading: true });
-        console.log("user is",user);
         axios.post(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user", user)
         .then(res => {
-            console.log("response is ",res);
             this.loadAssignedUsers(this.props.currentId);
         }).finally(() => {
             this.setState({ loading: false });
             this.toggleModalAssign();
         }).catch(err => {
-            console.log("error isss",err);
             this.setState({ patchError: err.response.data.globalErrors[0] });
             swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
         })
@@ -259,7 +255,6 @@ class View extends Component {
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
@@ -320,16 +315,16 @@ class View extends Component {
         });
     }
     loadObj(id) {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=purchases_edit').then(res => {
-        
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=purchase_edit').then(res => {
             this.setState({ obj: res.data, users:res.data.users, loading: false});
-            console.log("response date",res.data)
+            if(this.props?.location?.search && this.props?.location?.search?.indexOf('approval')){
+                this.toggleTab(4);
+            }
         });
     }
     loadAssignedUsers(id){
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user?projection=" +
             this.props.baseUrl + "-user&reference=" + id).then(res => {
-                console.log("loaded users are ",res.data._embedded[Object.keys(res.data._embedded)[0]]);
             this.setState({
                 users: res.data._embedded[Object.keys(res.data._embedded)[0]],
                 page: res.data.page,
@@ -341,9 +336,6 @@ class View extends Component {
         this.props.onRef(undefined);
     }
     // componentDidMount() {
-    //     console.log('view component did mount');
-    //     console.log(this.props.currentId);
-
     //     this.loadObj(this.props.currentId);
     //     // this.loadSubObjs();
     //     this.props.onRef(this);
@@ -537,31 +529,30 @@ class View extends Component {
                     <ModalHeader toggle={this.toggleModalAssign}>
                         Assign User
                         </ModalHeader>
-                    <ModalBody>
-                        <fieldset>
-                            <AutoSuggest url="users/search/roleBasedUsers"
-                                name="userName"
-                                displayColumns="name"
-                                label="User"
-                                placeholder="Search User by name"
-                                arrayName="users"
-                                inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                onRef={ref => {(this.userASRef = ref) 
-                                    if (ref) {
-                                    this.userASRef.load();
-                                }}}
-                                projection="user_details_mini"
-                                value={this.state.selectedUser}
-                                onSelect={e => this.setAutoSuggest('user', e?.id)}
-                                queryString="&flowcode=MG_PR_E&name"
-                                >
-
+                        <ModalBody>
+                            <fieldset>
+                                <AutoSuggest url="users/search/roleBasedUsers"
+                                    name="userName"
+                                    displayColumns="name"
+                                    label="User"
+                                    placeholder="Search User by name"
+                                    arrayName="users"
+                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                    onRef={ref => {(this.userASRef = ref) 
+                                        if (ref) {
+                                        this.userASRef.load();
+                                    }}}
+                                    projection="user_details_mini"
+                                    value={this.state.selectedUser}
+                                    onSelect={e => this.setAutoSuggest('user', e?.id)}
+                                    queryString="&flowcode=MG_PR_E&name"
+                                    >
                                 </AutoSuggest>
-                        </fieldset>
-                        <div className="text-center">
-                            <Button variant="contained" color="primary" onClick={e => this.saveUser()}>Save</Button>
-                        </div>
-                    </ModalBody>
+                            </fieldset>
+                            <div className="text-center">
+                                <Button variant="contained" color="primary" onClick={e => this.saveUser()}>Save</Button>
+                            </div>
+                        </ModalBody>
                 </Modal>
                 {!this.state.editFlag &&
                     <div className="row">
@@ -607,7 +598,7 @@ class View extends Component {
                                                             </tr>
                                                              </tbody>
                                                         </table>
-                                                        {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) && <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
+                                                        {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_PR_E) >= 0) && <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
                                                             showNotes={true}
                                                             onUpdate={(id) => this.updateStatus(id)}
                                                             //style={{marginLeft:' -50'}}
@@ -618,16 +609,16 @@ class View extends Component {
                                                         {/* <div>
                                                             <span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span>
                                                         </div> */}
-                                                        {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
+                                                        {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_PR_E) >= 0) &&   
                                                         <button title="Edit" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
-                                                              {this.props.user.role === 'ROLE_ADMIN' && 
+                                                        {this.props.user.role === 'ROLE_ADMIN' && 
                                                          <button title="Email" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
-                                                        {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
-                                                            <button   title="convert order" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} variant="contained" color="primary" size="small" onClick={this.convertToOrder}><AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>}
+                                                        {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_PR_E) >= 0) &&
+                                                            <button title="convert order" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} variant="contained" color="primary" size="small" onClick={this.convertToOrder}><AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
-                                                                <button  title="convert order" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}}><span style={{  textTransform: 'none', fontWeight: 'normal'}}> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></span></button>
-                                                            </Link>}
+                                                                <button title="convert order" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}}><span style={{  textTransform: 'none', fontWeight: 'normal'}}> <AssignmentSharpIcon   style={{ color: '#fff', }} fontSize="small"/></span></button>
+                                                            </Link>} */}
                                                     </div>
                                                     <h4 className="my-2">
                                                         <span>{this.state.obj.name}</span>
@@ -647,12 +638,8 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Assigned To</strong>
                                                                 </td>
-                                                                <td>{this.state && console.log('current state is',this.state)}
+                                                                <td>
                                                                     {this.state.users.map((obj, i) => {
-                                                                        if(i === 0){
-                                                                            console.log("users count",this.state.users.length);
-                                                                            console.log("users list",this.state.users);
-                                                                        }
                                                                         return (
                                                                             <Chip
                                                                             style={{backgroundColor:"lightgreen"}}
@@ -671,13 +658,9 @@ class View extends Component {
                                                                         )
                                                                     })}
                                                                 </td>
-                                                             
                                                                 <td>
-                                                            
-                                                                    { this.props.user.role === 'ROLE_ADMIN' &&
-                                                                   
+                                                                    {this.props.user.role === 'ROLE_ADMIN' &&
                                                                         <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"3px"}} title="Assigned To" onClick={this.toggleModalAssign}><AddIcon  style={{ color: '#fff', }} fontSize="small" /> </button>}
-                                                           
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -859,7 +842,6 @@ class View extends Component {
                             <TabPanel value={this.state.activeTab} index={4}>
                                 <Approval repository={this.props.baseUrl} reference={this.state.obj.id} onRef={ref => (this.followupsTemplateRef = ref)} readOnly={this.state.obj.status ==='Converted'}></Approval> 
                             </TabPanel>
-                          
                         </div>
                     </div>}
                     {this.state.editFlag &&

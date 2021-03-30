@@ -77,7 +77,7 @@ class Uploadp extends Component {
         });
     }
     loadProducts = (enqId,callback) =>{
-        axios.get(server_url + context_path + "api/purchases-products?reference.id=" + enqId+"&projection=purchases-product").then(res => {
+        axios.get(server_url + context_path + "api/purchase-products?reference.id=" + enqId+"&projection=purchase-product").then(res => {
             callback(res.data._embedded[Object.keys(res.data._embedded)[0]]);
         });
     }
@@ -85,8 +85,6 @@ class Uploadp extends Component {
         this.props.onRef(undefined);
     }
     componentDidMount() {
-        // console.log('upload component did mount');
-        // console.log(this.props.currentId);
         this.loadObj();
         this.props.onRef(this);
     }
@@ -194,6 +192,7 @@ class Uploadp extends Component {
                     this.toggleModal();
                     this.loadObj();
                     if(this.state.formWizard.obj.label === 'Quotation'){
+                        this.state.formWizard.products.forEach((p)=>p.updated=true);
                         this.props.generateQuote(this.state.formWizard.obj.expiryDate,this.state.formWizard.products);
                     }                    
                     swal("Uploaded!", "File Uploaded", "success");
@@ -202,11 +201,9 @@ class Uploadp extends Component {
                 }
             }).catch(err => {
                 var msg = "Select File";
-                
                 if(err.response.data.globalErrors && err.response.data.globalErrors[0]) {
                     msg = err.response.data.globalErrors[0];
                 }
-
                 swal("Unable to Upload!", msg, "error");
             })
         }
@@ -224,7 +221,24 @@ class Uploadp extends Component {
     }
     isFileExists = (type) => {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
-        if(this.props.user.role === 'ROLE_ADMIN') return false;
+        if(this.props.user.role === 'ROLE_ADMIN') {
+            if(type === 'Quotation'){
+                if(this.props.quoteObj.status === 'Approved'){
+                    return true;
+                }
+                else{return false}
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            if(type === 'Quotation'){
+                if(this.props.quoteObj.status === 'Approved'){
+                    return true;
+                }
+            }
+        }
         if (doc?.fileName) {
             return true;
         } else {
@@ -279,7 +293,6 @@ class Uploadp extends Component {
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
-        console.log("form errors from add company are ",errors);
         formWizard.errors = errors;
         this.setState({ formWizard });
         return hasError;

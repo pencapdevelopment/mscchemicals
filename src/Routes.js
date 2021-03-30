@@ -161,8 +161,8 @@ const Routes = ({ location }) => {
                                     <PrivateRoute path="/sales" component={waitFor(SalesEnquiry)} />
                                     <PrivateRoute path="/pbsales/:objId" component={waitFor(PbSalesEnquiry)} />
                                     <PrivateRoute path="/pbsales" component={waitFor(PbSalesEnquiry)} />
-                                    <PrivateRoute path="/purchases/:objId" component={waitFor(PurchaseEnquiry)} />
-                                    <PrivateRoute path="/purchases" component={waitFor(PurchaseEnquiry)} />
+                                    <PrivateRoute path="/purchase/:objId" component={waitFor(PurchaseEnquiry)} />
+                                    <PrivateRoute path="/purchase" component={waitFor(PurchaseEnquiry)} />
                                     {/* <PrivateRoute path="/pvpurchases/:objId" component={waitFor(PvPurchaseEnquiry)} />
                                     <PrivateRoute path="/pvpurchases" component={waitFor(PvPurchaseEnquiry)} /> */}
                                     <PrivateRoute path="/followups/:objId" component={waitFor(Followups)} />

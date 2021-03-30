@@ -11,7 +11,6 @@ import Sorter from '../../Common/Sorter';
 import FileDownload from '../../Common/FileDownload';
 import {
     Modal,
-
     ModalBody, ModalHeader,
 } from 'reactstrap';
 import EditIcon from '@material-ui/icons/Edit';
@@ -22,13 +21,11 @@ import UOM from '../Common/UOM';
 import {FormControl, TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-
 import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
 // import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
 import { Button } from '@material-ui/core';
 // import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
 // import {
@@ -36,9 +33,7 @@ import 'react-datetime/css/react-datetime.css';
 //     MuiPickersUtilsProvider,
 // } from '@material-ui/pickers';
 // import Event from '@material-ui/icons/Event';
-
 const json2csv = require('json2csv').parse;
-
 class List extends Component {
     state = {
         activeStep: 0,
@@ -75,7 +70,6 @@ class List extends Component {
         status: [
             { label: 'Accept', value: 'A' },
             { label: 'Reject', value: 'R' },
-          
         ], 
     }
     searchObject = e => {
@@ -107,10 +101,7 @@ class List extends Component {
             var direction = col.status === 1 ? 'desc' : 'asc';
             this.setState({ orderBy: col.param + ',' + direction }, this.loadObjects);
         }
-        
     }
-
-
     loadObjects(offset, all, callBack) {
         if (!offset) offset = 1;
         var url = server_url + context_path + "api/" + this.props.baseUrl + "?projection=approvals";
@@ -141,14 +132,13 @@ class List extends Component {
             if (all) {
                 this.setState({
                     all: res.data._embedded[Object.keys(res.data._embedded)[0]]
-                },()=> console.log("data",this.state.all));
+                });
             } else {
                 this.setState({
                     objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
                     page: res.data.page
-                },()=> console.log("approvalslist",this.state.objects));
+                });
             }
-
             if (callBack) {
                 callBack();
             }
@@ -198,8 +188,14 @@ class List extends Component {
         });
     }
     toggleEditclick = (idx) => {
-        console.log("check data",this.state.objects);
-        console.log("check idx",idx);
+        if(this.state.objects[idx].repository === 'sales'){
+            this.getSalesNGT(idx);
+        }
+        else{
+            this.getPurchaseNGT(idx);
+        }
+    }
+    getSalesNGT = (idx) => {
         axios.get( server_url + context_path + "api/sales-negotiation-tracking?salesProduct="+this.state.objects[idx].salesNegotiationTracking.salesProduct.id+"&page=0&sort=id,desc&projection=sales-negotiation-tracking")
         .then(res => {
             //var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
@@ -211,10 +207,8 @@ class List extends Component {
             if (ngList.length) {
                 let stage1Index = ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 === 0 && el.negotiation_stage3 === 0)
                 stage1Status = stage1Index > -1 ?ngList[stage1Index].status:null;
-
                 let stage2Index=ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 !== 0 && el.negotiation_stage3 === 0)
                 stage2Status = stage2Index > -1 ?ngList[stage2Index].status:null;
-
                 let stage3Index=ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 !== 0 && el.negotiation_stage3 !== 0)
                 stage3Status = stage3Index > -1 ?ngList[stage3Index].status:null;
             }
@@ -222,8 +216,32 @@ class List extends Component {
             objects[idx].stage1Status = stage1Status;
             objects[idx].stage2Status = stage2Status;
             objects[idx].stage3Status = stage3Status;
-            this.setState({ toggleres:idx,objects, modalEdit:!this.state.modalEdit }, () => console.log("toggleEditclick index",idx));
-        });  
+            this.setState({ toggleres:idx,objects, modalEdit:!this.state.modalEdit });
+        });
+    }
+    getPurchaseNGT = (idx) => {
+        axios.get( server_url + context_path + "api/purchase-negotiation-tracking?purchaseProduct="+this.state.objects[idx].purchaseNegotiationTracking.purchaseProduct.id+"&page=0&sort=id,desc&projection=purchase-negotiation-tracking")
+        .then(res => {
+            //var ngList = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            let stage1Status = null;
+            let stage2Status = null;
+            let stage3Status = null; 
+            let prodId = this.state.objects[idx].purchaseNegotiationTracking.product.id;
+            var ngList=res.data._embedded[Object.keys(res.data._embedded)[0]];
+            if (ngList.length) {
+                let stage1Index = ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 === 0 && el.negotiation_stage3 === 0)
+                stage1Status = stage1Index > -1 ?ngList[stage1Index].status:null;
+                let stage2Index=ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 !== 0 && el.negotiation_stage3 === 0)
+                stage2Status = stage2Index > -1 ?ngList[stage2Index].status:null;
+                let stage3Index=ngList.findIndex(el=>el.product.id===prodId && el.negotiation_stage1 !==0 && el.negotiation_stage2 !== 0 && el.negotiation_stage3 !== 0)
+                stage3Status = stage3Index > -1 ?ngList[stage3Index].status:null;
+            }
+            let objects = this.state.objects;
+            objects[idx].stage1Status = stage1Status;
+            objects[idx].stage2Status = stage2Status;
+            objects[idx].stage3Status = stage3Status;
+            this.setState({ toggleres:idx,objects, modalEdit:!this.state.modalEdit });
+        });
     }
     getStatus(stage,idx,readOnly,errors){
         let status = null;
@@ -274,8 +292,14 @@ class List extends Component {
         axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + approvalObj.id,{id:approvalObj.id,status:status,remark:remark})
         .then(apprRes =>{
             let ngtStatus = status === 'A'?'Approved':'Rejected';
-            axios.patch(server_url + context_path + "api/sales-negotiation-tracking/" + approvalObj.salesNegotiationTracking.id,{id:approvalObj.salesNegotiationTracking.id,status:ngtStatus});
-            axios.patch(server_url + context_path + "api/sales-products/" + approvalObj.salesNegotiationTracking.salesProduct.id,{id:approvalObj.salesNegotiationTracking.salesProduct.id,status:ngtStatus});
+            if(approvalObj.repository === 'sales'){
+                axios.patch(server_url + context_path + "api/sales-negotiation-tracking/" + approvalObj.salesNegotiationTracking.id,{id:approvalObj.salesNegotiationTracking.id,status:ngtStatus});
+                axios.patch(server_url + context_path + "api/sales-products/" + approvalObj.salesNegotiationTracking.salesProduct.id,{id:approvalObj.salesNegotiationTracking.salesProduct.id,status:ngtStatus});
+            }
+            if(approvalObj.repository === 'purchase'){
+                axios.patch(server_url + context_path + "api/purchase-negotiation-tracking/" + approvalObj.purchaseNegotiationTracking.id,{id:approvalObj.purchaseNegotiationTracking.id,status:ngtStatus});
+                axios.patch(server_url + context_path + "api/purchase-products/" + approvalObj.purchaseNegotiationTracking.purchaseProduct.id,{id:approvalObj.purchaseNegotiationTracking.purchaseProduct.id,status:ngtStatus});
+            }
         }); 
         this.setState({
             modalEdit: false
@@ -300,6 +324,220 @@ class List extends Component {
     toggleEdit= () => {
         this.setState({modalEdit: false});
     }
+    getSalesModalBody = (toggleres,errors,readOnly)=>{
+        return <div>
+        <div className="row">
+            <div className="col-md-12">
+                <Table hover responsive>
+                    <tbody>
+                        <tr>
+                            <td className="va-middle">
+                                <fieldset>
+                                    <FormControl>
+                                        <Link to={'/products/'+this.state.objects[toggleres].salesNegotiationTracking.product.id}>
+                                            {this.state.objects[toggleres].salesNegotiationTracking.product.name}
+                                        </Link>
+                                    </FormControl>
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset>
+                                    <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
+                                        //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                        inputProps={{ readOnly: true }}
+                                        // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                        // error={errors?.quantity?.length > 0}
+                                        value={this.state.objects[toggleres].salesNegotiationTracking.salesProduct.quantity} 
+                                        onChange={(e)=>this.saveQuantity(e)}
+                                        //onChange={e => this.setProductField(i, "quantity", e)}
+                                    />
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset>
+                                    <UOM required={true}
+                                        value={this.state.objects[toggleres].salesNegotiationTracking.salesProduct.uom} onChange={(e)=>this.saveUom(e)} isReadOnly={true}
+                                        //onChange={e => this.setProductField(i, "uom", e, true)}
+                                    />
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset>
+                                    <TextField type="number" name="amount" label="Amount" required={true}
+                                        inputProps={{ readOnly: true }}
+                                        //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                        // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
+                                        // error={errors?.amount?.length > 0}
+                                        value={this.state.objects[toggleres].salesNegotiationTracking.salesProduct.amount} onChange={(e)=>this.saveProduct(e)} />
+                                </fieldset>
+                            </td>
+                        </tr>
+                    </tbody>
+                </Table>
+            </div>
+        </div>  
+        <div className="row">  
+            <div className="col-md-4">
+                <strong>Negotiation Stage1 :</strong>
+            </div>
+            <div className="col-md-4">  
+                    <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
+                        value={this.state.objects[toggleres].salesNegotiationTracking.negotiation_stage1}  inputProps={{ readOnly: true }} />
+            </div>
+            <div className="col-md-4">  
+                {this.getStatus('stg1',toggleres,readOnly,errors)} 
+            </div>
+        </div>
+        {(this.state.objects[toggleres].salesNegotiationTracking.negotiation_stage2 !==0 && 
+        (this.state.objects[toggleres].salesNegotiationTracking.status === null ||
+        this.state.objects[toggleres].salesNegotiationTracking.status === 'R')) &&
+        <div className="row">  
+            <div className="col-md-4">
+                <strong>Negotiation Stage2 :</strong>
+            </div>
+            <div className="col-md-4">  
+                <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
+                value={this.state.objects[toggleres].salesNegotiationTracking.negotiation_stage2}  inputProps={{ readOnly: true }} />
+            </div>  
+            <div className="col-md-4">  
+                {this.getStatus('stg2',toggleres,readOnly,errors)} 
+            </div>     
+        </div>}
+        {((this.state.objects[toggleres].salesNegotiationTracking.negotiation_stage2 !==0 && 
+        this.state.objects[toggleres].salesNegotiationTracking.negotiation_stage3 !==0) &&
+        (this.state.objects[toggleres].salesNegotiationTracking.status === null ||
+        this.state.objects[toggleres].salesNegotiationTracking.status === 'R')) &&
+        <div className="row">  
+            <div className="col-md-4">
+                <strong>Negotiation Stage3 :</strong>
+            </div>
+            <div className="col-md-4">  
+                 <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
+                 value={this.state.objects[toggleres].salesNegotiationTracking.negotiation_stage3}  inputProps={{ readOnly: true }} />
+            </div>
+            <div className="col-md-4">  
+                {this.getStatus('stg3',toggleres,readOnly,errors)} 
+            </div>
+        </div>}
+        <div className="col-md-5  offset-md-3 " style={{marginTop:"30px",marginBottom:"3px"}}>
+            <fieldset>
+                <TextareaAutosize placeholder="Response" fullWidth={true} rowsMin={3} name="response"
+                   style={{padding: 10}} value={this.state.formWizard.obj.remark} onChange={e => this.setField('remark', e, true)}
+                />
+            </fieldset>
+        </div>
+        <div className="text-center">
+            <Button variant="contained" color="primary" onClick={this.giveApproval} >Save</Button>
+        </div>
+        </div>
+    }
+    getPurchaseModalBody = (toggleres,errors,readOnly)=>{
+        return <div>
+        <div className="row">
+            <div className="col-md-12">
+                <Table hover responsive>
+                    <tbody>
+                        <tr>
+                            <td className="va-middle">
+                                <fieldset>
+                                    <FormControl>
+                                        <Link to={'/products/'+this.state.objects[toggleres].purchaseNegotiationTracking.product.id}>
+                                            {this.state.objects[toggleres].purchaseNegotiationTracking.product.name}
+                                        </Link>
+                                    </FormControl>
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset>
+                                    <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
+                                        //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                        inputProps={{ readOnly: true }}
+                                        // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
+                                        // error={errors?.quantity?.length > 0}
+                                        value={this.state.objects[toggleres].purchaseNegotiationTracking.purchaseProduct.quantity} 
+                                        onChange={(e)=>this.saveQuantity(e)}
+                                        //onChange={e => this.setProductField(i, "quantity", e)}
+                                    />
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset>
+                                    <UOM required={true}
+                                        value={this.state.objects[toggleres].purchaseNegotiationTracking.purchaseProduct.uom} onChange={(e)=>this.saveUom(e)} isReadOnly={true}
+                                        //onChange={e => this.setProductField(i, "uom", e, true)}
+                                    />
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset>
+                                    <TextField type="number" name="amount" label="Amount" required={true}
+                                        inputProps={{ readOnly: true }}
+                                        //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
+                                        // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
+                                        // error={errors?.amount?.length > 0}
+                                        value={this.state.objects[toggleres].purchaseNegotiationTracking.purchaseProduct.amount} onChange={(e)=>this.saveProduct(e)} />
+                                </fieldset>
+                            </td>
+                        </tr>
+                    </tbody>
+                </Table>
+            </div>
+        </div>  
+        <div className="row">  
+            <div className="col-md-4">
+                <strong>Negotiation Stage1 :</strong>
+            </div>
+            <div className="col-md-4">  
+                    <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
+                        value={this.state.objects[toggleres].purchaseNegotiationTracking.negotiation_stage1}  inputProps={{ readOnly: true }} />
+            </div>
+            <div className="col-md-4">  
+                {this.getStatus('stg1',toggleres,readOnly,errors)} 
+            </div>
+        </div>
+        {(this.state.objects[toggleres].purchaseNegotiationTracking.negotiation_stage2 !==0 && 
+        (this.state.objects[toggleres].purchaseNegotiationTracking.status === null ||
+        this.state.objects[toggleres].purchaseNegotiationTracking.status === 'R')) &&
+        <div className="row">  
+            <div className="col-md-4">
+                <strong>Negotiation Stage2 :</strong>
+            </div>
+            <div className="col-md-4">  
+                <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
+                value={this.state.objects[toggleres].purchaseNegotiationTracking.negotiation_stage2}  inputProps={{ readOnly: true }} />
+            </div>  
+            <div className="col-md-4">  
+                {this.getStatus('stg2',toggleres,readOnly,errors)} 
+            </div>     
+        </div>}
+        {((this.state.objects[toggleres].purchaseNegotiationTracking.negotiation_stage2 !==0 && 
+        this.state.objects[toggleres].purchaseNegotiationTracking.negotiation_stage3 !==0) &&
+        (this.state.objects[toggleres].purchaseNegotiationTracking.status === null ||
+        this.state.objects[toggleres].purchaseNegotiationTracking.status === 'R')) &&
+        <div className="row">  
+            <div className="col-md-4">
+                <strong>Negotiation Stage3 :</strong>
+            </div>
+            <div className="col-md-4">  
+                 <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
+                 value={this.state.objects[toggleres].purchaseNegotiationTracking.negotiation_stage3}  inputProps={{ readOnly: true }} />
+            </div>
+            <div className="col-md-4">  
+                {this.getStatus('stg3',toggleres,readOnly,errors)} 
+            </div>
+        </div>}
+        <div className="col-md-5  offset-md-3 " style={{marginTop:"30px",marginBottom:"3px"}}>
+            <fieldset>
+                <TextareaAutosize placeholder="Response" fullWidth={true} rowsMin={3} name="response"
+                   style={{padding: 10}} value={this.state.formWizard.obj.remark} onChange={e => this.setField('remark', e, true)}
+                />
+            </fieldset>
+        </div>
+        <div className="text-center">
+            <Button variant="contained" color="primary" onClick={this.giveApproval} >Save</Button>
+        </div>
+        </div>
+    } 
     render() {
         const errors = this.state.formWizard.errors;
         const readOnly=this.state.readOnly;
@@ -310,112 +548,10 @@ class List extends Component {
                 </ModalHeader>
                 <ModalBody>
                     {this.state.toggleres > -1 &&
-                    <div>
-                        <div className="row">
-                            <div className="col-md-12">
-                                <Table hover responsive>
-                                    <tbody>
-                                        <tr>
-                                            <td className="va-middle">
-                                                <fieldset>
-                                                    <FormControl>
-                                                            <Link to={`/products/` }>
-                                                            {this.state.objects[this.state.toggleres].salesNegotiationTracking.product.name}
-                                                            </Link>
-                                                    </FormControl>
-                                                </fieldset>
-                                            </td>
-                                            <td>
-                                                <fieldset>
-                                                    <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
-                                                        //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                        inputProps={{ readOnly: true }}
-                                                        // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                        // error={errors?.quantity?.length > 0}
-                                                        value={this.state.objects[this.state.toggleres].salesNegotiationTracking.salesProduct.quantity} 
-                                                        onChange={(e)=>this.saveQuantity(e)}
-                                                        //onChange={e => this.setProductField(i, "quantity", e)}
-                                                    />
-                                                </fieldset>
-                                            </td>
-                                            <td>
-                                                <fieldset>
-                                                    <UOM required={true}
-                                                        value={this.state.objects[this.state.toggleres].salesNegotiationTracking.salesProduct.uom} onChange={(e)=>this.saveUom(e)} isReadOnly={true}
-                                                        //onChange={e => this.setProductField(i, "uom", e, true)}
-                                                    />
-                                                </fieldset>
-                                            </td>
-                                            <td>
-                                                <fieldset>
-                                                    <TextField type="number" name="amount" label="Amount" required={true}
-                                                        inputProps={{ readOnly: true }}
-                                                        //inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                        // helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
-                                                        // error={errors?.amount?.length > 0}
-                                                        value={this.state.objects[this.state.toggleres].salesNegotiationTracking.salesProduct.amount} onChange={(e)=>this.saveProduct(e)} />
-                                                </fieldset>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                            </div>
-                        </div>  
-                        <div className="row">  
-                            <div className="col-md-4">
-                                <strong>Negotiation Stage1 :</strong>
-                            </div>
-                            <div className="col-md-4">  
-                                    <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
-                                        value={this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage1}  inputProps={{ readOnly: true }} />
-                            </div>
-                            <div className="col-md-4">  
-                                {this.getStatus('stg1',this.state.toggleres,readOnly,errors)} 
-                            </div>
-                        </div>
-                        {(this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage2 !==0 && 
-                        (this.state.objects[this.state.toggleres].salesNegotiationTracking.status === null ||
-                        this.state.objects[this.state.toggleres].salesNegotiationTracking.status === 'R')) &&
-                        <div className="row">  
-                            <div className="col-md-4">
-                                <strong>Negotiation Stage2 :</strong>
-                            </div>
-                            <div className="col-md-4">  
-                                <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
-                                value={this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage2}  inputProps={{ readOnly: true }} />
-                            </div>  
-                            <div className="col-md-4">  
-                                {this.getStatus('stg2',this.state.toggleres,readOnly,errors)} 
-                            </div>     
-                        </div>}
-                        {((this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage2 !==0 && 
-                        this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage3 !==0) &&
-                        (this.state.objects[this.state.toggleres].salesNegotiationTracking.status === null ||
-                        this.state.objects[this.state.toggleres].salesNegotiationTracking.status === 'R')) &&
-                        <div className="row">  
-                            <div className="col-md-4">
-                                <strong>Negotiation Stage3 :</strong>
-                            </div>
-                            
-                            <div className="col-md-4">  
-                                 <TextField type="number" name="negotiation_stage1" label="Amount" required={true}  style={{width:"150px"}}
-                                 value={this.state.objects[this.state.toggleres].salesNegotiationTracking.negotiation_stage3}  inputProps={{ readOnly: true }} />
-                            </div>
-                            <div className="col-md-4">  
-                                {this.getStatus('stg3',this.state.toggleres,readOnly,errors)} 
-                            </div>
-                        </div>}
-                        <div className="col-md-5  offset-md-3 " style={{marginTop:"30px",marginBottom:"3px"}}>
-                            <fieldset>
-                                <TextareaAutosize placeholder="Response" fullWidth={true} rowsMin={3} name="response"
-                                   style={{padding: 10}} value={this.state.formWizard.obj.remark} onChange={e => this.setField('remark', e, true)}
-                                />
-                            </fieldset>
-                        </div>
-                        <div className="text-center">
-                            <Button variant="contained" color="primary" onClick={this.giveApproval} >Save</Button>
-                        </div>
-                        </div>}
+                        (this.state.objects[this.state.toggleres].repository === 'sales'?
+                            this.getSalesModalBody(this.state.toggleres,errors,readOnly):
+                            this.getPurchaseModalBody(this.state.toggleres,errors,readOnly))
+                    }
                 </ModalBody>
             </Modal>
             <Table hover responsive>
@@ -430,7 +566,6 @@ class List extends Component {
                 </thead>  
                 <tbody>   
                 {this.state.objects.map((obj,i) => {
-                        console.log("objects",this.state.objects)
                         // let aprrovals = this.state.objects.find(ap => {ap.reference === obj.});
                         if(obj.status === null){
                             return (
@@ -438,26 +573,21 @@ class List extends Component {
                                     <td>{i + 1}</td>
                                     <td>
                                         <a href="#s" className="btn-link" onClick={() => this.viewObj(i)}>
-                                            {obj.salesNegotiationTracking.product.name}
+                                            {obj.repository === 'sales'?obj.salesNegotiationTracking.product.name:obj.purchaseNegotiationTracking.product.name}
                                         </a>
                                     </td>
                                     <td>
                                         <Moment format="DD MMM YY">{obj.creationDate}</Moment>
                                     </td>
                                     <td>
-                                        { obj.status==='A'?'Approved':obj.status==='A'?'Rejected':'New'}
+                                        { obj.status==='A'?'Approved':obj.status==='R'?'Rejected':'New'}
                                         { this.props.user.role === 'ROLE_ADMIN' &&
                                         <EditIcon onClick={()=>this.toggleEditclick(i)}  style={{color: "#000" ,cursor :"pointer" ,position:"relative" ,left:"6px" }} size="small"  fontSize="small" />
                                         }
                                     </td>
-                                    <td>
-                                        
+                                    <td>      
                                         <Moment format="DD MMM YY">{obj.updationDate}</Moment>
-
-                                        {/* {console.log("obj.responseDate",obj.responseDate)} */}
                                     </td>
-                        
-                                  
                                 </tr>
                             )
                         }
@@ -466,11 +596,8 @@ class List extends Component {
                         }
                     })}
                 </tbody>
-                
             </Table>
-
             <CustomPagination page={this.state.page} onChange={(x) => this.loadObjects(x)} />
-
             <Table id="printSection" responsive>
                 <thead>
                     <tr>
@@ -496,12 +623,10 @@ class List extends Component {
         </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(List);

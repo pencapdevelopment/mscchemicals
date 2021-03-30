@@ -8,7 +8,7 @@ import 'react-datetime/css/react-datetime.css';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Status1 from '../Common/Status1';
+import QuoteStatus from '../Common/QuoteStatus';
 import { Table } from 'reactstrap';
 import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
@@ -62,10 +62,9 @@ class Quotation extends Component {
         selectedStatus: '',
         status: [
             { label: 'Approved', value: 'Approved', badge: 'success'},
-            { label: 'Rejected', value: 'Rejected', badge: 'danger'}
-            
+            { label: 'Rejected', value: 'Rejected', badge: 'danger'},
+            { label: 'Pending', value: 'Pending', badge: 'secondary'}
         ],
-
         formWizard: {
             editFlag: false,
             readOnly:false,
@@ -73,16 +72,8 @@ class Quotation extends Component {
                 status:'',
                 remark:''
             }
-        },
-        status1: [
-            { label: 'Accept', value: 'Approved' },
-            { label: 'Reject', value: 'Rejected' },
-          
-        ], 
+        }
     }
-
-   
-
     loadObj() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
             if (res.data.paymentTerms) {
@@ -135,19 +126,14 @@ class Quotation extends Component {
                 }
             });
             if(ngList.length>0){
-              this.setState({
-                ngTracking:ngList, 
-                trackingData:ngList1,
-                page:''
-            }, ()=>console.log("negotiationTraking second if setstate data", this.state.ngTracking, "current id", this.props.currentId));
-            }else{
-                
+                this.setState({
+                    ngTracking:ngList, 
+                    trackingData:ngList1,
+                    page:''
+                }, ()=>console.log("negotiationTraking second if setstate data", this.state.ngTracking, "current id", this.props.currentId));
             }
         });   
     }
-
-
-
     closetoggleModal = () => {
         this.setState({
             modal: !this.state.modal
@@ -158,7 +144,6 @@ class Quotation extends Component {
             modalproduct: !this.state.modalproduct
         });
     };
-
     toggleModal = (label) => {
         this.setState({
             modal: !this.state.modal,
@@ -169,11 +154,6 @@ class Quotation extends Component {
         var statusObj = this.state.obj;
         statusObj.status = status;
         this.setState({ statusObj });
-    }
-    updateStatus = (status) => {
-        var obj = this.state.obj;
-        obj.status = status;
-        this.setState({ obj });
     }
     updateObj() {
         this.setState({ editFlag: true }, () => {
@@ -244,8 +224,6 @@ class Quotation extends Component {
             })
         }
     }
-
-
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
         var input = e.target;
@@ -281,72 +259,63 @@ class Quotation extends Component {
                       <h3>Approved Products</h3>
                     </ModalHeader>
                     <ModalBody>
-                    
-                    <div className="row">
-                                        <div className="col-sm-12">
-                                        <Table  hover responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Name</th>
-                                                    <th>Quantity</th>
-                                                    <th>Amount</th>
-                                                    <th>Status</th>
-                                                   
-                                                </tr>
-                                            </thead>
-                                         
-                                            <tbody>
-                                            {this.state.ngTracking.map((product,i) => {
-                                             if(product.status === 'Approved'){
-                                                return (
-                                                    
-                                                    <tr key={i}>
-                                                        <td className="va-middle">{i + 1}</td>
-                                                        <td>
-                                                            <Link to={`/products/${product.product.id}`}>
-                                                                {product.product.name}
-                                                            </Link>
-                                                        </td>
-                                                        <td>{product.quantity}</td>
-                                                        <td>{product.amount}</td>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <Table  hover responsive>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Quantity</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {this.state.ngTracking.map((product,i) => {
+                                        if(product.status === 'Approved'){
+                                        return (
+                                            <tr key={i}>
+                                                <td className="va-middle">{i + 1}</td>
+                                                <td>
+                                                    <Link to={`/products/${product.product.id}`}>
+                                                        {product.product.name}
+                                                    </Link>
+                                                </td>
+                                                <td>{product.quantity}</td>
+                                                <td>{product.amount}</td>
 
-                                                        {this.state.ngTracking.map((ng) => {
-                                                        return (<div>
-                                                            {product.product.id===ng.product.id && <div>
-                                                       <td>
-                                                       {ng.status===null ? <div>
-                                                        <span className="badge badge-secondary">Pending</span></div> :<div>
-                                                            {product.status === 'Rejected' ? <div>
-                                                            <span className="badge badge-danger">{product.status}</span></div>:<div>
-                                                            <span className="badge badge-success">{product.status}</span></div>
-                                                    }
-                                                    </div>
-                                                    }                                                  
-                                                    </td>
-                                                    </div>}</div>)})}
-                                                    
-                                                    <div>
-                                                   
-                                                    </div>
-                                                    </tr> 
-                                                   )
-                                             }
-                                             else{
-                                                 return null;  }
-                                            })}
-                                            </tbody>
-                                        </Table>
-                                        {this.state.ngTracking.some(prod => prod.status === 'Approved') &&
-                                            <div style={{ textAlign: 'center',}} >
-                                                <Button  variant="contained" color="primary" size="small" onClick={this.props.convertOrder}>Convert To Order</Button>
+                                                {this.state.ngTracking.map((ng) => {
+                                                return (<div>
+                                                    {product.product.id===ng.product.id && <div>
+                                                <td>
+                                                {ng.status===null ? <div>
+                                                <span className="badge badge-secondary">Pending</span></div> :<div>
+                                                    {product.status === 'Rejected' ? <div>
+                                                    <span className="badge badge-danger">{product.status}</span></div>:<div>
+                                                    <span className="badge badge-success">{product.status}</span></div>
+                                            }
                                             </div>
+                                            }                                                  
+                                            </td>
+                                            </div>}</div>)})}
+                                            <div>
+                                            </div>
+                                            </tr> 
+                                            )
                                         }
-                                              
-                                       
-                                
+                                        else{
+                                            return null;  }
+                                    })}
+                                    </tbody>
+                                </Table>
+                                {this.state.ngTracking.some(prod => prod.status === 'Approved') &&
+                                    <div style={{ textAlign: 'center',}} >
+                                        <Button  variant="contained" color="primary" size="small" onClick={this.props.convertOrder}>Convert To Order</Button>
                                     </div>
-                                </div>
+                                }
+                            </div>
+                        </div>
                     </ModalBody>
                 </Modal>
                <Modal isOpen={this.state.modalproduct} backdrop="static" toggle={this.closetoggleModalProduct} size={'md'}>
@@ -370,7 +339,7 @@ class Quotation extends Component {
                                         Status
                                         </div>
                                         <div className="col-md-6">
-                                        <FormControl    >
+                                        <FormControl>
                                             <InputLabel> Status</InputLabel>
                                             <Select>
                                                 <MenuItem value={0} >Open</MenuItem>
@@ -386,7 +355,7 @@ class Quotation extends Component {
                         </Form>
                         <div className="text-center">
                         {/* onClick={e => this.addProduct()} */}
-                            <Button variant="contained" color="primary" >Submit</Button>
+                            <Button variant="contained" color="primary">Submit</Button>
                         </div>
                     </ModalBody>
                 </Modal>
@@ -401,25 +370,26 @@ class Quotation extends Component {
                                     <div className="">
                                         <div className="row">
                                             <div className="col-sm-10">
-                                                  
-                                            <table>
-                                                            <tbody>
-                                                            <tr style={{marginTop: 70, marginLeft: 10}}>
-                                                                {/* <td style={{backgroundColor:'rgba(0, 0, 0, 0.04);'}}>
-                                                                    <span ><ArrowDropDownIcon/></span>
-                                                                </td> */}
-                                                            <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span> 
-                                                            {/* <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span> */}
-                                                            </tr>
-                                                             </tbody>
-                                                        </table>
-                                                       
-                                                 {(this.props.user.role === 'ROLE_ADMIN'  && <Status1 onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
-                                                            showNotes={true}
-                                                            onUpdate={(id) => this.updateStatus(id)}
-                                                            color="primary"
-                                                            statusList={this.state.status}  status={this.state.statusObj}
-                                                            statusType="Enquiry"></Status1>)} 
+                                                <table>
+                                                    <tbody>
+                                                        <tr style={{marginTop: 70, marginLeft: 10}}>
+                                                            {/* <td style={{backgroundColor:'rgba(0, 0, 0, 0.04);'}}>
+                                                                <span ><ArrowDropDownIcon/></span>
+                                                            </td> */}
+                                                        <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span> 
+                                                        {/* <span  style={{ marginLeft: 20,fontSize: 12}} className={Const.getStatusBadge(this.state.obj.status?this.state.obj.status:'Pending', this.state.status)}>{this.state.obj.status?this.state.obj.status:'Pending'}</span> */}
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                 {(this.props.user.role === 'ROLE_ADMIN'  && 
+                                                 <QuoteStatus onRef={ref => (this.statusRef = ref)} baseUrl={this.state.baseUrl} currentId={this.props.currentId}
+                                                    projection="sales_quotation_edit"
+                                                    showNotes={true}
+                                                    onUpdate={(id) => this.updateStatus(id)}
+                                                    color="primary"
+                                                    statusList={this.state.status}  status={this.state.statusObj}
+                                                    statusType="Enquiry">
+                                                </QuoteStatus>)} 
                                             {/* {(this.props.user.role === 'ROLE_ADMIN' || readOnly || (this.props.user.permissions.indexOf("MG_AC") >= 0)) &&
                                                 <FormControl>
                                                    
@@ -440,17 +410,13 @@ class Quotation extends Component {
                                             </div>
                                             <div className="col-sm-2"  >
                                                 <buttonGroup>
-                                                    
-                                                {(this.props.user.role === 'ROLE_ADMIN' && <button disabled={this.state.obj.status === 'Approved' || this.state.obj.status === null || this.state.obj.status === 'Email Sent' }
-
-
+                                                {(this.props.user.role === 'ROLE_ADMIN' && 
+                                                <button disabled={this.state.obj.status === 'Approved' || this.state.obj.status === null || this.state.obj.status === 'Email Sent' }
                                                     style={{ backgroundColor: "#2b3db6", border: "1px solid #2b3db6 ", borderRadius: "5px" }}
                                                     color="primary" variant="contained" onClick={() => this.updateObj()}>
                                                     <EditIcon style={{ color: '#fff', }} fontSize="small" /></button>)}
-
                                                     <button style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
                                                     <button onClick={()=>this.cartEdit1()}  style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6",borderRadius:"5px"}} color="primary" variant="contained"> <ShoppingCartIcon   style={{ color: '#fff', }} fontSize="small"/></button>
-                                              
                                                 </buttonGroup>
                                                    
                                              </div>
@@ -499,11 +465,11 @@ class Quotation extends Component {
                                             </tr>
                                             <tr>
                                                 <td><strong>Specification</strong></td>
-                                                <td>{this.state.obj.specification}</td>
+                                                <td>{this.state.obj.specification?this.state.obj.specification:'-NA-'}</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Makes</strong></td>
-                                                <td>{this.state.obj.make}</td>
+                                                <td><strong>Make</strong></td>
+                                                <td>{this.state.obj.make?this.state.obj.make:'-NA-'}</td>
                                             </tr>
                                             <tr>
                                                 <td><strong>Payment Terms</strong></td>
@@ -527,7 +493,7 @@ class Quotation extends Component {
                                             </tr>
                                             <tr>
                                                 <td><strong>Valid Till</strong></td>
-                                                <td><Moment format="DD MMM YY">{this.state.obj.valiTill}</Moment></td>
+                                                <td><Moment format="DD MMM YY">{this.state.obj.validTill}</Moment></td>
                                             </tr>
                                         </tbody>
                                     </table>

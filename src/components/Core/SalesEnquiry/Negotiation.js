@@ -540,21 +540,21 @@ class Negotiation extends Component {
                                     <td style={{ width: '35px' ,border: '1px solid rgba(0, 0, 0, 0.42)'}}>Negotiation Stage 1</td>
                                     <td style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
                                         {this.state.obj4 ? this.state.obj4.ns1_remark: '-No Remarks-'}
-                                        {this.state.obj4.status && <span className="badge badge-success">{this.state.obj4.status}</span>}
+                                        {this.state.obj4?this.findStatus(this.state.obj4.productId,"ng1"):''}
                                     </td>
                                 </tr>
                                 <tr style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
                                     <td style={{ width: '35px', border: '1px solid rgba(0, 0, 0, 0.42)' }}>Negotiation Stage 2</td>
                                     <td style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
                                         {this.state.obj4 ? this.state.obj4.ns2_remark: '-No Remarks-'}
-                                        {this.state.obj4.status && <span className="badge badge-success">{this.state.obj4.status}</span>}
+                                        {this.state.obj4?this.findStatus(this.state.obj4.productId,"ng2"):''}
                                     </td>
                                 </tr>
                                 <tr style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }} >
                                     <td style={{ width: '35px', border: '1px solid rgba(0, 0, 0, 0.42)' }}>Negotiation Stage 3</td>
                                     <td style={{ border: '1px solid rgba(0, 0, 0, 0.42)' }}>
                                         {this.state.obj4 ? this.state.obj4.ns3_remark: '-No Remarks-'}
-                                        {this.state.obj4.status && <span className="badge badge-success">{this.state.obj4.status}</span>}
+                                        {this.state.obj4?this.findStatus(this.state.obj4.productId,"ng3"):''}
                                     </td>
                                 </tr>
                             </tbody>
