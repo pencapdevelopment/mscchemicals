@@ -11,6 +11,7 @@ import { allcats } from './subcat';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import AutoSuggest from '../../Common/AutoSuggest';
 
 
 import 'react-datetime/css/react-datetime.css';
@@ -66,6 +67,8 @@ class Add extends Component {
                 outgoing: '',
                 selectedMakes: [],
                 selectedTypes: [],
+                companie:''
+                
             }
         },
         category: [
@@ -178,7 +181,7 @@ class Add extends Component {
         var hasError = this.checkForError();
         if (!hasError) {
             var newObj = this.state.formWizard.obj;
-            newObj['make'] = (newObj.selectedMakes && newObj.selectedMakes !=='')?newObj.selectedMakes.join(","):'';
+           // newObj['make'] = (newObj.selectedMakes && newObj.selectedMakes !=='')?newObj.selectedMakes.join(","):'';
             var promise = undefined;
             if (!this.state.formWizard.editFlag) {
                 promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
@@ -229,6 +232,21 @@ class Add extends Component {
         }
         return true;
     }
+
+    setAutoSuggest1(field, val) {
+        var formWizard = this.state.formWizard;
+       
+        formWizard.obj[field] = val;
+        this.setState({ formWizard });
+    }
+    setAutoSuggest2(field, val) {
+        console.log('setAutoSuggest2');
+        var formWizard = this.state.formWizard;
+       
+        formWizard.obj[field] = val;
+        this.setState({ formWizard });
+    }
+
 
     loadMake() {
         axios.get(server_url + context_path + "api/companies?projection=company_auto_suggest&type=V")
@@ -391,7 +409,7 @@ class Add extends Component {
                                     helperText={errors?.specification?.length > 0 ? errors?.specification[0]?.msg : ""}
                                     error={errors?.specification?.length > 0}
                                     value={this.state.formWizard.obj.specification} onChange={e => this.setField("specification", e)} />
-                                <FormControl>
+                                {/* <FormControl>
                                     <InputLabel id="demo-mutiple-checkbox-label">Make</InputLabel>
                                     <Select
                                         name="make"
@@ -415,8 +433,27 @@ class Add extends Component {
                                         )
                                     })}
                                     </Select>
-                                </FormControl>
-                            </div>      
+                                </FormControl> */}
+                                 <FormControl>
+                                                <AutoSuggest url="companies"
+                                                    name="make"
+                                                    displayColumns="name"
+                                                    label="make"
+                                                    required={true}
+                                                    helperText={errors?.make_auto_suggest?.length > 0 ? errors?.make_auto_suggest[0]?.msg : ""}
+                                                    error={errors?.make_auto_suggest?.length > 0}
+                                                    inputProps={{ minLength: 5, maxLength: 30, "data-validate": '[{ "key":"required","msg":"make is required"}]' }}
+                                                    onRef={ref => (this.countryASRef = ref)}
+                                                    placeholder="Search compaies by name"
+                                                    arrayName="companies"
+                                                    projection="company_auto_suggest"
+                                                    value={this.state.formWizard.obj.make}
+                                                   onChange={e=>this.setAutoSuggest2('make', e.name)}
+                                                    onSelect={e => this.setAutoSuggest1('make', e.name)}
+                                                   
+                                                    queryString="&type=V&name" ></AutoSuggest>
+                                            </FormControl>
+                            </div>
                             }
                             {this.state.formWizard.obj.type === 'Food grade' &&
                             <div className="col-md-12 " style={{ marginLeft:"-14px"}}>

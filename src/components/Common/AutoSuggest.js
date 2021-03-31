@@ -46,6 +46,9 @@ class AutoSuggest extends Component {
     e.stopPropagation();
     // e.nativeEvent.stopImmediatePropagation();
     // debugger;
+    if(this.state.searchedValues.length===0){
+      this.setState({ searchParam: obj.name });
+    }
     if (obj) {
       this.props.onSelect(obj);
       this.setState({ searchParam: obj.name });
