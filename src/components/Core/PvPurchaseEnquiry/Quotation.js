@@ -2,7 +2,6 @@ import {Button, Select, MenuItem, InputLabel, FormControl } from '@material-ui/c
 import axios from 'axios';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
-import Moment from 'react-moment';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -12,11 +11,12 @@ import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
 import Upload from '../Common/Upload';
 import Uploadp from './Uploadp';
+import Divider from '@material-ui/core/Divider';
 import AddQuotation from './AddQuotation';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
 import { saveProducts } from '../Common/AddProducts1';
-import Divider from '@material-ui/core/Divider';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PageLoader from '../../Common/PageLoader';
 import { createOrder } from '../Orders/Create';
 import AssignmentSharpIcon from '@material-ui/icons/AssignmentSharp';
@@ -27,7 +27,7 @@ class Quotation extends Component {
         editFlag: false,
         modal: false,
         obj: '',
-        baseUrl: 'purchase-quotation',
+        baseUrl: 'pvpurchase-quotation',
         currentId: '',
         ngTracking : [],
         fileTypes2: [
@@ -45,7 +45,7 @@ class Quotation extends Component {
         ]
     }
     loadObj(id) {
-        axios.get(Const.server_url + Const.context_path + "api/purchase-quotation?enquiry.id=" + id + '&projection=purchase_quotation_edit&sort=id,desc').then(res => {
+        axios.get(Const.server_url + Const.context_path + "api/pvpurchase-quotation?enquiry.id=" + id + '&projection=pv_purchase_quotation_edit&sort=id,desc').then(res => {
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
             if(list.length) {
                 this.setState({ obj: list[0], currentId: list[0].id },this.negotiationTraking);
@@ -53,7 +53,7 @@ class Quotation extends Component {
         });
     }
     negotiationTraking(){
-        axios.get( Const.server_url + Const.context_path + "api/purchase-negotiation-tracking?reference.id="+this.props.currentId+"&sort=id,desc&projection=purchase-negotiation-tracking").then(res => {
+        axios.get( Const.server_url + Const.context_path + "api/pvpurchase-negotiation-tracking?reference.id="+this.props.currentId+"&sort=id,desc&projection=pv-purchase-negotiation-tracking").then(res => {
             let ngList1 = res.data._embedded[Object.keys(res.data._embedded)[0]];
             let ngList =  [];
             ngList1.map((ngt1,idx1)=>{
@@ -89,7 +89,7 @@ class Quotation extends Component {
         })
         .then(willChange => {
             if (willChange) {
-                axios.patch(Const.server_url + Const.context_path + "api/purchase-products/"+purchaseProd.id,{id:purchaseProd.id,status:e.target.value})
+                axios.patch(Const.server_url + Const.context_path + "api/pvpurchase-products/"+purchaseProd.id,{id:purchaseProd.id,status:e.target.value})
                 .then(res => {this.loadObj(this.props.currentId)});
             }
         });
@@ -169,27 +169,27 @@ class Quotation extends Component {
     generateQuote = (expiryDate,products)=>{
         this.setState({loading:true});
         let pe = this.props.parentObj;
-        axios.get(Const.server_url+Const.context_path+'api/companies/'+pe.company.id).then(compRes => {
+        axios.get(Const.server_url+Const.context_path+'api/prospective-vendor/'+pe.company.id).then(compRes => {
             let promise = undefined;
             if(this.state.obj.id){
                 let purQuote = {...this.state.obj};
-                purQuote.company = '/companies/'+purQuote.company.id;
-                purQuote.enquiry = '/purchase/'+purQuote.enquiry.id;
-                promise = axios.patch(Const.server_url + Const.context_path + "api/purchase-quotation/"+purQuote.id, purQuote);
+                purQuote.company = '/prospective-vendor/'+purQuote.company.id;
+                purQuote.enquiry = '/pvpurchase/'+purQuote.enquiry.id;
+                promise = axios.patch(Const.server_url + Const.context_path + "api/pvpurchase-quotation/"+purQuote.id, purQuote);
             }
             else{
                 let purQuote = {
-                    code: Const.getUniqueCode('PQ'),
-                    company: "/companies/"+compRes.data.id,
+                    code: Const.getUniqueCode('PVQ'),
+                    company: "/prospective-vendor/"+compRes.data.id,
                     gst: '',
                     amount: '',
                     transportationCharges: '',
                     terms: compRes.data.paymentTerms,
                     deliveryPeriod: '',
-                    enquiry: '/purchase/'+pe.id,
+                    enquiry: '/pvpurchase/'+pe.id,
                     validTill: expiryDate,
                 };
-                promise = axios.post(Const.server_url + Const.context_path + "api/purchase-quotation", purQuote);
+                promise = axios.post(Const.server_url + Const.context_path + "api/pvpurchase-quotation", purQuote);
             }
             promise.then(res =>{
                 saveProducts(this.props.baseUrl, pe.id, products, () => {});
@@ -225,7 +225,7 @@ class Quotation extends Component {
             swal("Unable to Convert!", "Please get Approval of atleast one product", "error");
             return ;
         }
-        createOrder('Purchase', this.state.obj, this.props.baseUrl);
+        createOrder('PVPurchase', this.state.obj, this.props.baseUrl);
     }
     render() {
         return (
@@ -250,7 +250,7 @@ class Quotation extends Component {
                                             </table>
                                             {(this.props.user.role === 'ROLE_ADMIN'  && 
                                             <QuoteStatus onRef={ref => (this.statusRef = ref)} baseUrl={this.state.baseUrl} currentId={this.props.currentId}
-                                                projection="purchase_quotation_edit"
+                                                projection="pv_purchase_quotation_edit"
                                                 showNotes={true}
                                                 onUpdate={(id) => this.updateStatus(id)}
                                                 color="primary"
@@ -289,7 +289,7 @@ class Quotation extends Component {
                                                     <strong>Company</strong>
                                                 </td>
                                                 <td>
-                                                    <Link to={`/companies/${this.state.obj.company.id}`}>
+                                                    <Link to={`/prospective-vendor/${this.state.obj.company.id}`}>
                                                         {this.state.obj.company.name}
                                                     </Link>
                                                 </td>
@@ -310,7 +310,7 @@ class Quotation extends Component {
                                                 <td>
                                                     <strong>Payment Terms</strong>
                                                 </td>
-                                                <td>{this.state.obj.terms}</td>
+                                                <td>{this.state.obj.company.paymentTerms?this.state.obj.company.paymentTerms:"-NA-"}</td>
                                             </tr>
                                              <tr>
                                                 <td>
@@ -327,7 +327,7 @@ class Quotation extends Component {
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div className=" mt-4">
+                                    <div className="mt-4">
                                         <h4 style={{fontSize:"18px"}}>Products</h4>
                                     </div>
                                     <Divider />
@@ -361,10 +361,6 @@ class Quotation extends Component {
                                     </Table>
                                 </div>
                             </div>}
-                            {/* {!this.state.obj &&
-                            <div className="text-center">
-                                {this.props.user.permissions.indexOf(Const.MG_PR_E) >=0 && <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Generate Quotation</Button>}
-                            </div>} */}
                         </div>
                     </div>}
                 {this.state.editFlag &&

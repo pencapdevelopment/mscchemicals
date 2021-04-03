@@ -96,7 +96,7 @@ class Add extends Component {
         this.setField(field, e, true);
     }
     loadCompany(companyId) {
-        axios.get(server_url + context_path + "api/companies/" + companyId + '?projection=company_auto_suggest_product')
+        axios.get(server_url + context_path + "api/prospective-vendor/" + companyId + '?projection=vendor_auto_suggest_product')
         .then(res => {
             var formWizard = this.state.formWizard;
             formWizard.obj.email = res.data.email;
@@ -124,7 +124,8 @@ class Add extends Component {
                     });
                 }
             });
-            axios.get(server_url + context_path + "api/company-contact?sort=id,asc&projection=company_contact_name&page=0&size=1&company=" + companyId)
+            console.log(server_url + context_path + "api/vendor-contact?sort=id,asc&projection=company_contact_name&page=0&size=1&company=" + companyId)
+            axios.get(server_url + context_path + "api/vendor-contact?sort=id,asc&projection=vendor_contact_name&page=0&size=1&vendor=" + companyId)
             .then(res => {
                 if (res.data._embedded['company-contact'] && res.data._embedded['company-contact'].length) {
                     var formWizard = this.state.formWizard;
@@ -135,7 +136,7 @@ class Add extends Component {
         });
     }
     loadData() {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=purchase_edit')
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=pv_purchase_edit')
         .then(res => {
             var formWizard = this.state.formWizard;
             formWizard.obj = res.data;
@@ -440,7 +441,7 @@ class Add extends Component {
             this.setState({ loading: true });        
             selectedCompanies.forEach((comps,idx) => {
                 var newObj = {...this.state.formWizard.obj};
-                newObj.company = '/companies/' + comps.companyId;
+                newObj.company = '/prospective-vendor/' + comps.companyId;
                 if(!this.state.formWizard.editFlag){
                     newObj.code = getUniqueCode('PR');
                     newObj.adminApproval = 'N';
@@ -582,7 +583,7 @@ class Add extends Component {
                             <div className="col-3">
                                 <fieldset>
                                     <FormControl>
-                                        <AutoSuggest url="companies"
+                                        <AutoSuggest url="prospective-vendor"
                                             name="companyName"
                                             displayColumns="name"
                                             label="Company"
@@ -593,11 +594,11 @@ class Add extends Component {
                                                 }
                                             }}
                                             placeholder="Search Company by name"
-                                            arrayName="companies"
+                                            arrayName="prospective-vendor"
                                             helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
                                             error={errors?.companyName_auto_suggest?.length > 0}
                                             inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                            projection="company_auto_suggest"
+                                            projection="vendor_auto_suggest"
                                             value={this.state.formWizard.obj.selectedCompany}
                                             onSelect={e => this.setAutoSuggest('company', e?.id)}
                                             queryString="&name" >
@@ -932,7 +933,7 @@ class Add extends Component {
                                 <div className="col-md-3  ">
                                     <fieldset>
                                         <TextField type="text" name="paymentTerms" label="Payment terms" required={true} fullWidth={true}
-                                            inputProps={{readOnly: true, maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
+                                            inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
                                             helperText={errors?.paymentTerms?.length > 0 ? errors?.paymentTerms[0]?.msg : ""}
                                             error={errors?.paymentTerms?.length > 0}
                                             value={this.state.formWizard.obj.paymentTerms} onChange={e => this.setField("paymentTerms", e)} />

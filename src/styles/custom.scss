@@ -22,7 +22,10 @@ body:not(.aside-collapsed) .topnavbar .navbar-header .navbar-brand {
 
 
 .wrapper .aside-container .aside-inner {
-    padding-top: 75px;
+    padding-top:75px;
+    height: 100%;
+    width: 235px;
+    overflow: hidden;
 }
 
 .layout-fixed .wrapper .section-container {

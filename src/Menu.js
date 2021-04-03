@@ -171,7 +171,7 @@ const Menu = [
                 role: 'ROLE_ADMIN'
             },
             {
-                path:'/pvpurchases',
+                path:'/pvpurchase',
                 name:'Purchases',
                 icon:'fa fa-history',
                 role: 'ROLE_ADMIN',

@@ -54,7 +54,7 @@ const Products = lazy(() => import('./components/Core/Products/Products'));
 const SalesEnquiry = lazy(() => import('./components/Core/SalesEnquiry/SalesEnquiry'));
 const PbSalesEnquiry = lazy(() => import('./components/Core/PbSalesEnquiry/SalesEnquiry'));
 const PurchaseEnquiry = lazy(() => import('./components/Core/PurchaseEnquiry/PurchaseEnquiry'));
-// const PvPurchaseEnquiry = lazy(() => import('./components/Core/PvPurchaseEnquiry/PurchaseEnquiry'));
+const PvPurchaseEnquiry = lazy(() => import('./components/Core/PvPurchaseEnquiry/PurchaseEnquiry'));
 const Followups = lazy(() => import('./components/Core/Followups/Followups'));
 const Lead = lazy(() => import('./components/Core/Lead/Lead'));
 const Tracking = lazy(() => import('./components/Core/Tracking/Tracking'));
@@ -62,6 +62,7 @@ const Order = lazy(() => import('./components/Core/Orders/Order'));
 const Event = lazy(() => import('./components/Core/Events/Event'));
 const CostAccount = lazy(() => import('./components/Core/CostAccount'));
 const Approvals = lazy(() => import('./components/Core/Approvals/Approval'));
+const PurchaseApprovals = lazy(() => import('./components/Core/PurchaseApproval/Approval'));
 const Invoices = lazy(() => import('./components/Core/Invoices'));
 const Reports = lazy(() => import('./components/Core/Reports'));
 const ProspectiveBuyers = lazy(()=> import('./components/Core/ProspectiveBuyer/ProspectiveBuyer'))
@@ -163,8 +164,8 @@ const Routes = ({ location }) => {
                                     <PrivateRoute path="/pbsales" component={waitFor(PbSalesEnquiry)} />
                                     <PrivateRoute path="/purchase/:objId" component={waitFor(PurchaseEnquiry)} />
                                     <PrivateRoute path="/purchase" component={waitFor(PurchaseEnquiry)} />
-                                    {/* <PrivateRoute path="/pvpurchases/:objId" component={waitFor(PvPurchaseEnquiry)} />
-                                    <PrivateRoute path="/pvpurchases" component={waitFor(PvPurchaseEnquiry)} /> */}
+                                    <PrivateRoute path="/pvpurchase/:objId" component={waitFor(PvPurchaseEnquiry)} />
+                                    <PrivateRoute path="/pvpurchase" component={waitFor(PvPurchaseEnquiry)} />
                                     <PrivateRoute path="/followups/:objId" component={waitFor(Followups)} />
                                     <PrivateRoute path="/followups" component={waitFor(Followups)} />
 
@@ -177,8 +178,8 @@ const Routes = ({ location }) => {
                                     {/* <PrivateRoute path="/sales1" component={waitFor(Sales1)} /> */}
                                     <PrivateRoute path="/sales-approval-alerts" component={waitFor(SalesNotifications)} />
                                     <PrivateRoute path="/purchases-approval-alerts" component={waitFor(PurchaseNotifications)} />
-                                    <PrivateRoute path="/approvals" component={waitFor(Approvals)} />
-
+                                    <PrivateRoute path="/approvals" component={waitFor(Approvals)}/>
+                                    <PrivateRoute path="/PurchaseApprovals" component={waitFor(PurchaseApprovals)} />
                                     <PrivateRoute path="/trackings/:objId" component={waitFor(Tracking)} />
                                     <PrivateRoute path="/trackings" component={waitFor(Tracking)} />
                                     <PrivateRoute path="/orders/:objId" component={waitFor(Order)} />

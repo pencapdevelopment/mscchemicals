@@ -10,7 +10,7 @@ import Chip from '@material-ui/core/Chip';
 import Box from '@material-ui/core/Box';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Moment from 'react-moment';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import { Table } from 'reactstrap';
 import CloseSharpIcon from '@material-ui/icons/CloseSharp';
 import {
@@ -122,7 +122,22 @@ class View extends Component {
             return "-NA-";
         }
     }
-
+    closetoggleModal = () => {
+        this.setState({
+            modal: !this.state.modal
+        });
+    };
+    closetoggleModalProduct = () => {
+        this.setState({
+            modalproduct: !this.state.modalproduct
+        });
+    };
+    toggleModalSale = (label) => {
+        this.setState({
+            modal: !this.state.modal,
+            label: label
+        });
+    };
     toggleTab = (tab) => {
         if(tab===4){
             this.state.obj.products.map((product, i) => {
@@ -212,12 +227,12 @@ class View extends Component {
 
 
 
-    loadObj(id) {
+    loadObj(id,callBack) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=order_edit').then(res => {
             this.setState({ 
                 obj: res.data,
                 loading:false
-             });
+             },()=>{if(callBack){callBack()}});
 
         });
     }
@@ -238,13 +253,14 @@ class View extends Component {
     }
 
     componentDidMount() {
-        if(this.props.user.role === 'ROLE_ACCOUNTS'||this.props.user.role === 'ROLE_INVENTORY'){
-            this.toggleTab(1);
-        }
         console.log('view component did mount');
         console.log(this.props.currentId);
         this.orderUser(this.props.currentId);
-        this.loadObj(this.props.currentId);
+        this.loadObj(this.props.currentId,()=>{
+            if(this.props.user.role === 'ROLE_ACCOUNTS'||this.props.user.role === 'ROLE_INVENTORY'){
+                this.state.obj.type=== 'Sales'?this.toggleTab(0):this.toggleTab(1)
+            }
+        });
         // this.loadSubObjs();
         this.props.onRef(this);
         this.setState({loading:true})
@@ -312,11 +328,17 @@ class View extends Component {
             modalSales: !this.state.modalSales
         });
     }
+    toggleModalSale = () => {
+        this.setState({
+            modalSales: !this.state.modalSales
+        });
+    }
     editInventory = (i) => {
         var prod = this.state.obj.products[i];
         
         if(this.state.obj.type==='Sales'){
             this.setState({ editSubFlag: true,currentProdId:prod.id,currentProd:prod  }, this.toggleModalSales);
+          
         }else{
             this.setState({ editSubFlag: true,currentProdId:prod.id,currentProd:prod  }, this.toggleModal);
         }
@@ -347,14 +369,14 @@ class View extends Component {
             <div>
                  {this.state.loading && <PageLoader />}
                 <div className="content-heading">Order</div>
-                <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModal} size={'lg'}>
+                {/* <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModal} size={'lg'}>
                             <ModalHeader toggle={this.toggleModal}>
                                  Add inventory - {this.state.currentProd.product?.name}
                             </ModalHeader>
                             <ModalBody>
                                  <AddInventory orderProduct={this.state.currentProd} orderStatus={this.state.obj.status} orderType={this.state.obj.type} orderId={this.state.obj.id} onRef={ref => (this.addInventoryRef = ref)} onCancel={e=> this.toggleModal(e)} baseUrl='product-flow'></AddInventory>
                             </ModalBody>
-                        </Modal>
+                        </Modal> */}
                         <Modal isOpen={this.state.modalSales} backdrop="static" toggle={this.toggleModalSales} size={'lg'}>
                             <ModalHeader toggle={this.toggleModal}>
                                  Add inventory - {this.state.currentProd.product?.name}
@@ -363,6 +385,27 @@ class View extends Component {
                                  <SalesInventory orderProduct={this.state.currentProd} orderStatus={this.state.obj.status} orderType={this.state.obj.type} orderId={this.state.obj.id} onRef={ref => (this.addInventoryRef = ref)} onCancel={e=> this.toggleModalSales()} baseUrl='product-flow'></SalesInventory>
                             </ModalBody>
                         </Modal>
+                        <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModalSale} size={'md'}>
+                    <ModalHeader toggle={this.toggleModal}>
+                      
+                    </ModalHeader>
+                    <ModalBody>
+                    <fieldset>
+                                <TextareaAutosize placeholder="Remark" fullWidth={true} rowsMin={3} name="Remark"
+                                   style={{padding: 10}}
+                                   inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
+                                    // helperText={errors?.description?.length > 0 ? errors?.description[0]?.msg : ""}
+                                    // error={errors?.description?.length > 0}
+                                    // value={this.state.formWizard.obj.description} onChange={e => this.setField("description", e)} 
+                                    // value={this.state.orderData.instructions} onChange={this.Instructions}
+                                    />
+                            </fieldset>          
+                        <div className="text-center">
+                            <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Submit</Button>
+                        </div>
+                    </ModalBody>
+                </Modal>
+                
                         <Modal isOpen={this.state.modalDocs} backdrop="static" toggle={this.toggleModalDocs} size={'lg'}>
                             <ModalHeader toggle={this.toggleModalDocs}>
                                  Add Documents - {this.state.currentProd.product?.name}
@@ -378,8 +421,8 @@ class View extends Component {
                          
                         <div className="col-md-12">
                             <AppBar position="static">
-                                  {(this.props.user.role !== 'ROLE_ACCOUNTS'&& this.props.user.role !== 'ROLE_INVENTORY'&& 
-                                    <div>     
+                                  {(this.props.user.role !== 'ROLE_ACCOUNTS' && this.props.user.role !== 'ROLE_INVENTORY'&& 
+                                    <div>
                                         <Tabs
                                             className="bg-white"
                                             indicatorColor="primary"
@@ -390,25 +433,25 @@ class View extends Component {
                                             value={this.state.activeTab}
                                             onChange={(e, i) => this.toggleTab(i)} >
                                                 <Tab  label="Details"   />
+                                           
                                                 {(this.state.obj.type === "Sales" ?
                                                     <Tab label="Shipping Method" /> 
                                                 : 
                                                     <Tab label="CheckList" /> )
-                                                }
-                                                
+                                                }                                
                                                 <Tab label="CHA Documents" />
                                                 <Tab label="Accounts" />
                                                 <Tab label="Followups" />
                                                 <Tab label="Shipping Documents" />
                                                 <Tab label="Banking Documents" />
-                                                <Tab label="Approvals" />   
-                                             
+                                                <Tab label="Approvals" /> 
+           
                                         </Tabs>
                                     </div>)}
                             </AppBar>
-                            </div>
-                        
+                            </div>   
                     </div>}
+                            {console.log("obj is ",this.state.obj)}
                             {this.state.obj &&  
                             (this.state.obj.type === "Sales" ? 
                             <TabPanel value={this.state.activeTab} index={0}>
@@ -422,34 +465,21 @@ class View extends Component {
                                        
                                         <div className="col-sm-2"><button style={{backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} title="status" size="small" variant="contained"><span style={{color:"#fff"}}>Status</span></button></div>
                                             <div className="col-sm-9"></div>
-                                            {/* style={{ backgroundColor: "#2b3db6", border:"1px solid " }} */}
                                             {(this.props.user.role !== 'ROLE_ACCOUNTS'&& this.props.user.role !== 'ROLE_INVENTORY' &&
                                    <div className="col-sm-1" ><button style={{backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} variant="contained" size="small"><CloseSharpIcon style={{color:"#fff"}} fontSize="small" /></button></div>
                                    )}
-                                           
-
-                                        {/* {this.state.obj.type === 'Sales' && <Button variant="contained" color="warning" size="xs" onClick={() => this.downloadInvoice()}>Download Invoice</Button> }
-                                              */}
-                                       {/* {this.state.obj.status !=='Completed' &&  <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
-                                                onUpdate={(id) => this.updateStatus(id)} statusList={this.state.status} status={this.state.obj.status}
-                                                statusType="Order"></Status>} */}
-
-                                        {/* {this.state.obj.status !=='Completed' &&   <Button  style={{}} variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button> }
-                                       */}
                                         </div>
                                         <h4 className="my-2">
                                             <span>{this.state.obj.name}</span>
                                         </h4>
-                              
-                                  
                                         </div>
                                      </div>
                                 </div>
                                 <div className="row">
-                            <div className={(this.props.user.role === 'ROLE_ACCOUNTS' || this.props.user.role === 'ROLE_INVENTORY')?"col-sm-10": "col-sm-8 "}>
+                            <div className={(this.props.user.role ==='ROLE_ACCOUNTS' || this.props.user.role === 'ROLE_INVENTORY')?"col-sm-12": "col-sm-8 "}>
                                 <div className="card b">
                                    <div className="card-header">
-                                   {(this.props.user.role === 'ROLE_ACCOUNTS'&&<div>
+                                   {(this.props.user.role === 'ROLE_ACCOUNTS') &&<div >
                                    <table>
                                            <thead>
                                                <tr >
@@ -470,8 +500,10 @@ class View extends Component {
                                                                             </Link>}                                                             
                                                                             />
                                                                         )
-                                                                    })} 
+                                                                    })}
+                                                                     
                                                      </th>
+                                                     
                                                    <th><Button variant="contained" color="primary" size="small">Credit Limit</Button></th>
                                                    <th><Button variant="contained" color="primary" size="small"> Bills Overdue</Button></th>
                                                    <th><Button variant="contained" color="primary" size="small">Total O/S</Button></th>
@@ -479,7 +511,7 @@ class View extends Component {
                                                </tr>
                                            </thead>
                                        </table>
-                                   </div>)}
+                                   </div>}
                                        
                                    </div>                               
                                            <div className="card-body bb bt" style={{fontSize: 14,}}>
@@ -631,7 +663,7 @@ class View extends Component {
                                         <div className="col-sm-3"><Button variant="contained" color="primary" size="xs" >Approve</Button></div>
                                         <div className="col-sm-3"></div>
                                         <div className="col-sm-3"></div>
-                                        <div className="col-sm-3"><Button variant="contained" color="primary" size="xs" >Hold</Button></div>
+                                        <div className="col-sm-3"><Button variant="contained" color="primary" size="xs" onClick={e => this.toggleModal()}  >Hold</Button></div>
                                         </div>
                                         </div>)}
                                   
@@ -874,41 +906,6 @@ class View extends Component {
                                      
                                      
                                      )}
-                             
-                                        {/* <div className=" mt-4">
-                                            <h4 style={{fontSize: 14}}>Products</h4>
-                                        </div>
-                                        <Table hover responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Name</th>
-                                                    <th>Quantity</th>
-                                                    <th>Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            {this.state.obj.products.map((product, i) => {
-                                                return (
-                                                    <tr key={i}>
-                                                        <td className="va-middle">{i + 1}</td>
-                                                        <td>
-                                                            <Link to={`/products/${product.product.id}`}>
-                                                                {product.product.name}
-                                                            </Link>
-                                                        </td>
-                                                        <td>{product.quantity} {product.uom}</td>
-                                                        <td>{product.amount}</td>
-                                                       
-                                                         <td><Button variant="contained" color="primary" size="xs" onClick={() => this.editInventory(i)}>Inventory</Button> </td>
-                                                        
-                                                        {this.state.obj.type !== 'Sales' && <td><Button variant="contained" color="warning" size="xs" onClick={() => this.editDocuments(i)}>Documents</Button> </td>
-                                                          }
-                                                    </tr>)
-                                                })}
-                                            </tbody>
-                                        </Table>
-                                    */}
                                     </div>
                                 </div>
                               
@@ -946,10 +943,6 @@ class View extends Component {
                                                                                 label={ <Link style={{color: "#000"}} to={`/users/${ obj.user.id}`}>
                                                                                 { obj.user.name}
                                                                             </Link>}
-                                                                               
-                                                                                // onClick={() => this.handleClick(obj)}
-                                                                                // onDelete={() => this.handleDelete(i)}
-                                                                            // className={classes.chip}
                                                                             />
                                                                         )
                                                                     })} 
@@ -1166,21 +1159,85 @@ class View extends Component {
                                             </div>
                                         </div>
                                         {
-                                            // this.props.user.role === 'ROLE_ADMIN' &&
+                                          (this.props.user.role !== 'ROLE_ACCOUNTS' && this.props.user.role !== 'ROLE_INVENTORY') &&
                                             <div className="col-md-4" >
-                                                {/* <Assign onRef={ref => (this.assignRef = ref)} baseUrl={this.props.baseUrl}
-                                                    parentObj={this.state.obj} currentId={this.props.currentId}></Assign> */}
-                                                {/* <Timeline
-                                                    title='Period ending 2017'
-                                                    timeline={mockTimeline}
-                                                /> */}
-                                                <ActivityStream
+                                                <div className="row">
+                                                    
+                                                    <div className="col-sm-12">
+                                               
+                                                    <Card style={{backgroundColor: "#fff", marginLeft: 41}}>
+                                                 
+                                                    <CardActionArea>
+                                                        
+                                                        <Typography style={{margin: 15}}  gutterBottom variant="h5" component="h2">
+                                                            <div className="row ">
+                                                                <div className="col-sm-2">
+                                                                <Avatar />
+                                                             
+                                                                </div>
+                                                                <div className="col-sm-10 "  style={{fontSize: 18, marginTop: 2 }}>                                                             
+                                                                {this.state.users.map((obj, i) => {
+                                                                        return (
+                                                                            <Chip
+
+                                                                               style={{color: "#000",backgroundColor: "#e8cd0b", margin: "3px"}}
+
+                                                                                avatar={
+                                                                                    // <Avatar>
+                                                                                        {/* <AssignmentIndIcon /> */}
+                                                                                    // </Avatar>
+                                                                                }
+                                                                                label={ <Link style={{color: "#000"}} to={`/users/${ obj.user.id}`}>
+                                                                                { obj.user.name}
+                                                                            </Link>}
+                                                                            />
+                                                                        )
+                                                                    })} 
+                                                                </div>
+                                                            </div>
+                                                                {/* <tr >
+                                                                    <td>  <Avatar /> </td>   
+                                                                    <td><span>Assign User</span></td>
+                                                          
+                                                                </tr>  */}
+                                                           
+                                                            
+                                                      
+                                                        </Typography>
+                                                        {/* <CardMedia
+                                                        component="img"
+                                                        alt="Contemplative Reptile"
+                                                        height="60"
+                                                        image="/static/images/cards/contemplative-reptile.jpg"
+                                                        title="Contemplative Reptile"
+                                                        /> */}
+                                                        <CardContent>
+                                                    
+                                                       {/*   <Typography variant="body2" color="textSecondary" component="p"> */}
+                                                        
+                                                        {/* </Typography> */}
+                                                        </CardContent>
+                                                       
+                                                      
+                                                    </CardActionArea>
+                                                    {/* <CardActions>
+                                                    </CardActions> */}
+                                                   
+                                                </Card>
+                                        
+                                                    </div>
+                                                </div>
+                                                <div className="row" style={{marginTop: 5}}>
+                                                    <div className="col-sm-12">
+                                                    <ActivityStream
                                                     title="Activity"
                                                     stream={mockActivity}
                                                     
                                                 />
-                                            </div>
-                                            }
+                                                    </div>
+                                                </div>
+                                               
+                                            </div>}
                                     </div>
                                 
                             </TabPanel>

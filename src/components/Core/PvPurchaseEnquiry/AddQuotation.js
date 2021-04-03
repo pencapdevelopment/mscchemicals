@@ -33,7 +33,7 @@ class AddQuotation extends Component {
             msg: '',
             errors: {},
             obj: {
-                code: getUniqueCode('SQ'),
+                code: getUniqueCode('PVQ'),
                 company: '',
                 specification: '',
                 make: '',
@@ -55,7 +55,7 @@ class AddQuotation extends Component {
         }
     }
     loadData() {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=purchase_quotation_edit')
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=pv_purchase_quotation_edit')
         .then(res => {
             var formWizard = this.state.formWizard;
             formWizard.obj = res.data;
@@ -168,13 +168,8 @@ class AddQuotation extends Component {
         var hasError = this.checkForError();
         if (!hasError) {
             var newObj = {...this.state.formWizard.obj};
-            newObj.company = '/companies/' + newObj.company;
-            newObj.enquiry = '/purchase/' + newObj.enquiry;
-            // if (!newObj.products.length) {
-            //     swal("Unable to Save!", "Please add atleast one product", "error");
-            //     return;
-            // }
-            // var products = newObj.products;
+            newObj.company = '/prospective-vendor/' + newObj.company;
+            newObj.enquiry = '/pvPurchase/' + newObj.enquiry;
             newObj.products = null;
             var promise = undefined;
             if (!this.state.formWizard.editFlag) {
@@ -244,7 +239,7 @@ class AddQuotation extends Component {
                 p.id = null;
             });
             formWizard.obj.products = this.props.parentObj.products;
-            axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + this.props.parentObj.id + '?projection=purchase_edit').then(res => {
+            axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + this.props.parentObj.id + '?projection=pvpurchase_edit').then(res => {
                 // this.setState({ obj: res.data });
                 res.data.products.forEach((p, idx) => {
                     formWizard.selectedProducts[idx] = p.product;
@@ -271,18 +266,18 @@ class AddQuotation extends Component {
                             </fieldset>
                             <fieldset>
                                 <FormControl>
-                                    <AutoSuggest url="companies"
+                                    <AutoSuggest url="prospective-vendor"
                                         name="companyName"
                                         displayColumns="name"
                                         label="Company"
                                         onRef={ref => (this.companyASRef = ref)}
                                         placeholder="Search Company by name"
-                                        arrayName="companies"
+                                        arrayName="prospective-vendor"
                                         helperText={errors?.companyName_auto_suggest?.length > 0 ? errors?.companyName_auto_suggest[0]?.msg : ""}
                                         error={errors?.companyName_auto_suggest?.length > 0}
                                         inputProps={{ "data-validate": '[{ "key":"required"}]' }}
                                         readOnly={true}
-                                        projection="company_auto_suggest"
+                                        projection="vendor_auto_suggest"
                                         value={this.state.formWizard.obj.selectedCompany}
                                         onSelect={e => this.setAutoSuggest('company', e?.id)}
                                         queryString="&name" ></AutoSuggest>
@@ -312,31 +307,6 @@ class AddQuotation extends Component {
                                     value={this.state.formWizard.obj.terms}
                                     onChange={e => this.setField("terms", e)} />
                             </fieldset>
-                            {/*<fieldset>
-                                <FormControl>
-                                    <TextField type="number" name="transportationCharges" label="Transportation Charges" required={true} fullWidth={true}
-                                        value={this.state.formWizard.obj.transportationCharges} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                        helperText={errors?.transportationCharges?.length > 0 ? errors?.transportationCharges[0]?.msg : ""}
-                                        error={errors?.transportationCharges?.length > 0}
-                                        onChange={e => this.setField("transportationCharges", e)} />
-                                </FormControl>
-                            </fieldset>
-                            <fieldset>
-                                <TextField type="text" name="packing" label="Packing" required={true}
-                                    fullWidth={true}
-                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                    helperText={errors?.packing?.length > 0 ? errors?.packing[0]?.msg : ""}
-                                    error={errors?.packing?.length > 0}
-                                    value={this.state.formWizard.obj.packing}
-                                    onChange={e => this.setField("packing", e)} />
-                            </fieldset>
-                            <fieldset>
-                                <TextField type="number" name="deliveryPeriod" label="Delivery Period" required={true} fullWidth={true}
-                                    value={this.state.formWizard.obj.deliveryPeriod} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                    helperText={errors?.deliveryPeriod?.length > 0 ? errors?.deliveryPeriod[0]?.msg : ""}
-                                    error={errors?.deliveryPeriod?.length > 0}
-                                    onChange={e => this.setField("deliveryPeriod", e)} />
-                            </fieldset> */}
                             <fieldset>
                                 <TextField type="number" name="gst" label="GST" required={true} fullWidth={true}
                                     value={this.state.formWizard.obj.gst} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
@@ -374,81 +344,6 @@ class AddQuotation extends Component {
                             </fieldset>
                         </div>
                     </div>
-                    {/* <div className="text-center mt-4">
-                        <h4>
-                            Products
-                            <Button className="ml-2 d-none" variant="outlined" color="primary" size="sm" onClick={this.addProduct} title="Add Product">
-                                <em className="fas fa-plus mr-1"></em> Add
-                            </Button>
-                        </h4>
-                    </div>
-                    {this.state.formWizard.obj.enquiry.products && this.state.formWizard.obj.enquiry.products.length &&
-                        <div className="row">
-                            <div className="col-md-12">
-                                <Table hover responsive>
-                                    <tbody>
-                                        {this.state.formWizard.obj.enquiry.products.map((prod, i) => {
-                                            return (
-                                                <tr key={i}>
-                                                    <td className="va-middle">{i + 1}</td>
-                                                    <td className="va-middle">
-                                                        <fieldset>
-                                                            <FormControl>
-                                                                {prod.product &&
-                                                                    <Link to={`/products/${prod.product.id}`}>
-                                                                        {prod.product.name}
-                                                                    </Link>}
-                                                                {!prod.product &&
-                                                                    <AutoSuggest url="products"
-                                                                        name="productName"
-                                                                        displayColumns="name"
-                                                                        label="Product"
-                                                                        placeholder="Search product by name"
-                                                                        arrayName="products"
-                                                                        helperText={errors?.productName_auto_suggest?.length > 0 ? errors?.productName_auto_suggest[i]?.msg : ""}
-                                                                        error={errors?.productName_auto_suggest?.length > 0}
-                                                                        inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                                                        onRef={ref => (this.productASRef[i] = ref)}
-                                                                        projection="product_auto_suggest"
-                                                                        value={this.state.formWizard.selectedProducts[i]}
-                                                                        onSelect={e => this.setProductAutoSuggest(i, e?.id)}
-                                                                        queryString="&name" ></AutoSuggest>}
-                                                            </FormControl>
-                                                        </fieldset>
-                                                    </td>
-                                                    <td>
-                                                        <fieldset>
-                                                            {prod.product && <span>{prod.quantity}</span>}
-                                                            {!prod.product &&
-                                                                <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
-                                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                                    helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                                    error={errors?.quantity?.length > 0}
-                                                                    value={this.state.formWizard.obj.products[i].quantity} onChange={e => this.setProductField(i, "quantity", e)} />}
-                                                        </fieldset>
-                                                    </td>
-                                                    <td>
-                                                        <fieldset>
-                                                            {prod.product && <span>{prod.amount}</span>}
-                                                            {!prod.product &&
-                                                                <TextField type="number" name="amount" label="Amount" required={true} fullWidth={true}
-                                                                    inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                                    helperText={errors?.amount?.length > 0 ? errors?.amount[i]?.msg : ""}
-                                                                    error={errors?.amount?.length > 0}
-                                                                    value={this.state.formWizard.obj.products[i].amount} onChange={e => this.setProductField(i, "amount", e)} />}
-                                                        </fieldset>
-                                                    </td>
-                                                    <td className="va-middle">
-                                                        <Button variant="outlined" color="secondary" size="sm" onClick={e => this.deleteProduct(i)} title="Delete Product">
-                                                            <em className="fas fa-trash"></em>
-                                                        </Button>
-                                                    </td>
-                                                </tr>)
-                                        })}
-                                    </tbody>
-                                </Table>
-                            </div> 
-                        </div>} */}
                     <div className="text-center mt-4">
                         <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
                         <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save</Button>

@@ -365,12 +365,12 @@ class CheckList extends Component {
                         </div>
                     </ModalBody> 
                 </Modal>
-                {this.props.user.role !== 'ROLE_PURCHASES' && this.props.user.role !== 'ROLE_INVENTORY'&& this.props.user.role !== 'ROLE_ACCOUNTS'&&
+                {this.props.user.role !== 'ROLE_INVENTORY'&& this.props.user.role !== 'ROLE_ACCOUNTS'&&
                 <div>
                     <div className="row">
                         <div className="col-md-4 offset-md-3" >
                         <fieldset >
-                                <TextField type="text" name="lable" label="lable" required={true} fullWidth={true}
+                                <TextField type="text" name="lable" label="Lable" required={true} fullWidth={true}
                                     inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
                                     helperText={errors?.lable?.length > 0 ? errors?.lable[0]?.msg : ""}
                                     error={errors?.lable?.length > 0}
@@ -508,7 +508,7 @@ class CheckList extends Component {
                         }
                         <Divider/>
                     </div>}
-                        {((this.props.user.role === 'ROLE_ACCOUNTS' || this.props.user.role === 'ROLE_ADMIN') &&
+                        {((this.props.user.role === 'ROLE_ACCOUNTS' || this.props.user.role === 'ROLE_ADMIN'||this.props.user.role === 'ROLE_PURCHASES') &&
                             <div>
                                 <div className="row">
                                     <div className="col-md-4  offset-md-3">
@@ -667,7 +667,8 @@ class CheckList extends Component {
                             </div>
                         )}
                         
-                        { (this.props.user.role === 'ROLE_PURCHASES' &&<div>
+                        {/* { (this.props.user.role === 'ROLE_PURCHASES' &&
+                        <div>
                                  <div className="row">
                                     <div className="col-md-4  offset-md-3">
                                         <fieldset>
@@ -731,6 +732,7 @@ class CheckList extends Component {
                                 </div>         
                      
                             </div> )}
+                             */}
                             {(this.props.user.role === 'ROLE_INVENTORY' &&       
                     <div>
                         <div className="row">

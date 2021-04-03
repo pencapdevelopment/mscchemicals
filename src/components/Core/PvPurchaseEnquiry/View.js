@@ -195,37 +195,7 @@ class View extends Component {
             });
         }
     }
-    // handleDelete = (i) => {
-    //     if(this.props.user.role === 'ROLE_ADMIN'){
-    // eslint-disable-line no-alert
-    //     var user = this.state.users[i];
-    //     swal({
-    //         title: "Are you sure?",
-    //         text: "You will not be able to recover this user assignment!",
-    //         icon: "warning",
-    //         dangerMode: true,
-    //         button: {
-    //             text: "Yes, delete it!",
-    //             closeModal: true,
-    //         }
-    //     })
-    //     .then(willDelete => {
-    //         if (willDelete) {
-    //             axios.delete(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user/" + user.id)
-    //             .then(res => {
-    //                 var users = this.state.users;
-    //                 users.splice(i, 1);
-    //                 this.setState({ users });
-    //             }).finally(() => {
-    //                 this.setState({ loading: false });
-    //             }).catch(err => {
-    //                 this.setState({ deleteError: err.response.data.globalErrors[0] });
-    //                 swal("Unable to Delete!", err.response.data.globalErrors[0], "error");
-    //             })
-    //         }
-    //     });
-    // }
-    // }
+   
     saveUser() {
         var user = {
             active: true,
@@ -315,7 +285,7 @@ class View extends Component {
         });
     }
     loadObj(id) {
-        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=purchase_edit').then(res => {
+        axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=pv_purchase_edit').then(res => {
             this.setState({ obj: res.data, users:res.data.users, loading: false});
             if(this.props?.location?.search && this.props?.location?.search?.indexOf('approval')){
                 this.toggleTab(4);
@@ -324,7 +294,7 @@ class View extends Component {
     }
     loadAssignedUsers(id){
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "-user?projection=" +
-            this.props.baseUrl + "-user&reference=" + id).then(res => {
+            "pv-purchase" + "-user&reference=" + id).then(res => {
             this.setState({
                 users: res.data._embedded[Object.keys(res.data._embedded)[0]],
                 page: res.data.page,
@@ -463,12 +433,12 @@ class View extends Component {
                                                             <fieldset>
                                                                 <FormControl>
                                                                     {prod.id &&
-                                                                        <Link to={`/products/${prod.product.id}`}>
+                                                                        <Link to={`/vendor-product/${prod.product.id}`}>
                                                                             {prod.product.name}
                                                                         </Link>
                                                                     }
                                                                     {!prod.id &&
-                                                                        <AutoSuggest url="products"
+                                                                        <AutoSuggest url="vendor-product"
                                                                             name="productName"
                                                                             fullWidth={true}
                                                                             displayColumns="name"
@@ -479,7 +449,7 @@ class View extends Component {
                                                                             // error={errors?.productName_auto_suggest?.length > 0}
                                                                             inputProps={{ "data-validate": '[{ "key":"required"}]' }}
                                                                             onRef={ref => (this.productASRef[i] = ref)}
-                                                                            projection="product_auto_suggest"
+                                                                            projection="vendor_auto_suggest_product"
                                                                             value={this.state.formWizard.selectedProducts[i]}
                                                                             onSelect={e => this.setProductAutoSuggest(i, e?.id)}
                                                                             queryString="&name" ></AutoSuggest>}
@@ -537,7 +507,7 @@ class View extends Component {
                                     label="User"
                                     placeholder="Search User by name"
                                     arrayName="users"
-                                    inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                    inputProps={{"data-validate": '[{ "key":"required"}]'}}
                                     onRef={ref => {(this.userASRef = ref) 
                                         if (ref) {
                                         this.userASRef.load();
@@ -609,7 +579,7 @@ class View extends Component {
                                                         {/* <div>
                                                             <span className={Const.getStatusBadge(this.state.obj.status, this.state.status)}>{this.state.obj.status}</span>
                                                         </div> */}
-                                                        {(this.props.user.role === 'ROLE_ADMIN' ) &&   
+                                                        {(this.props.user.role === 'ROLE_ADMIN' && this.props.user.permissions.indexOf(Const.MG_PR_E) >= 0) &&   
                                                         <button title="Edit" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
                                                         {this.props.user.role === 'ROLE_ADMIN' && 
                                                          <button title="Email" style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>}
@@ -680,7 +650,7 @@ class View extends Component {
                                                                     <strong>Company</strong>
                                                                 </td>
                                                                 <td>
-                                                                    <Link to={`/companies/${this.state.obj.company.id}`}>
+                                                                    <Link to={`/prospective-vendor/${this.state.obj.company.id}`}>
                                                                         {this.state.obj.company.name?this.state.obj.company.name:"-NA-"}
                                                                     </Link>
                                                                 </td>

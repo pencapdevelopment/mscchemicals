@@ -648,7 +648,8 @@ class View extends Component {
                                                                 <tbody>
                                                                     <tr>
                                                                         <td>
-                                                                             {(this.props.user.role === 'ROLE_ADMIN'&&this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&   
+                                                                        {/* &&this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) */}
+                                                                             {(this.props.user.role === 'ROLE_ADMIN') &&   
                                                         
                                                         <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff'}} fontSize="small" /></button>}
                                                                         </td>
