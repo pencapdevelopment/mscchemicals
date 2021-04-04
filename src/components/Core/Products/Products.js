@@ -3,12 +3,12 @@ import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
 
 import PageLoader from '../../Common/PageLoader';
-
+import axios from 'axios';
 import TabPanel from '../../Common/TabPanel';
-// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
 import { Tab, Tabs, AppBar, Button } from '@material-ui/core';
 // import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-
+import swal from 'sweetalert';
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
 // import {
@@ -16,7 +16,10 @@ import 'react-datetime/css/react-datetime.css';
 //     MuiPickersUtilsProvider,
 // } from '@material-ui/pickers';
 // import Event from '@material-ui/icons/Event';
-
+import {
+    Modal,
+   ModalBody, ModalHeader,
+} from 'reactstrap';
 import List from './List';
 import Add from './Add';
 import View from './View';
@@ -27,6 +30,7 @@ class Products extends Component {
     state = {
         activeTab: 0,
         loading: true,
+        modal1: false,
         baseUrl: 'products',
         editFlag: false,
         currentId: 0
@@ -42,7 +46,56 @@ class Products extends Component {
             });
         }
     }
+    uploadFiles() {
+        var formData = new FormData();
+        var imagefile = document.querySelector('#fileUpload');
+        formData.append("file", imagefile.files[0]);
+        formData.append("from", "companies");
+        // formData.append("parent", '');
+        formData.append("fileType", this.state.label);
+        // if (this.state.formWizard.obj.enableExpiryDate && this.state.formWizard.obj.expiryDate) {
+        //     formData.append("expiryDate", this.state.formWizard.obj.expiryDate);
+        // }
+        axios.post(server_url + context_path + 'docs/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then(res => {
+            if (res.data.uploaded === 1) {
+                // this.toggleModal(this.state.label);
+                var joined = this.state.uploadedFiles.concat(res.data);
+                this.setState({ uploadedFiles: joined });
+                this.closetoggleModal();
+                swal("Uploaded!", "File Uploaded", "success");
+            } else {
+                swal("Unable to Upload!", "Upload Failed", "error");
+            }
+        }).catch(err => {
+            var msg = "Select File";
 
+            if (err.response.data.globalErrors && err.response.data.globalErrors[0]) {
+                msg = err.response.data.globalErrors[0];
+            }
+            swal("Unable to Upload!", msg, "error");
+        })
+    //     this.convertToOrder();
+    }
+    closetoggleModal = () => {
+        this.setState({
+            modal: !this.state.modal
+        });
+    };
+    closetoggleModalProduct = () => {
+        this.setState({
+            modalproduct: !this.state.modalproduct
+        });
+    };
+    toggleModal = (label) => {
+        this.setState({
+            modal: !this.state.modal,
+            label: label
+        });
+    };
     saveSuccess(id) {
         this.setState({ editFlag: true, currentId: id });
         this.toggleTab(2);
@@ -73,18 +126,47 @@ class Products extends Component {
 
         return (
             <ContentWrapper>
+                 <Modal isOpen={this.state.modal} backdrop="static" toggle={this.closetoggleModal} size={'md'}>
+                    <ModalHeader toggle={this.closetoggleModal}>
+                        Upload - Po
+                        {/* {this.state.label} */}
+                    </ModalHeader>
+                    <ModalBody>
+                        <fieldset>
+                            <Button
+                                variant="contained"
+                                component="label" color="primary"> Select File
+                                    <input type="file" id="fileUpload"
+                                    name="fileUpload" accept='.csv'
+                                    onChange={e => this.fileSelected('fileUpload', e)}
+                                    style={{ display: "none" }} />
+                            </Button>{this.state.name}
+                        </fieldset>
+                        <span><strong>Note:-</strong>*Please upload .CSV files only</span>
+                        {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
+                        {/*  } */}
+                        <div className="text-center">
+                            <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Submit</Button>
+                        </div>
+                    </ModalBody>
+                </Modal>
                 {this.state.loading && <PageLoader />}
                 {this.state.currentId === 0 &&
                     <div>
                         <div className="content-heading">
-                            <h4 className="col-10 my-2" onClick={() => this.toggleTab(0)}>
+                            <h4 className="col-8 my-2" onClick={() => this.toggleTab(0)}>
                                 <span>Products</span>
                             </h4>
 
                             <div className="col-2 float-right mt-2">
-                                <Button variant="contained" color="warning" size="xs"
+                                <Button variant="contained"  style={{marginLeft: "30px"}} color="warning" size="xs"
                                     onClick={() => this.toggleTab(1)} > + Add Product</Button>
-                            </div></div>
+                            </div>
+                            <div className="col-2 float-right mt-2">
+                                <Button variant="contained" color="warning"   size="xs"
+                                   onClick={e => this.toggleModal()} > Bulk Import</Button>
+                            </div>
+                            </div>
                         <div className="row">
                             <div className="col-md-12">
                                 <AppBar position="static">

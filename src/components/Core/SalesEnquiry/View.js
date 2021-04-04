@@ -141,7 +141,6 @@ class View extends Component {
   
     setProductField(i, field, e, noValidate) {
         var obj = this.state.obj;
-        console.log(e.target.value)
         // var input = e.target;
         obj.products[i][field] = e.target.value;
         this.setState({ obj });
@@ -160,8 +159,7 @@ class View extends Component {
     }
     handleDelete = (i) => 
     {
-        if(this.props.user.role === 'ROLE_ADMIN'){
-            console.log('You clicked the delete icon.', i); // eslint-disable-line no-alert
+        if(this.props.user.role === 'ROLE_ADMIN'){ // eslint-disable-line no-alert
             var user = this.state.users[i];
             swal({
                 title: "Are you sure?",
@@ -344,7 +342,6 @@ class View extends Component {
     loadObj(id) {
         axios.get(Const.server_url + Const.context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=sales_edit')
         .then(res => {
-            console.log("view.js obj data==>>",res.data);
             this.setState({ obj: res.data, users:res.data.users, loading: false},()=>{
             if(this.props?.location?.search && this.props?.location?.search?.indexOf('approval')){
                 this.toggleTab(4);
@@ -449,7 +446,6 @@ class View extends Component {
             swal("Unable to Convert!", "Please get Admin approval", "error");
             return;
         }
-        console.log("products",this.state.obj.products)
         if (this.state.obj.products.length === 0) {
        
             swal("Unable to Convert!", "Please add atleast one product", "error");

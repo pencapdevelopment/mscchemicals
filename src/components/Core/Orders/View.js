@@ -239,22 +239,16 @@ class View extends Component {
     orderUser(id) {
         axios.get(server_url + context_path + "api/"+this.props.baseUrl+"-user?reference.id="+id+"&projection=orders-user")
         .then(res => {
-            console.log("order user response",res);
             this.setState({
                 users:res?.data?._embedded[Object.keys(res?.data?._embedded)[0]],
                 loading:false
-             },()=>{console.log("after setting state is",this.state)});
-
+             });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
-        console.log('view component did mount');
-        console.log(this.props.currentId);
         this.orderUser(this.props.currentId);
         this.loadObj(this.props.currentId,()=>{
             if(this.props.user.role === 'ROLE_ACCOUNTS'||this.props.user.role === 'ROLE_INVENTORY'){
@@ -1038,6 +1032,7 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Port of Landing</strong>
                                                                 </td>
+                                                                {console.log("order ob is", this.state.obj)}
                                                                 <td>{this.state.obj.portOfLanding}</td>
                                                             </tr>
                                                             <tr>
@@ -1063,7 +1058,7 @@ class View extends Component {
                                                                 <td>
                                                                     <strong>Payment Terms</strong>
                                                                 </td>
-                                                                <td>{this.state.obj.paymentterms}</td>
+                                                                <td>{this.state.obj.company.paymentTerms}</td>
                                                             </tr>                                            
                                                             <tr>
                                                                 <td>

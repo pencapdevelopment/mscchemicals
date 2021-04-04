@@ -2,7 +2,6 @@ import { Button } from '@material-ui/core';
 import axios from 'axios';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
-
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
@@ -24,16 +23,7 @@ import {
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import AddQuotation from './AddQuotation';
 import { createOrder } from '../Orders/Create';
-
-
-
-
-
-
-
-
 // const json2csv = require('json2csv').parse;
-
 class Order extends Component {
     state = {
         activeTab: 0,
@@ -43,7 +33,6 @@ class Order extends Component {
             poNumber:'',
             instructions:'',
             poDate:''
-
         },
         prodData:'',
         obj: '',
@@ -91,7 +80,6 @@ class Order extends Component {
                 selectedCustomerTypes: [],
                 selectedorganizations: [],
                 msmeId: '',
-                
             },
             tempproduct: {
                 code: getUniqueCode('PD'),
@@ -191,50 +179,37 @@ class Order extends Component {
 
         this.setState({ formWizard });
     }
-    componentDidUpdate(){
-        console.log("orderData==>", this.state.orderData)
-    }
-
+    componentDidUpdate(){}
     componentDidMount(){
-        console.log("componentDidMount() method");
         axios.get(server_url + context_path + "api/sales/" + this.props.parentObj.id+ '?projection=sales_edit').then(res => {
-            this.setState({ prodData: res.data })
-            console.log("sales-products data==>>", res.data);
+            this.setState({ prodData: res.data });
         });
-
     }
-    
-        setDateField(field, e) {
-            var orderData = this.state.orderData;
-    
-            if (e) {
-                orderData[field] = e.format().toLocaleString();
-            } else {
-                orderData[field] = null;
-            }
-    
-            this.setState({ orderData });
+    setDateField(field, e) {
+        var orderData = this.state.orderData;
+        if (e) {
+            orderData[field] = e.format().toLocaleString();
+        } else {
+            orderData[field] = null;
         }
-
-        Instructions=(e)=>{
-            console.log("Instructions");
-            var orderData=this.state.orderData;
-            var input=e.target;
-            orderData.instructions=input.value ;
-            this.setState({
-                orderData
-            });
-        }
-        poNumber=(e)=>{
-            console.log("poNumber");
-            var orderData=this.state.orderData;
-            var input=e.target;
-            orderData.poNumber=input.value ;
-            this.setState({
-                orderData
-            });
-        }
-
+        this.setState({ orderData });
+    }
+    Instructions=(e)=>{
+        var orderData=this.state.orderData;
+        var input=e.target;
+        orderData.instructions=input.value ;
+        this.setState({
+            orderData
+        });
+    }
+    poNumber=(e)=>{
+        var orderData=this.state.orderData;
+        var input=e.target;
+        orderData.poNumber=input.value ;
+        this.setState({
+            orderData
+        });
+    }
     uploadFiles() {
         var formData = new FormData();
         var imagefile = document.querySelector('#fileUpload');
@@ -265,19 +240,15 @@ class Order extends Component {
             if (err.response.data.globalErrors && err.response.data.globalErrors[0]) {
                 msg = err.response.data.globalErrors[0];
             }
-
             swal("Unable to Upload!", msg, "error");
         })
         this.convertToOrder();
-
     }
-
     convertToOrder = () => {
         if (this.props.parentObj.adminApproval !== 'Y' && this.props.user.role !== 'ROLE_ADMIN') {
             swal("Unable to Convert!", "Please get Admin approval", "error");
             return;
         }
-        console.log("products",this.props.parentObj.products)
         if (this.props.parentObj.products.length === 0) {
        
             swal("Unable to Convert!", "Please add atleast one product", "error");
@@ -290,8 +261,6 @@ class Order extends Component {
         orderData1.poDate=orderData.poDate;
         createOrder('Sales', orderData1, this.props.baseUrl);
     }
-
-  
     render() {
         return (
             <div>

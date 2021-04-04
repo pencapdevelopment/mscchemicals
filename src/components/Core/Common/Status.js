@@ -4,15 +4,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Modal,
-
     ModalBody, ModalHeader
 } from 'reactstrap';
 import swal from 'sweetalert';
 import { context_path, server_url } from '../../Common/constants';
 import Chip from '@material-ui/core/Chip';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-
-
 class Status extends Component {
     state = {
         modal: false,
@@ -21,28 +18,21 @@ class Status extends Component {
         selectedStatus: '',
         statusNotes:''
     }
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
-        // console.log('status component did mount');
-        // console.log(this.props.currentId);
         this.props.onRef(this);
-
         this.setState({
             selectedStatus: this.props.status,
             statusNotes: this.props.statusNotes
         })
     }
-
     patchStatus = e => {
         e.preventDefault();
 

@@ -76,8 +76,6 @@ class Quotation extends Component {
         });   
     }
     updatePurchaseProdStatus = (e,purchaseProd) => {
-        console.log('e target is',e.target);
-        console.log('purchaseProd',purchaseProd);
         swal({
             title: "Are you sure?",
             text: "Are you sure to change the status of product",
@@ -96,10 +94,9 @@ class Quotation extends Component {
     }
     getPurchaseProdStatus = (purchaseProd) => {
         let ngt = this.state.ngTracking;
-        console.log("ngt is",ngt);
         if((ngt.length < 1 && purchaseProd.status === null) ||
         (ngt.length > 0 && !ngt.some(p => p.product.id === purchaseProd.product.id) && purchaseProd.status === null)){
-            return <FormControl>
+            return this.props.user.role !== 'ROLE_ADMIN'?null:<FormControl>
             <InputLabel >Status</InputLabel>
             <Select
                 name="purchaseProdStatus"
@@ -209,23 +206,36 @@ class Quotation extends Component {
         });
     }
     convertToOrder = () => {
-        if(this.state.obj.enquiry.adminApproval!=='Y' && this.props.user.role !== 'ROLE_ADMIN'){
-            swal("Unable to Convert!", "Please get Admin approval of purchase enquiry", "error");
-            return ;
-        }
-        if(this.state.obj.status!=='Approved'){
-            swal("Unable to Convert!", "Please get Quotation Approval", "error");
-            return ;
-        }
-        if(this.state.obj.enquiry.products.length===0){
-            swal("Unable to Convert!", "Please add atleast one product", "error");
-            return ;
-        }
-        if(this.state.obj.enquiry.products.length>0 && !this.state.obj.enquiry.products.some(p => p.status === 'Approved')){
-            swal("Unable to Convert!", "Please get Approval of atleast one product", "error");
-            return ;
-        }
-        createOrder('Purchase', this.state.obj, this.props.baseUrl);
+        swal({
+            title: "Are you Sure?",
+            text: "Are you sure to convert to order",
+            icon: "info",
+            button: {
+                text: "Yes, Convert!",
+                closeModal: true,
+            }
+        })
+        .then(willConvert => {
+            if (willConvert) {
+                if(this.state.obj.enquiry.adminApproval!=='Y' && this.props.user.role !== 'ROLE_ADMIN'){
+                    swal("Unable to Convert!", "Please get Admin approval of purchase enquiry", "error");
+                    return ;
+                }
+                if(this.state.obj.status!=='Approved'){
+                    swal("Unable to Convert!", "Please get Quotation Approval", "error");
+                    return ;
+                }
+                if(this.state.obj.enquiry.products.length===0){
+                    swal("Unable to Convert!", "Please add atleast one product", "error");
+                    return ;
+                }
+                if(this.state.obj.enquiry.products.length>0 && !this.state.obj.enquiry.products.some(p => p.status === 'Approved')){
+                    swal("Unable to Convert!", "Please get Approval of atleast one product", "error");
+                    return ;
+                }
+                createOrder('Purchase', this.state.obj.enquiry, this.props.baseUrl);
+            }
+        });
     }
     render() {
         return (

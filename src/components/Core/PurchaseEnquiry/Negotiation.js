@@ -146,10 +146,10 @@ class Negotiation extends Component {
         if(!(this.state.ngList1.ns1_readOnly && this.state.ngList1.ns2_readOnly && this.state.ngList1.ns3_readOnly)){
             axios.post( server_url + context_path + "api/purchase-negotiation-tracking/", purchProdObj)
             .then(res => {
-                axios.patch(server_url + context_path + "api/purchase-products/"+purchProdObj.id,{id:purchProdObj.id,status:null});
+                axios.patch(server_url + context_path + "api/purchase-products/"+purchProdObj.id,{id:purchProdObj.id,status:null})
+                .then(purProdRes => {this.loadPurchaseEnqObj(this.props.currentId);});
                 this.setState({ngTObj: res.data, modalnegatation:false, loading: false});
                 this.purchaseApprovalData();
-                this.loadPurchaseEnqObj(this.props.currentId);
                 this.negotiationTraking();
             })
             .catch(err=>err) ;
@@ -612,8 +612,6 @@ class Negotiation extends Component {
                                                 {this.state.purchaseEnqObj.products &&
                                                 <tbody>
                                                     {this.state.purchaseEnqObj.products.map((product, i) => {
-                                                        console.log("ngtrack length",this.state.ngTracking.length);
-                                                        console.log("ngtrack some of"+product.product.id,this.state.ngTracking.some(p =>p.product.id === product.product.id),product);
                                                     if((this.state.ngTracking.length < 1 && (product.status === null || product.status === 'Pending')) ||
                                                     (this.state.ngTracking.length>0 && !this.state.ngTracking.some(p =>p.product.id === product.product.id) && !(product.status === 'Rejected' || product.status === 'Approved'))){
                                                         return null;
@@ -632,16 +630,16 @@ class Negotiation extends Component {
                                                         <button className="btn btn-primary"  onClick={()=>this.toggleRemarkNegotiation(product.id)}  >< VisibilityRoundedIcon  size="medium" style={{marginLeft: 20}} color="primary" aria-label=" VisibilityRoundedIcon" /></button>
                                                         </td>
                                                         <td>
-                                                        <Button color='primary' size='small' disabled={product.status==='Approved'} onClick={()=>this.toggleModalNegotation(product.id)} variant="contained">Negotiation</Button>
+                                                        <Button color='primary' size='small' disabled={product.status==='Approved' || product.status===null || product.status==='Pending'} onClick={()=>this.toggleModalNegotation(product.id)} variant="contained">Negotiation</Button>
                                                         </td>
                                                         {/* <td>
                                                             <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                         </td> */}
-                                                        {this.state.ngTracking.map((ng) => {
+                                                        {/* {this.state.ngTracking.map((ng) => {
                                                         return (<div>
-                                                        {product.product.id===ng.product.id && <div>
+                                                        {product.product.id===ng.product.id && <div> */}
                                                         <td>
-                                                            {ng.status===null ? <div>
+                                                            {product.status===null ? <div>
                                                                 <span className="badge badge-secondary">Pending</span></div> :<div>
                                                                 {product.status === 'Rejected' ? <div>
                                                                     <span className="badge badge-danger">{product.status}</span></div>:<div>
@@ -650,8 +648,8 @@ class Negotiation extends Component {
                                                                 </div>
                                                             }
                                                         </td>
-                                                        </div>
-                                                            }</div>)})}    
+                                                        {/* </div>
+                                                            }</div>)})}     */}
                                                     </tr>)})}
                                                 </tbody>}
                                             </Table>

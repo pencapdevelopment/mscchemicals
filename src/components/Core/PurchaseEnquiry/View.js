@@ -598,7 +598,7 @@ class View extends Component {
                                                             </tr>
                                                              </tbody>
                                                         </table>
-                                                        {(this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_PR_E) >= 0) && <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
+                                                        {(this.props.user.role === 'ROLE_ADMIN') && <Status onRef={ref => (this.statusRef = ref)} baseUrl={this.props.baseUrl} currentId={this.props.currentId}
                                                             showNotes={true}
                                                             onUpdate={(id) => this.updateStatus(id)}
                                                             //style={{marginLeft:' -50'}}

@@ -25,12 +25,17 @@ import PageLoader from '../Common/PageLoader';
 import Sorter from '../Common/Sorter';
 import TabPanel from '../Common/TabPanel';
 import ContentWrapper from '../Layout/ContentWrapper';
+import {
+    Modal,
+   ModalBody, ModalHeader,
+} from 'reactstrap';
 const json2csv = require('json2csv').parse;
 class Users extends Component {
     state = {
         activeTab: 0,
         loading: false,
         modal1: false,
+        modal: false,
         modal2: false,
         page: {
             number: 0,
@@ -98,6 +103,33 @@ class Users extends Component {
             }
         });
     }
+    closetoggleModal = () => {
+        this.setState({
+            modal: !this.state.modal
+        });
+    };
+    closetoggleModalProduct = () => {
+        this.setState({
+            modalproduct: !this.state.modalproduct
+        });
+    };
+    toggleModal = (label) => {
+        this.setState({
+            modal: !this.state.modal,
+            label: label
+        });
+    };
+    fileSelected(name, e) {
+        var file = e.target.files[0];
+        var sizeinMb = file.size / (1024 * 1024);
+        if (sizeinMb > 3) {
+            var error = this.state.error;
+            error[name] = 'File is > 3MB'
+            this.setState({ error });
+        }
+        this.setState({ name: file.name });
+    }
+    
     componentDidMount() {
         this.loadObjects();
     }
@@ -360,6 +392,40 @@ class Users extends Component {
             return;
         }
     }
+    uploadFiles() {
+        var formData = new FormData();
+        var imagefile = document.querySelector('#fileUpload');
+        formData.append("file", imagefile.files[0]);
+        formData.append("from", "companies");
+        // formData.append("parent", '');
+        formData.append("fileType", this.state.label);
+        // if (this.state.formWizard.obj.enableExpiryDate && this.state.formWizard.obj.expiryDate) {
+        //     formData.append("expiryDate", this.state.formWizard.obj.expiryDate);
+        // }
+        axios.post(server_url + context_path + 'docs/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then(res => {
+            if (res.data.uploaded === 1) {
+                // this.toggleModal(this.state.label);
+                var joined = this.state.uploadedFiles.concat(res.data);
+                this.setState({ uploadedFiles: joined });
+                this.closetoggleModal();
+                swal("Uploaded!", "File Uploaded", "success");
+            } else {
+                swal("Unable to Upload!", "Upload Failed", "error");
+            }
+        }).catch(err => {
+            var msg = "Select File";
+
+            if (err.response.data.globalErrors && err.response.data.globalErrors[0]) {
+                msg = err.response.data.globalErrors[0];
+            }
+            swal("Unable to Upload!", msg, "error");
+        })
+        this.convertToOrder();
+    }
     patchObj(idx) {
         var user = this.state.objects[idx];
         this.setState({ loading: true });
@@ -408,13 +474,42 @@ class Users extends Component {
     render() {
         return (
             <ContentWrapper>
+                 <Modal isOpen={this.state.modal} backdrop="static" toggle={this.closetoggleModal} size={'md'}>
+                    <ModalHeader toggle={this.closetoggleModal}>
+                        Upload - Po
+                        {/* {this.state.label} */}
+                    </ModalHeader>
+                    <ModalBody>
+                        <fieldset>
+                            <Button
+                                variant="contained"
+                                component="label" color="primary"> Select File
+                                    <input type="file" id="fileUpload"
+                                    name="fileUpload" accept='.csv'
+                                    onChange={e => this.fileSelected('fileUpload', e)}
+                                    style={{ display: "none" }} />
+                            </Button>{this.state.name}
+                        </fieldset>
+                        <span><strong>Note:-</strong>*Please upload .CSV files only</span>
+                        {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
+                        {/*  } */}
+                        <div className="text-center">
+                            <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Submit</Button>
+                        </div>
+                    </ModalBody>
+                </Modal>
+              
                 {this.state.loading && <PageLoader />}
                 <div className="row content-heading">
-                    <h4 className="col-10 my-2" onClick={() => this.toggleTab(0)}>
+                    <h4 className="col-9 my-2" onClick={() => this.toggleTab(0)}>
                         <span>Users</span>
                     </h4>
+                  
                     <div className="col-2 float-right mt-2">
-                        <Button variant="contained" color="warning" size="xs" onClick={() => this.toggleTab(1)} > + Add User</Button>
+                        <Button variant="contained"  style={{marginLeft: "70px"}} color="warning" size="xs" onClick={() => this.toggleTab(1)} > + Add User</Button>
+                    </div>
+                    <div className="col-1 float-right mt-2">
+                    <Button type="submit" className="btn btn-raised btn-primary" style={{marginLeft: "-20px"}} onClick={e => this.toggleModal()} >Bulk Import</Button>
                     </div>
                 </div>
                 <div className="row">
