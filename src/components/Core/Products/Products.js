@@ -33,7 +33,9 @@ class Products extends Component {
         modal1: false,
         baseUrl: 'products',
         editFlag: false,
-        currentId: 0
+        currentId: 0,
+        importBtndisable:false,
+        importBtnText:'Submit'
     }
 
     toggleTab = (tab) => {
@@ -47,44 +49,79 @@ class Products extends Component {
         }
     }
     uploadFiles() {
-        var formData = new FormData();
         var imagefile = document.querySelector('#fileUpload');
-        formData.append("file", imagefile.files[0]);
-        formData.append("from", "companies");
-        // formData.append("parent", '');
-        formData.append("fileType", this.state.label);
-        // if (this.state.formWizard.obj.enableExpiryDate && this.state.formWizard.obj.expiryDate) {
-        //     formData.append("expiryDate", this.state.formWizard.obj.expiryDate);
-        // }
-        axios.post(server_url + context_path + 'docs/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).then(res => {
-            if (res.data.uploaded === 1) {
-                // this.toggleModal(this.state.label);
-                var joined = this.state.uploadedFiles.concat(res.data);
-                this.setState({ uploadedFiles: joined });
+        if(imagefile.files.length){
+            this.setState({importBtndisable:true,importBtnText:"Please Wait..."});
+            var formData = new FormData();
+            formData.append("file", imagefile.files[0]);
+            formData.append("from", "products");
+            // formData.append("parent", '');
+            formData.append("fileType", "import products");
+            // if (this.state.formWizard.obj.enableExpiryDate && this.state.formWizard.obj.expiryDate) {
+            //     formData.append("expiryDate", this.state.formWizard.obj.expiryDate);
+            // }
+            // docs/upload
+            axios.post(server_url + context_path + 'bulkimportprod/products', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(res => {
+                console.log(res);
+                this.setState({importBtndisable:false,importBtnText:"Submit"});
+                if (res.data.status) {
+                    // this.toggleModal(this.state.label);
+                    this.closetoggleModal();
+                    swal("Imported!", res.data.msg, "success");
+                } else {
+                    swal("Unable to Import!", res.data.msg, "error");
+                }
+            }).catch(err => {
+                this.setState({importBtndisable:false,importBtnText:"Submit"});
                 this.closetoggleModal();
-                swal("Uploaded!", "File Uploaded", "success");
-            } else {
-                swal("Unable to Upload!", "Upload Failed", "error");
-            }
-        }).catch(err => {
-            var msg = "Select File";
-
-            if (err.response.data.globalErrors && err.response.data.globalErrors[0]) {
-                msg = err.response.data.globalErrors[0];
-            }
-            swal("Unable to Upload!", msg, "error");
-        })
-    //     this.convertToOrder();
+                var msg = "Select a File";
+                console.log("error is", err);
+                if (err?.response?.data?.globalErrors && err?.response?.data?.globalErrors[0]) {
+                    msg = err.response.data.globalErrors[0];
+                }
+                swal("Unable to Import!", msg, "error");
+            })
+        }
+        else{
+            swal("Unable to Import!", "Select a File", "error");
+        }
+    }
+    downloadSampleFile = (e) => {
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+        // var doc = this.state.docs[idx];
+        axios({
+            url: server_url + context_path + "bulkimportprod/samplefile",
+            method: 'GET',
+            responseType: 'blob',
+        }).then(response => {
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'csv' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'products.csv');
+            document.body.appendChild(link);
+            link.click();
+        });
     }
     closetoggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     };
+    fileSelected(name, e) {
+        var file = e.target.files[0];
+        var sizeinMb = file.size / (1024 * 1024);
+        if (sizeinMb > 3) {
+            var error = this.state.error;
+            error[name] = 'File is > 3MB'
+            this.setState({ error });
+        }
+        this.setState({ name: file.name });
+    }
     closetoggleModalProduct = () => {
         this.setState({
             modalproduct: !this.state.modalproduct
@@ -108,27 +145,22 @@ class Products extends Component {
             this.addTemplateRef.updateObj(id);
         })
     }
-
     cancelSave = () => {
         this.toggleTab(0);
     }
-
     componentDidMount() {
         if (this.props.match.params.objId) {
             this.setState({ editFlag: true, currentId: this.props.match.params.objId });
             this.toggleTab(2);
         }
-
         this.setState({ loading: false })
     }
-
     render() {
-
         return (
             <ContentWrapper>
                  <Modal isOpen={this.state.modal} backdrop="static" toggle={this.closetoggleModal} size={'md'}>
                     <ModalHeader toggle={this.closetoggleModal}>
-                        Upload - Po
+                        Upload
                         {/* {this.state.label} */}
                     </ModalHeader>
                     <ModalBody>
@@ -142,11 +174,15 @@ class Products extends Component {
                                     style={{ display: "none" }} />
                             </Button>{this.state.name}
                         </fieldset>
+                        <span><a href="javascript:void(0);" className="btn-link" 
+                            onClick={(e) => this.downloadSampleFile(e)}>download sample file</a>
+                        </span><br/>
                         <span><strong>Note:-</strong>*Please upload .CSV files only</span>
                         {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
                         {/*  } */}
                         <div className="text-center">
-                            <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Submit</Button>
+                            <Button variant="contained" color="primary" disabled={this.state.importBtndisable} 
+                            onClick={e => this.uploadFiles()}>{this.state.importBtnText}</Button>
                         </div>
                     </ModalBody>
                 </Modal>
@@ -163,7 +199,7 @@ class Products extends Component {
                                     onClick={() => this.toggleTab(1)} > + Add Product</Button>
                             </div>
                             <div className="col-2 float-right mt-2">
-                                <Button variant="contained" color="warning"   size="xs"
+                                <Button variant="contained" color="warning" className="btn btn-raised btn-primary" size="xs"
                                    onClick={e => this.toggleModal()} > Bulk Import</Button>
                             </div>
                             </div>
