@@ -29,7 +29,6 @@ import Chip from '@material-ui/core/Chip';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
-import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
 import AutoSuggest from '../../Common/AutoSuggest';
@@ -316,7 +315,8 @@ class View extends Component {
                     subtitle:<Moment format="DD MMM YY">{act.creationDate}</Moment>,
                     avatar:<Avatar alt="" src={`${process.env.PUBLIC_URL}/static/images/face1.jpg`}/>,
                     body:act.description
-                })
+                });
+                return null;
             });
             this.setState({activityData});
         });
@@ -625,7 +625,7 @@ class View extends Component {
                                                         <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon  style={{ color: '#fff'}} fontSize="small" /></button>}
                                                                         </td>
                                                                         <td>
-                                                                             {this.state.isQuoteExists < 1 ?  <button style={{right: -10, backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} Size="small" variant="contained" title=" Generate Quotation" onClick={() => this.handleGenerateQuote()} > <img style={{width: "20px", height: "20px"}} src="img/quotei.png" /></button>:'' }
+                                                                             {this.state.isQuoteExists < 1 ?  <button style={{right: -10, backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} Size="small" variant="contained" title=" Generate Quotation" onClick={() => this.handleGenerateQuote()} > <img alt="" style={{width: "20px", height: "20px"}} src="img/quotei.png" /></button>:'' }
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>

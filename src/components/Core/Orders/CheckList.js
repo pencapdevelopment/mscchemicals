@@ -3,18 +3,14 @@ import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
 import swal from 'sweetalert';
 import axios from 'axios';
-import AutoSuggest from '../../Common/AutoSuggest';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import { server_url, context_path, } from '../../Common/constants';
-import { Button, TextField, Input, FormControl,Radio,  } from '@material-ui/core';
+import { Button, TextField, FormControl,Radio,  } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Divider from '@material-ui/core/Divider'
 import 'react-datetime/css/react-datetime.css';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
 import MomentUtils from '@date-io/moment';
 import {
     Modal,
@@ -29,19 +25,12 @@ import Event from '@material-ui/icons/Event';
 
 import FormValidator from '../../Forms/FormValidator';
 import {  Form } from 'reactstrap';
-
 // import Radio from '@material-ui/core/Radio';
 // import RadioGroup from '@material-ui/core/RadioGroup';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
 // import FormLabel from '@material-ui/core/FormLabel';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-
 // const json2csv = require('json2csv').parse;
-
-
-
 class CheckList extends Component {
-
     state = {
         editFlag: false,
         // status: [],
@@ -394,14 +383,18 @@ class CheckList extends Component {
                             </div>   
                         <div >
                         <Button variant="contained"
-                                component="label"  color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} >Upload
-                        <input type="file" id="fileUpload"
-                                    name="coa" accept='.doc,.docx,.pdf,.jpg,.png'
-                                    onChange={e => this.fileSelected('coa', e)}
-                                    style={{ display: "none" }} />
-                        </Button>{this.state.formWizard.obj.coa}
-                        
+                            component="label"  color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} >Upload
+                            <input type="file" id="fileUpload"
+                                name="coa" accept='.doc,.docx,.pdf,.jpg,.png'
+                                onChange={e => this.fileSelected('coa', e)}
+                                style={{ display: "none" }} />
+                        </Button>
                         </div>  
+                        <div className="col-md-3">
+                            <a href="javascript:void(0);" style={{marginTop:"38px",display:"block"}} className="btn-link">
+                            {'doc.fileName'}
+                            </a>
+                        </div>
                     </div>
                     <div className="row">
                     <div className="col-md-4  offset-md-3">
@@ -882,12 +875,10 @@ class CheckList extends Component {
             </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(CheckList);

@@ -21,14 +21,8 @@ import 'react-datetime/css/react-datetime.css';
 //     MuiPickersUtilsProvider,
 // } from '@material-ui/pickers';
 // import Event from '@material-ui/icons/Event';
-
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-
-
 import FormValidator from '../../Forms/FormValidator';
 import {  Form } from 'reactstrap';
-
 // import Radio from '@material-ui/core/Radio';
 // import RadioGroup from '@material-ui/core/RadioGroup';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';

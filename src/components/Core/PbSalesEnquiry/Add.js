@@ -23,10 +23,7 @@ import Moment from 'react-moment';
 // } from '@material-ui/pickers';
 // import Event from '@material-ui/icons/Event';
 import Divider from '@material-ui/core/Divider';
-import {
-    Table, Modal,
-    ModalBody, ModalHeader,
-} from 'reactstrap';
+import {Table} from 'reactstrap';
 import FormValidator from '../../Forms/FormValidator';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
@@ -291,8 +288,8 @@ class Add extends Component {
                 text: "Yes, delete it!",
                 closeModal: true,
             }
-        }).
-        then(willDelete => {
+        })
+        .then(willDelete => {
             if (willDelete) {
                 var selectedCompanies = this.state.selectedCompanies;
                 selectedCompanies.splice(i, 1);
@@ -324,8 +321,8 @@ class Add extends Component {
                 text: "Yes, delete it!",
                 closeModal: true,
             }
-        }).
-        then(willDelete => {
+        })
+        .then(willDelete => {
             if (willDelete) {
                 var users = this.state.users;
                 users.splice(i, 1);
@@ -391,7 +388,7 @@ class Add extends Component {
         // const form = this.formWizardRef;
         const tabPane = document.getElementById('salesEnquiryForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
-        const { errors, hasError } = FormValidator.bulkValidate(inputs);
+        const { errors} = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
         console.log("form errors are ",errors);
         if(this.state.users.length>0 && errors.hasOwnProperty('usersName_auto_suggest')){

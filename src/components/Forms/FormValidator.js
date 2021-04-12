@@ -61,8 +61,8 @@ const FormValidator = {
                         }
                         break;
                     case 'number':
-                        var isValid3 =  !validator.isNumeric(value);
-                        if(isValid3){
+                        var isValidNo =  !validator.isNumeric(value);
+                        if(isValidNo){
                             result.push({key:m.key,msg:'Field should be number'});
                         }
                         break;

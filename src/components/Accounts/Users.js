@@ -131,7 +131,6 @@ class Users extends Component {
         }
         this.setState({ name: file.name });
     }
-    
     componentDidMount() {
         this.loadObjects();
     }

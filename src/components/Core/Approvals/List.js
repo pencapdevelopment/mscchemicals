@@ -7,7 +7,6 @@ import Moment from 'react-moment';
 // import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
 // import PageLoader from '../../Common/PageLoader';
-import Sorter from '../../Common/Sorter';
 import FileDownload from '../../Common/FileDownload';
 import {
     Modal,
@@ -16,7 +15,6 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 import {  Select, MenuItem, InputLabel } from '@material-ui/core';
 import FormValidator from '../../Forms/FormValidator';
-import AutoSuggest from '../../Common/AutoSuggest';
 import UOM from '../Common/UOM';
 import {FormControl, TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';

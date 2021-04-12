@@ -1,7 +1,6 @@
 import { Button, TextField } from '@material-ui/core';
 import axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
-import queryString from 'query-string';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import Moment from 'react-moment';

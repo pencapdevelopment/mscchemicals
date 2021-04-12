@@ -1,8 +1,7 @@
-import {Button, Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
+import {Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
 import axios from 'axios';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
-import Moment from 'react-moment';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -10,7 +9,6 @@ import QuoteStatus from '../Common/QuoteStatus';
 import { Table } from 'reactstrap';
 import swal from 'sweetalert';
 import * as Const from '../../Common/constants';
-import Upload from '../Common/Upload';
 import Uploadp from './Uploadp';
 import AddQuotation from './AddQuotation';
 import EditIcon from '@material-ui/icons/Edit';
@@ -65,6 +63,7 @@ class Quotation extends Component {
                         ngList.push(ngt1);
                     }
                 }
+                return null;
             });
             if(ngList.length>0){
                 this.setState({
@@ -271,7 +270,7 @@ class Quotation extends Component {
                                         <div className="col-sm-2"  >
                                             <buttonGroup>
                                             {(this.props.user.role === 'ROLE_ADMIN' && 
-                                                <button title="Edit Quotation" disabled={this.state.obj.status === 'Approved' || this.state.obj.status === null || this.state.obj.status === 'Email Sent'} style={{ backgroundColor: "#2b3db6", border: "1px solid #2b3db6 ", borderRadius: "5px" }} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon style={{ color: '#fff', }} fontSize="small" /></button>)}
+                                                <button title="Edit Quotation" disabled={this.state.obj.status === 'Approved' || this.state.obj.status === null || this.state.obj.status === 'Pending' || this.state.obj.status === 'Email Sent'} style={{ backgroundColor: "#2b3db6", border: "1px solid #2b3db6 ", borderRadius: "5px" }} color="primary" variant="contained" onClick={() => this.updateObj()}> <EditIcon style={{ color: '#fff', }} fontSize="small" /></button>)}
                                                 <button title={this.state.obj.status !== 'Approved'?'Please Get Admin approval to send mail':'Send Mail'} disabled={this.state.obj.status !== 'Approved'} style={{ backgroundColor: "#2b3db6", border:"1px solid  #2b3db6",borderRadius:"5px" }} color="primary" variant="outlined" onClick={() => this.sendEmail()} ><EmailIcon  style={{ color: '#fff', }} fontSize="small" /></button>
                                                 {!this.state.obj.enquiry.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_PR_E) >= 0) &&
                                                     <button title={this.state.obj.status !== 'Approved'?'Please Get Admin approval to convert to order':'convert to Order'} 

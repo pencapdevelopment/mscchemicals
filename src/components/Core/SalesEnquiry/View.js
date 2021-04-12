@@ -29,7 +29,6 @@ import Chip from '@material-ui/core/Chip';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
-import { mockActivity } from '../../Timeline';
 import { ActivityStream } from '../../Timeline';
 import UOM from '../Common/UOM';
 import AutoSuggest from '../../Common/AutoSuggest';
@@ -37,7 +36,6 @@ import AutoSuggest from '../../Common/AutoSuggest';
 class View extends Component {
     constructor(props) {
         super(props)
-      
         this.state = {
             loading: false,
             activeTab: 0,
@@ -663,13 +661,12 @@ class View extends Component {
                                                             <Button variant="contained" color="primary"  size="xs" onClick={() => this.updateObj()}> <EditIcon style={{color: '#fff'}} size="large" /></Button>}
                                                             </Fab> */}
                                                       
-                                                          {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
+                                                        {/* {!this.state.obj.order && (this.props.user.role === 'ROLE_ADMIN' ||this.props.user.permissions.indexOf(Const.MG_SE_E) >= 0) &&
                                                             <Button  variant="contained" color="primary" size="small" onClick={this.convertToOrder}>Convert To Order</Button>}
                                                         {this.state.obj.order &&
                                                             <Link to={`/orders/${this.state.obj.order}`}>
                                                                 <Button title="Convert to order" variant="contained" color="white" size="small"><span style={{  textTransform: 'none', fontWeight: 'normal'}}>Convert Order</span></Button>
-                                                            </Link>}  
-
+                                                            </Link>}   */}
                                                     </div>
                                                     <h4 className="my-2">
                                                         <span>{this.state.obj.name}</span>

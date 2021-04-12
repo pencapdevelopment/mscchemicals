@@ -358,9 +358,9 @@ class Negotiation extends Component {
     render() {
         return (
             <div>
-                {(this.state.quoteObj.status === 'Rejected' || this.state.quoteObj.status === null) ? null: 
+                {this.state.loading && <PageLoader />}
+                {(this.state.quoteObj && (this.state.quoteObj.status === 'Rejected' || this.state.quoteObj.status === 'Pending' || this.state.quoteObj.status === null)) ? null: 
                 <div>
-                    {this.state.loading && <PageLoader />}
                     <Modal isOpen={this.state.modalnegatation} backdrop="static" toggle={this.toggleModalNegotation1} size={'lg'}>
                         <ModalHeader toggle={this.toggleModalNegotation1}>
                             Negotation Products : {this.state.purchProdObj.id}
@@ -576,8 +576,8 @@ class Negotiation extends Component {
                                             <td>{this.state.quoteObj.code}</td>
                                             <td>{this.state.quoteObj.mailSetnDate?<Moment format="DD MMM YY">{this.state.quoteObj.creationDate}</Moment>:'-NA-'}</td>
                                             <td>{'-NA-'}</td>
-                                            <td><Moment format="DD MMM YY">{this.state.quoteObj.creationDate}</Moment></td>
-                                            <td><Moment format="DD MMM YY">{this.state.quoteObj.validTill}</Moment></td>
+                                            <td>{this.state.quoteObj?.creationDate?<Moment format="DD MMM YY">{this.state.quoteObj.creationDate}</Moment>:'-NA-'}</td>
+                                            <td>{this.state.quoteObj?.validTill?<Moment format="DD MMM YY">{this.state.quoteObj.validTill}</Moment>:'-NA-'}</td>
                                         </tr>      
                                     </tbody>
                                 </Table>

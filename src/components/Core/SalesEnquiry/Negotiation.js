@@ -373,8 +373,8 @@ class Negotiation extends Component {
     render() {
         return (
             <div>
-                {(this.state.obj.status === 'Rejected' || this.state.obj.status === null) ? null: <div>
                 {this.state.loading && <PageLoader />}
+                {(this.state.obj && (this.state.obj.status === 'Rejected' || this.state.obj.status ==='Pending' || this.state.obj.status === null)) ? null: <div>
                 <Modal isOpen={this.state.modalnegatation} backdrop="static" toggle={this.toggleModalNegotation1} size={'lg'}>
                      <ModalHeader toggle={this.toggleModalNegotation1}>
                         Negotation Products : {this.state.obj2.id}
@@ -617,6 +617,10 @@ class Negotiation extends Component {
                                         {this.state.obj1.products &&
                                         <tbody>
                                         {this.state.obj1.products.map((product, i) => {
+                                            if((this.state.ngTracking.length < 1 && (product.status === null || product.status === 'Pending')) ||
+                                            (this.state.ngTracking.length>0 && !this.state.ngTracking.some(p =>p.product.id === product.product.id) && !(product.status === 'Rejected' || product.status === 'Approved'))){
+                                                return null;
+                                            }
                                             return (
                                                 <tr key={i}>
                                                     <td className="va-middle">{i + 1}</td>
@@ -631,28 +635,23 @@ class Negotiation extends Component {
                                                     <button className="btn btn-primary"  onClick={()=>this.toggleRemarkNegotiation(product.id)}  >< VisibilityRoundedIcon  size="medium" style={{marginLeft: 20}} color="primary" aria-label=" VisibilityRoundedIcon" /></button>
                                                     </td>
                                                     <td>
-                                                    <Button color='primary' size='small' disabled={product.status==='Approved'} onClick={()=>this.toggleModalNegotation(product.id)} variant="contained">Negotiation</Button>
+                                                    <Button color='primary' size='small' disabled={product.status==='Approved' || product.status===null || product.status==='Pending'} onClick={()=>this.toggleModalNegotation(product.id)} variant="contained">Negotiation</Button>
                                                     </td>
                                                     
                                                     {/* <td>
                                                         <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                     </td> */}
-
-                                                    {this.state.ngTracking.map((ng) => {
-                                                        return (<div>
-                                                            {product.product.id===ng.product.id && <div>
-                                                   <td>
-                                                    {ng.status===null ? <div>
-                                                        <span className="badge badge-secondary">Pending</span></div> :<div>
-                                                            {product.status === 'Rejected' ? <div>
-                                                            <span className="badge badge-danger">{product.status}</span></div>:<div>
-                                                            <span className="badge badge-success">{product.status}</span></div>
-                                                    }
-                                                    </div>
-                                                }
-                                                    </td>
-                                                </div>
-                                                    }</div>)})}    
+                                                    <td>
+                                                        {product.status===null ? 
+                                                            <div><span className="badge badge-secondary">Pending</span></div> :
+                                                            <div>{
+                                                                product.status === 'Rejected' ? 
+                                                                    <div><span className="badge badge-danger">{product.status}</span></div>:
+                                                                    <div><span className="badge badge-success">{product.status}</span></div>
+                                                                }
+                                                            </div>
+                                                        }
+                                                    </td>   
                                                 </tr>
                                             )
                                             })}

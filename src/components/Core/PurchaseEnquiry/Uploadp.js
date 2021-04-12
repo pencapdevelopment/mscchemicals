@@ -20,8 +20,6 @@ import { context_path, server_url } from '../../Common/constants';
 import Sorter from '../../Common/Sorter';
 import ContentWrapper from '../../Layout/ContentWrapper';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import AutoSuggest from '../../Common/AutoSuggest';
-import UOM from '../Common/UOM';
 import { Link } from 'react-router-dom';
 // const json2csv = require('json2csv').parse;
 class Uploadp extends Component {
@@ -29,6 +27,8 @@ class Uploadp extends Component {
         activeTab: 0,
         editFlag: false,
         editSubFlag: false,
+        disableUploadBtn: false,
+        UploadBtntxt:'Save',
         modal: false,
         error: {},
         formWizard: {
@@ -57,8 +57,11 @@ class Uploadp extends Component {
             'doc': 'application/msword',
             'docx': 'application/msword',
             'pdf': 'application/pdf',
+            'csv':'text/csv',
             'png': 'image/png',
             'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'txt':'text/plain'
         }
     }
     toggleModal = () => {
@@ -174,6 +177,7 @@ class Uploadp extends Component {
     uploadFiles() {
         var hasError = this.checkForError();
         if (!hasError) {
+            this.setState({UploadBtntxt:'Please Wait...',disableUploadBtn:true});
             var formData = new FormData();
             var imagefile = document.querySelector('#fileUpload');
             formData.append("file", imagefile.files[0]);
@@ -188,6 +192,7 @@ class Uploadp extends Component {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(res => {
+                this.setState({UploadBtntxt:'Save',disableUploadBtn:false});
                 if (res.data.uploaded === 1) {
                     this.toggleModal();
                     this.loadObj();
@@ -200,6 +205,8 @@ class Uploadp extends Component {
                     swal("Unable to Upload!", "Upload Failed", "error");
                 }
             }).catch(err => {
+                this.setState({UploadBtntxt:'Save',disableUploadBtn:false});
+                this.toggleModal();
                 var msg = "Select File";
                 if(err.response.data.globalErrors && err.response.data.globalErrors[0]) {
                     msg = err.response.data.globalErrors[0];
@@ -401,7 +408,7 @@ class Uploadp extends Component {
                                         </tbody>
                                     </Table>}
                                     <div className="text-center">
-                                        <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Save</Button>
+                                        <Button variant="contained" color="primary" disabled={this.state.disableUploadBtn} onClick={e => this.uploadFiles()}>{this.state.UploadBtntxt}</Button>
                                     </div>
                                 </Form>
                             </ModalBody>

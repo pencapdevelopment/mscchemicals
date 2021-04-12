@@ -72,7 +72,11 @@ class Quotation extends Component {
                 status:'',
                 remark:''
             }
-        }
+        },
+        saleProdStatus: [
+            { label: 'Approve', value: 'Approved', badge: 'success'},
+            { label: 'Reject', value: 'Rejected', badge: 'danger'}
+        ]
     }
     loadObj() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId).then(res => {
@@ -130,7 +134,7 @@ class Quotation extends Component {
                     ngTracking:ngList, 
                     trackingData:ngList1,
                     page:''
-                }, ()=>console.log("negotiationTraking second if setstate data", this.state.ngTracking, "current id", this.props.currentId));
+                });
             }
         });   
     }
@@ -161,16 +165,51 @@ class Quotation extends Component {
         })
     }
     loadObj(id) {
-        console.log("QUotation.js loadObj function")
         axios.get(Const.server_url + Const.context_path + "api/sales-quotation?enquiry.id=" + id + '&projection=sales_quotation_edit').then(res => {
-            console.log("Quotation.js", list)
             var list = res.data._embedded[Object.keys(res.data._embedded)[0]];
-            console.log("Quotation.js", list)
             if(list.length) {
-                this.setState({ obj: list[0], currentId: list[0].id }, ()=>console.log("loadobj sales-quotation data", this.state.obj));
-                console.log("setState")
+                this.setState({ obj: list[0], currentId: list[0].id });
             }
         });
+    }
+    updateSaleProdStatus = (e,saleProd) => {
+        swal({
+            title: "Are you sure?",
+            text: "Are you sure to change the status of product",
+            icon: "info",
+            button: {
+                text: "Yes, Change it!",
+                closeModal: true,
+            }
+        })
+        .then(willChange => {
+            if (willChange) {
+                axios.patch(Const.server_url + Const.context_path + "api/sales-products/"+saleProd.id,{id:saleProd.id,status:e.target.value})
+                .then(res => {this.loadObj(this.props.currentId)});
+            }
+        });
+    }
+    getSaleProdStatus = (saleProd) => {
+        let ngt = this.state.ngTracking;
+        if((ngt.length < 1 && saleProd.status === null) ||
+        (ngt.length > 0 && !ngt.some(p => p.product.id === saleProd.product.id) && saleProd.status === null)){
+            return this.props.user.role !== 'ROLE_ADMIN'?null:<FormControl>
+            <InputLabel >Status</InputLabel>
+            <Select
+                name="saleProdStatus"
+                onChange={e => this.updateSaleProdStatus(e,saleProd)}
+            >
+                {this.state.saleProdStatus.map((e, keyIndex) => {
+                    return (<MenuItem key={keyIndex} value={e.value}> {e.label} </MenuItem>)
+                })}
+            </Select>
+            </FormControl>;
+        }
+        else{
+            return saleProd.status === null?<span className="badge badge-secondary">Pending</span>:
+            saleProd.status === 'Rejected'?<span className="badge badge-danger">{saleProd.status}</span>:
+            <span className="badge badge-success">{saleProd.status}</span>;
+        }
     }
     componentWillUnmount() {
         this.props.onRef(undefined);
@@ -181,15 +220,12 @@ class Quotation extends Component {
             selectedStatus: this.props.status,
             // statusNotes: this.props.statusNotes
         })
-        // console.log('quotation component did mount');
-        console.log("componentDidMount", this.props.currentId);
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
         this.negotiationTraking();
         
     }
     updateObj() {
-        console.log("updateObj in Quotation.js")
         if(this.state.obj) {
             this.setState({ editFlag: true }, () => {
                 this.addTemplateRef.updateObj(this.state.currentId);
@@ -254,7 +290,7 @@ class Quotation extends Component {
         const readOnly=this.state.readOnly;  
         return (
             <div>  
-                             <Modal isOpen={this.state.modalproduct1} backdrop="static" toggle={this.cartEdit} size={'md'}>
+                <Modal isOpen={this.state.modalproduct1} backdrop="static" toggle={this.cartEdit} size={'md'}>
                     <ModalHeader toggle={this.cartEdit}>
                       <h3>Approved Products</h3>
                     </ModalHeader>
@@ -272,48 +308,31 @@ class Quotation extends Component {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    {this.state.ngTracking.map((product,i) => {
+                                    {this.state?.obj?.enquiry?.products ? this.state.obj.enquiry.products.map((product,i) => {
                                         if(product.status === 'Approved'){
-                                        return (
-                                            <tr key={i}>
-                                                <td className="va-middle">{i + 1}</td>
-                                                <td>
-                                                    <Link to={`/products/${product.product.id}`}>
-                                                        {product.product.name}
-                                                    </Link>
-                                                </td>
-                                                <td>{product.quantity}</td>
-                                                <td>{product.amount}</td>
-
-                                                {this.state.ngTracking.map((ng) => {
-                                                return (<div>
-                                                    {product.product.id===ng.product.id && <div>
-                                                <td>
-                                                {ng.status===null ? <div>
-                                                <span className="badge badge-secondary">Pending</span></div> :<div>
-                                                    {product.status === 'Rejected' ? <div>
-                                                    <span className="badge badge-danger">{product.status}</span></div>:<div>
-                                                    <span className="badge badge-success">{product.status}</span></div>
-                                            }
-                                            </div>
-                                            }                                                  
-                                            </td>
-                                            </div>}</div>)})}
-                                            <div>
-                                            </div>
-                                            </tr> 
+                                            return (
+                                                <tr key={i}>
+                                                    <td className="va-middle">{i + 1}</td>
+                                                    <td>
+                                                        <Link to={`/products/${product.product.id}`}>
+                                                            {product.product.name}
+                                                        </Link>
+                                                    </td>
+                                                    <td>{product.quantity}</td>
+                                                    <td>{product.amount}</td>
+                                                    <td>{this.getSaleProdStatus(product)}</td>
+                                                </tr> 
                                             )
                                         }
-                                        else{
-                                            return null;  }
-                                    })}
+                                        else{ return null;  }
+                                    }):null}
                                     </tbody>
                                 </Table>
-                                {this.state.ngTracking.some(prod => prod.status === 'Approved') &&
+                                {this.state?.obj?.enquiry?.products ?this.state.obj.enquiry.products.some(prod => prod.status === 'Approved') &&
                                     <div style={{ textAlign: 'center',}} >
                                         <Button  variant="contained" color="primary" size="small" onClick={this.props.convertOrder}>Convert To Order</Button>
                                     </div>
-                                }
+                                :null}
                             </div>
                         </div>
                     </ModalBody>
@@ -519,9 +538,9 @@ class Quotation extends Component {
                                                     {/* <th>Actions</th> */}
                                                 </tr>
                                             </thead>
-                                            {this.state.obj.products &&
+                                            {this.state?.obj?.enquiry?.products &&
                                             <tbody>
-                                            {this.props.parentObj.products.map((product, i) => {
+                                            {this.state.obj.enquiry.products.map((product, i) => {
                                                 return (
                                                     <tr key={i}>
                                                         <td className="va-middle">{i + 1}</td>
@@ -532,21 +551,7 @@ class Quotation extends Component {
                                                         </td>
                                                         <td>{product.quantity}</td>
                                                         <td>{product.amount}</td>
-
-                                                        {this.state.ngTracking.map((ng) => {
-                                                        return (<div>
-                                                            {product.product.id===ng.product.id && <div>
-                                                       <td>
-                                                       {ng.status===null ? <div>
-                                                        <span className="badge badge-secondary">Pending</span></div> :<div>
-                                                            {product.status === 'Rejected' ? <div>
-                                                            <span className="badge badge-danger">{product.status}</span></div>:<div>
-                                                            <span className="badge badge-success">{product.status}</span></div>
-                                                    }
-                                                    </div>
-                                                    }                                                  
-                                                    </td>
-                                                    </div>}</div>)})}
+                                                        <td>{this.getSaleProdStatus(product)}</td>
                                                         {/* <td>
                                                             <Button variant="contained" color="primary" size="sm" onClick={() => this.sendEmail(i)}><EmailIcon fontSize="small"style={{color:'#fff'}}></EmailIcon> </Button>
                                                         </td> */}
@@ -569,7 +574,6 @@ class Quotation extends Component {
                             <AddQuotation baseUrl={this.state.baseUrl} saleId={this.props.currentId} currentId={this.state.currentId} parentObj={this.props.parentObj}
                             onRef={ref => (this.addTemplateRef = ref)} onSave={(id) => this.saveSuccess(id)} onCancel={this.cancelSave}></AddQuotation>
                         </div>
-                        
                     </div>}
             </div>)
     }

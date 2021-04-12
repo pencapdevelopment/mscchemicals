@@ -35,7 +35,6 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
 import PageLoader from '../../Common/PageLoader';
-import { instanceOf } from 'prop-types';
 function getSteps() {
     return ['Basic Details', 'Branches', 'Contacts'];
 }
@@ -398,8 +397,8 @@ class Add extends Component {
                 text: "Yes, delete it!",
                 closeModal: true,
             }
-        }).
-        then(willDelete => {
+        })
+        .then(willDelete => {
             if (willDelete) {
                 var formWizard = this.state.formWizard;
                 if(formWizard.obj.products[i].id){
@@ -436,8 +435,8 @@ class Add extends Component {
     }
     isUniqueDocument = (input,formWizard) => {
         let controller = (this.state.formWizard.editFlag?'isRegCompExists?id='+this.state.formWizard.obj.id+'&':'isCompExists?');
-        axios.get(server_url + context_path + 'api/companies/search/'+controller+'field='+input.value+'&projection=company_auto_suggest').
-        then(res => {
+        axios.get(server_url + context_path + 'api/companies/search/'+controller+'field='+input.value+'&projection=company_auto_suggest')
+        .then(res => {
             let companies = res.data._embedded[Object.keys(res.data._embedded)];
             if(companies.length){
                 if(Array.isArray(formWizard.errors[input.name])){
@@ -514,7 +513,7 @@ class Add extends Component {
         if(input.value !== '' && (input.name === 'gstin' || input.name === 'pan' || input.name === 'fssai' || input.name === 'drugLicense' || input.name === 'manufactureLicenseNo' || input.name === 'msmeId')){
             this.isUniqueDocument(input,formWizard);
         }
-        if(this.state.formWizard.obj.locationType=='I'){
+        if(this.state.formWizard.obj.locationType==='I'){
             formWizard.obj.province = 'province'
         }
        else{
@@ -613,7 +612,7 @@ class Add extends Component {
         // const form = this.formWizardRef;
         const tabPane = document.getElementById('saveForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
-        const { errors, hasError } = FormValidator.bulkValidate(inputs);
+        const { errors} = FormValidator.bulkValidate(inputs);
         var formWizard = this.state.formWizard;
         formWizard.errors = errors;
         const uniqueInputs = [].slice.call(tabPane.querySelectorAll('.unique > div > input'));

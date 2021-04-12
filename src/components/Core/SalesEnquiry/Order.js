@@ -214,8 +214,8 @@ class Order extends Component {
         var formData = new FormData();
         var imagefile = document.querySelector('#fileUpload');
         formData.append("file", imagefile.files[0]);
-        formData.append("from", "companies");
-        // formData.append("parent", '');
+        formData.append("from", "sales");
+        formData.append("parent", this.props.parentObj.id);
         formData.append("fileType", this.state.label);
         // if (this.state.formWizard.obj.enableExpiryDate && this.state.formWizard.obj.expiryDate) {
         //     formData.append("expiryDate", this.state.formWizard.obj.expiryDate);
@@ -226,7 +226,9 @@ class Order extends Component {
             }
         }).then(res => {
             if (res.data.uploaded === 1) {
+                this.convertToOrder();
                 // this.toggleModal(this.state.label);
+                this.convertToOrder();
                 var joined = this.state.uploadedFiles.concat(res.data);
                 this.setState({ uploadedFiles: joined });
                 this.closetoggleModal();
@@ -236,21 +238,18 @@ class Order extends Component {
             }
         }).catch(err => {
             var msg = "Select File";
-
             if (err.response.data.globalErrors && err.response.data.globalErrors[0]) {
                 msg = err.response.data.globalErrors[0];
             }
             swal("Unable to Upload!", msg, "error");
         })
-        this.convertToOrder();
     }
     convertToOrder = () => {
-        if (this.props.parentObj.adminApproval !== 'Y' && this.props.user.role !== 'ROLE_ADMIN') {
-            swal("Unable to Convert!", "Please get Admin approval", "error");
-            return;
-        }
+        // if (this.props.parentObj.adminApproval !== 'Y' && this.props.user.role !== 'ROLE_ADMIN') {
+        //     swal("Unable to Convert!", "Please get Admin approval", "error");
+        //     return;
+        // }
         if (this.props.parentObj.products.length === 0) {
-       
             swal("Unable to Convert!", "Please add atleast one product", "error");
             return;
         }
@@ -341,63 +340,48 @@ class Order extends Component {
                 <div className="row">
                     <div className="col-sm-8">
                     <div className="card b">
-                      
                     <Table className="card-header" hover responsive>
                          <thead>
-                                            <tr>
-                                                <th>Company Name</th>
-                                                <th>Status of Order</th>
-                                                <th>Action</th>
-                                              
-                                                
-                                            </tr>
-                        </thead>
-                  
-                                
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Status of Order</th>
+                                <th>Action</th>                
+                            </tr>
+                        </thead>   
                          <tbody className="card-body bb bt" hover responsive>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td>   
-                                    <Button  title="upload Po" variant="contained" color="primary" onClick={e => this.toggleModal('GST')} startIcon={<CloudUploadIcon />} style={{textTransform :"none", marginLeft: -30}}>Upload Po</Button>
-                                    </td>
-                                </tr>      
-                                       
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td><Button  title="upload Po" variant="contained" color="primary" onClick={e => this.toggleModal('PO')} startIcon={<CloudUploadIcon />} style={{textTransform :"none", marginLeft: -30}}>Upload Po</Button></td>
+                            </tr>                 
                         </tbody>           
                     </Table>
-                            </div>    
-                    </div>
+                </div>    
+            </div>
                 </div>
                 <div className="row">
                     <div className="col-sm-8">
-                    <div className="card b">
-                      
+                    <div className="card b">          
                     <Table className="card-header" hover responsive>
                          <thead>
-                                            <tr>
-                                                <th>File Name</th>
-                                                <th>Po Number</th>
-                                                <th>Po Date </th>
-                                                <th>Instructons</th>
-                                              
-                                                
-                                            </tr>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Po Number</th>
+                                <th>Po Date </th>
+                                <th>Instructons</th>
+                            </tr>
                         </thead>
-                  
-                                
                          <tbody className="card-body bb bt" hover responsive>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>      
-                                       
-                        </tbody>           
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>          
+                        </tbody>          
                     </Table>
-                            </div>    
-                    </div>
                 </div>
-               
+            </div>
+        </div>       
                 {this.state.editFlag &&
                     <div className="card b">
                         <div className="card-body bb bt">

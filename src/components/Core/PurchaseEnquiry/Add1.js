@@ -640,7 +640,7 @@ class Add extends Component {
                                 {this.state.selectedCompanies.map((comp, i) => {
                                     return (
                                         <Chip
-                                        style={{backgroundColor:"lightgreen"}}
+                                            style={{backgroundColor:"lightgreen"}}
                                             avatar={
                                                 <Avatar>
                                                     <AssignmentIndIcon  style={{color:"#000"}} />
@@ -1016,6 +1016,7 @@ class Add extends Component {
                             {this.state.users.map((u, i) => {
                                 return (
                                     <Chip
+                                        style={{backgroundColor:"lightgreen"}}
                                         avatar={
                                             <Avatar>
                                                 <AssignmentIndIcon />

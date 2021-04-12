@@ -8,8 +8,6 @@ import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import PageLoader from '../Common/PageLoader';
 import Sorter from '../Common/Sorter';
-import TabPanel from '../Common/TabPanel';
-import Approval from './Approvals/Approval';
 import FileDownload from '../Common/FileDownload';
 
 

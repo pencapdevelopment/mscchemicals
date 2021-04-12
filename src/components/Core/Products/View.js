@@ -11,11 +11,9 @@ import {  Modal,
     ModalHeader,
     ModalBody } from 'reactstrap';
 import Sorter from '../../Common/Sorter';
-
 import CustomPagination from '../../Common/CustomPagination';
 import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
 import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
-
 import 'react-datetime/css/react-datetime.css';
 // import MomentUtils from '@date-io/moment';
 // import {
@@ -23,9 +21,7 @@ import 'react-datetime/css/react-datetime.css';
 //     MuiPickersUtilsProvider,
 // } from '@material-ui/pickers';
 // import Event from '@material-ui/icons/Event';
-
 import TabPanel from '../../Common/TabPanel';
-
 import Add from './Add';
 import Upload from '../Common/Upload';
  import AddFlow from './AddFlow';
@@ -63,15 +59,12 @@ class View extends Component {
             });
         }
     }
-
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
 
@@ -201,7 +194,7 @@ class View extends Component {
                                 <div className="card b">
                                     <div className="card-header">
                                         <div className="float-right mt-2">
-                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                            {this.props.user.role==='ROLE_ADMIN'?<Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>:null}
                                         </div>
                                         <h4 className="my-2">
                                             <span>{this.state.obj.name}</span>
@@ -332,9 +325,10 @@ class View extends Component {
                                                                 {obj.quantity}
                                                             </td>
                                                             <td>
+                                                                {this.props.user.role === 'ROLE_ADMIN'?
                                                                 <Link to={`/users/${obj.createdBy.id}`}>
                                                                     {obj.createdBy.name}
-                                                                </Link>
+                                                                </Link>:obj.createdBy.name}
                                                             </td>
                                                             <td>
                                                                 <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>

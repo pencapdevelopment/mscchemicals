@@ -14,6 +14,8 @@ class QuoteStatus extends Component {
     state = {
         modal: false,
         loading: false,
+        quoteSaveBtntxt:'Save',
+        disableQuotSaveBtn: false,
         error: {},
         selectedStatus: '',
         statusNotes:'',
@@ -49,15 +51,18 @@ class QuoteStatus extends Component {
     }
     patchQuoteStatus=(e)=>{
          e.preventDefault();
-        var quoteObj=this.state.quoteObj;
+        var quoteObj={...this.state.quoteObj};
         var id=quoteObj.id;
+        this.setState({disableQuotSaveBtn:true,quoteSaveBtntxt:'Please Wait...'});
         axios.patch(server_url + context_path + "api/"+this.props.baseUrl+"/"+id, { status: this.state.selectedStatus,statusNotes:this.state.statusNotes })
         .then(res => {
+            this.setState({disableQuotSaveBtn:false,quoteSaveBtntxt:'Save'});
             this.props.onUpdate(this.state.selectedStatus);
         }).finally(() => {
             this.setState({ loading: false });
             this.toggleModal();
         }).catch(err => {
+            this.setState({disableQuotSaveBtn:false,quoteSaveBtntxt:'Save'});
             console.log("error while status update",err);
             this.setState({ patchError: err.response.data.globalErrors[0] });
             swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
@@ -103,7 +108,7 @@ class QuoteStatus extends Component {
                                 </fieldset>}
                                 <fieldset>
                                     <div className="form-group text-center">
-                                        <Button variant="contained" color="primary" type="submit" className="btn btn-raised btn-primary" >Save</Button>
+                                        <Button variant="contained" color="primary" type="submit" disabled={this.state.disableQuotSaveBtn} className="btn btn-raised btn-primary" >{this.state.quoteSaveBtntxt}</Button>
                                     </div>
                                 </fieldset>
                             </form>

@@ -33,7 +33,7 @@ export function createOrder(type, obj, baseUrl) {
         saveProducts('orders', res.data.id, products, function() {
             axios.patch(server_url + context_path + "api/" + baseUrl + "/" + newObj.enquiryId, {order: res.data.id})
             .then(res1 => {
-                // window.location.href = 'orders/' + res.data.id;                
+                window.location.href = 'orders/' + res.data.id;                
             }).catch(err => {
                 swal("Unable to update order!", err.response.data.globalErrors[0], "error");
             })

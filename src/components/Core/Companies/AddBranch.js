@@ -1,7 +1,6 @@
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import axios from 'axios';
-import queryString from 'query-string';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import { connect } from 'react-redux';
@@ -12,11 +11,7 @@ import { context_path, getUniqueCode, server_url } from '../../Common/constants'
 import FormValidator from '../../Forms/FormValidator';
 import ContentWrapper from '../../Layout/ContentWrapper';
 //import Branches from './Branches';
-
-
 // const json2csv = require('json2csv').parse;
-
-
 class AddBranch extends Component {
 
     state = {
