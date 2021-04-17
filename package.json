@@ -5,7 +5,7 @@
   "author": "@themicon_co",
   "license": "https://wrapbootstrap.com/help/licenses",
   "private": true,
-  "homepage": "https://pencapdevelopment.github.io/mscchemicals",
+  "homepage": ".",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
@@ -16,7 +16,8 @@
     "lint": "react-app-rewired lint",
     "postinstall-heroku": "npm run build",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "devdeploy": "gh-pages -t -b gh-pages-dev -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -28,6 +29,7 @@
     "not op_mini all"
   ],
   "dependencies": {
+    "@babel/helper-regex": "^7.10.5",
     "@babel/plugin-proposal-optional-chaining": "^7.9.0",
     "@date-io/moment": "^1.3.13",
     "@fortawesome/fontawesome-free": "5.5.0",
@@ -55,6 +57,7 @@
     "datatables.net-keytable-bs": "2.5.0",
     "datatables.net-responsive": "2.2.3",
     "datatables.net-responsive-bs": "2.2.3",
+    "date-fns": "1.29.0",
     "deep-equal": "1.0.1",
     "draft-js": "^0.11.7",
     "easy-pie-chart": "2.1.7",
@@ -99,6 +102,7 @@
     "react": "16.8.0",
     "react-app-rewired": "^2.1.5",
     "react-big-calendar": "0.20.2",
+    "react-bootstrap": "^1.4.0",
     "react-chartist": "0.13.1",
     "react-chartjs-2": "2.7.4",
     "react-color": "2.14.1",
@@ -124,7 +128,7 @@
     "react-select": "2.1.1",
     "react-toastify": "4.4.3",
     "react-transition-group": "2.5.0",
-    "reactstrap": "6.5.0",
+    "reactstrap": "^8.7.1",
     "recompose": "0.30.0",
     "rtlcss": "2.4.0",
     "screenfull": "3.3.3",

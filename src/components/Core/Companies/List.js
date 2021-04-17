@@ -313,8 +313,8 @@ class List extends Component {
                                     <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
                                 </td>
                                 <td>
-
-                                    <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button>
+                                {  this.props.user.role === 'ROLE_ADMIN' && <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button>}
+                                   
                                     <Button className="d-none" variant="contained" color="warning" size="xs" onClick={() => this.patchObj(i)}>{obj.active ? 'InActivate' : 'Activate'}</Button>
                                 </td>
                             </tr>

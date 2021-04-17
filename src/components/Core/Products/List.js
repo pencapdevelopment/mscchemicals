@@ -6,13 +6,15 @@ import axios from 'axios';
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
-import PageLoader from '../../Common/PageLoader';
+// import PageLoader from '../../Common/PageLoader';
 import Sorter from '../../Common/Sorter';
 import FileDownload from '../../Common/FileDownload';
 
 import CustomPagination from '../../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { server_url, context_path, defaultDateFilter,  } from '../../Common/constants';
+import { Button, TextField, Select, MenuItem, InputLabel, FormControl,  } from '@material-ui/core';
 
 import 'react-datetime/css/react-datetime.css';
 import MomentUtils from '@date-io/moment';
@@ -303,7 +305,7 @@ class List extends Component {
                                     </Link>
                                 </td>
                                 <td>
-                                    {obj.type === 'B' ? "Buyer" : "Vendor"}
+                                    {obj.type}
                                 </td>
                                 <td>
 
@@ -312,7 +314,7 @@ class List extends Component {
                                 </td>
                                 <td>
 
-                                    {obj.quantity==0?'Out of stock':obj.quantity+' '+(obj.uom==null?'':obj.uom) }
+                                    {obj.quantity===0?'Out of stock':obj.quantity+' '+(obj.uom===null?'':obj.uom) }
 
                                 </td>
                                 <td>

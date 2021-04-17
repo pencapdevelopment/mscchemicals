@@ -20,9 +20,9 @@ export default (navigator, closeSidebar) => {
 
     // SIDEBAR COLLAPSED ITEM HANDLER
     // -----------------------------------
+    // mouseenter
 
-
-    var eventName = isTouch() ? 'click' : 'mouseenter';
+    var eventName = isTouch() ? 'click' : '';
     var subNav = $();
     $sidebar.find('.sidebar-nav > li').on(eventName, function() {
 
@@ -117,8 +117,8 @@ export default (navigator, closeSidebar) => {
                 top: itemTop,
                 bottom: (subNav.outerHeight(true) + itemTop > vwHeight) ? 0 : 'auto'
             });
-
-        subNav.on('mouseleave', function() {
+            //
+        subNav.on(' mouseleave', function() {
             toggleTouchItem($listItem);
             subNav.remove();
         });

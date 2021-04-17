@@ -21,7 +21,7 @@ const SidebarItemHeader = ({ item }) => (
 
 /** Normal items for the sidebar */
 const SidebarItem = ({ item, isActive }) => (
-    <li className={isActive ? 'active' : ''}>
+    <li className={isActive ? 'active' : ''} >
         <Link to={item.path} title={item.name}>
             {item.label && <Badge tag="div" className="float-right" color={item.label.color}>{item.label.value}</Badge>}
             {item.icon && <em className={item.icon}></em>}
@@ -34,12 +34,18 @@ const SidebarItem = ({ item, isActive }) => (
 const SidebarSubItem = ({ item, isActive, handler, children, isOpen }) => (
     <li className={isActive ? 'active' : ''}>
         <div className="nav-item" onClick={handler}>
-            {item.label && <Badge tag="div" className="float-right" color={item.label.color}>{item.label.value}</Badge>}
-            {item.icon && <em className={item.icon}></em>}
+            {/* {item.label && <Badge tag="div" className="float-right" color={item.label.color}>{item.label.value}</Badge>} 
+                 // &&
+            //  <em style={{marginRight: "-20px"}} className={"float-right " +item.icon}></em>
+            */}
+            {item.label && item.icon && <em className={item.icon}></em>}
+       
+         
+            {/* {item.icon && <em className={item.icon}></em>} */}
             <span><Trans i18nKey={item.translate}>{item.name}</Trans></span>
         </div>
-        <Collapse isOpen={isOpen}>
-            <ul id={item.path} className="sidebar-nav sidebar-subnav">
+        <Collapse isOpen={isOpen} style={{marginLeft: 70}}>
+            <ul id={item.path} className="sidebar-nav sidebar-subnav" >
                 {children}
             </ul>
         </Collapse>
@@ -48,7 +54,7 @@ const SidebarSubItem = ({ item, isActive, handler, children, isOpen }) => (
 
 /** Component used to display a header on menu when using collapsed/hover mode */
 const SidebarSubHeader = ({ item }) => (
-    <li className="sidebar-subnav-header">{item.name}</li>
+    <li className="sidebar-subnav-header" style={{hover:"none"}}>{item.name}</li>
 )
 
 class Sidebar extends Component {
@@ -143,7 +149,7 @@ class Sidebar extends Component {
                 <div className="aside-inner">
                     <nav data-sidebar-anyclick-close="" className="sidebar smooth-scroll">
                         { /* START sidebar nav */}
-                        <ul className="sidebar-nav">
+                        <ul className="sidebar-nav  ">
                             { /* Iterates over all sidebar items */}
                             {
                                 Menu.map((item, i) => {
@@ -163,9 +169,14 @@ class Sidebar extends Component {
                                                     <SidebarSubItem item={item} isOpen={this.state.collapse[item.name]} handler={this.toggleItemCollapse.bind(this, item.name)} isActive={this.routeActive(this.getSubRoutes(item))} key={i}>
                                                         <SidebarSubHeader item={item} key={i} />
                                                         {
-                                                            item.submenu.map((subitem, i) =>
-                                                                <SidebarItem key={i} item={subitem} isActive={this.routeActive(subitem.path)} />
-                                                            )
+                                                            item.submenu.map((subitem, i) =>{
+                                                                if (this.itemRole(subitem) === true){
+                                                                    return (<SidebarItem key={i} item={subitem} isActive={this.routeActive(subitem.path)} />)
+                                                                }
+                                                                else{
+                                                                    return null;
+                                                                }
+                                                            })
                                                         }
                                                     </SidebarSubItem>
                                                 ]

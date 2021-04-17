@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PageLoader from '../Common/PageLoader';
+// import PageLoader from '../Common/PageLoader';
 import { Link } from 'react-router-dom';
 import { Input, CustomInput } from 'reactstrap';
 
@@ -48,7 +48,7 @@ class Register extends Component {
         const form = e.target;
         const inputs = [...form.elements].filter(i => ['INPUT', 'SELECT'].includes(i.nodeName))
 
-        const { errors, hasError } = FormValidator.bulkValidate(inputs)
+        const { errors } = FormValidator.bulkValidate(inputs)
 
         this.setState({
             [form.name]: {

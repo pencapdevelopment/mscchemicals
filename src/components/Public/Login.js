@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
-import PageLoader from '../Common/PageLoader';
+// import PageLoader from '../Common/PageLoader';
 import { Redirect, Link } from 'react-router-dom';
-import { Input, FormFeedback } from 'reactstrap';
+import {  FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/actions';
 import FormValidator from '../Forms/FormValidator.js';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { server_url, context_path } from '../Common/constants';
-import { FormHelperText, TextField } from '@material-ui/core';
+import {  TextField } from '@material-ui/core';
 import { Email, Lock } from '@material-ui/icons';
-
+import PageLoader from '../Common/PageLoader';
 
 class Login extends Component {
-
+ 
     state = {
         loading: false,
         formLogin: {
@@ -24,6 +24,7 @@ class Login extends Component {
 
     componentWillMount() {
         console.log('Component will mount');
+        console.log("server :"+server_url);
     }
 
     validateOnChange = event => {
@@ -51,13 +52,14 @@ class Login extends Component {
         const inputs = [...form.elements].filter(i => ['INPUT', 'SELECT'].includes(i.nodeName))
 
         const { errors, hasError } = FormValidator.bulkValidate(inputs)
-
+        this.setState({ loading: true });
         this.setState({
             [form.name]: {
                 ...this.state[form.name],
                 errors
             }
         });
+        
         let userObj = { userName: this.state.formLogin.email, password: this.state.formLogin.password }
         fetch(server_url + context_path + 'user-login',
             {
@@ -68,9 +70,11 @@ class Login extends Component {
                 body: JSON.stringify(userObj)
             })
             .then(response => {
+                this.setState({ loading: false });
                 return response.json()
             })
             .then(data => {
+                this.setState({ loading: false });
                 if (data.status === 200) {
                     this.props.actions.login(data.user);
                     this.props.history.push('/dashboard');
@@ -84,7 +88,7 @@ class Login extends Component {
                 //    this.props.history.push('/dashboard')
             })
             .catch(error => {
-
+                this.setState({ loading: false });
                 this.setState({ loginError: 'Error while processing' });
             });;
 
@@ -101,16 +105,21 @@ class Login extends Component {
     }
 
     render() {
+    
         const errors = this.state.formLogin.errors;
         if (this.props.loginStatus.login) {
             return (<Redirect to={{ pathname: '/dashboard', state: { from: this.props.location } }} />)
         } else {
-            const CSS = ".wrapper{background: #2b3eb7} .card {min-height: 400px; max-width: 400px; margin: calc(50vh - 200px) auto 0 !important;} .card img {height: 75px} .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus {color: #fff !important; background-color: #2b3eb7 !important; border-color: #2b3eb7 !important; box-shadow: none !important;}";
+            const CSS = ".wrapper{background: #2b3eb7} .card {height: 450px; width: 540px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; margin: -450px 0px 0px 450px;} .card img {height: 75px} .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus {color: #fff !important; background-color: #2b3eb7 !important; border-color: #2b3eb7 !important;}";
 
             return (
-                <div className="block-center">
+            <div>
+              <body className="backimg">
+              {this.state.loading && <PageLoader />}
+                <div className="login1">
+                    <img className="img1" src="img/MSCB2.jpg" alt="MSCLogo" />
                     <style>{CSS}</style>
-                    <div className="card card-flat">
+                    <div className="card">
                         <div className="card-header text-center bg-default">
                             <Link to="">
                                 <img className="block-center rounded" src="img/logo-dark.png" alt="Logo" />
@@ -128,7 +137,7 @@ class Login extends Component {
                                             invalid={this.hasError('formLogin', 'email', 'required') || this.hasError('formLogin', 'email', 'email')}
                                             onChange={this.validateOnChange}
 
-                                            inputProps={{ "data-validate": '[{ "key":"required"},{ "key":"email"}]' }}
+                                            // inputProps={{ "data-validate": '[{ "key":"required"},{ "key":"email"}]' }}
                                             helperText={errors?.email?.length > 0 ? errors?.email[0]?.msg : ""}
                                             error={errors?.email?.length > 0}
                                             value={this.state.formLogin.email}
@@ -152,7 +161,7 @@ class Login extends Component {
                                             placeholder="Password"
                                             invalid={this.hasError('formLogin', 'password', 'required')}
                                             onChange={this.validateOnChange}
-                                            inputProps={{ "data-validate": '[{ "key":"required"},{"key":"minlen","param":"5"},{"key":"maxlen","param":"50"}]' }}
+                                            // inputProps={{ "data-validate": '[{ "key":"required"},{"key":"minlen","param":"5"},{"key":"maxlen","param":"50"}]' }}
                                             value={this.state.formLogin.password}
 
                                             helperText={errors?.password?.length > 0 ? errors?.password[0]?.msg : ""}
@@ -187,6 +196,8 @@ class Login extends Component {
                     </div>
 
                 </div>
+                </body> 
+            </div> 
             );
         }
     }

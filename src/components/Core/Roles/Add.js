@@ -5,29 +5,32 @@ import swal from 'sweetalert';
 import axios from 'axios';
 
 import { IOSSwitch } from '../../Common/IOSSwitch';
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-import AutoSuggest from '../../Common/AutoSuggest';
+import { server_url, context_path } from '../../Common/constants';
+import { Button, TextField,  FormControl } from '@material-ui/core';
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+// import AutoSuggest from '../../Common/AutoSuggest';
 
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 
 
 import FormValidator from '../../Forms/FormValidator';
-import { Card, CardHeader, CardBody, Input, TabContent, TabPane, Nav, NavItem, NavLink, Form, CustomInput } from 'reactstrap';
+import {  Form } from 'reactstrap';
+// import { Card, CardHeader, CardBody, Input, TabContent, TabPane, Nav, NavItem, NavLink, Form, CustomInput } from 'reactstrap';
 
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
+// import Radio from '@material-ui/core/Radio';
+// import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
+// import FormLabel from '@material-ui/core/FormLabel';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
-const json2csv = require('json2csv').parse;
+// const json2csv = require('json2csv').parse;
 
 class Add extends Component {
 
@@ -111,7 +114,7 @@ class Add extends Component {
         var input = e.target;
         formWizard.obj[field] = input.value;
 
-        if(!formWizard.obj.id && field == 'name' && input.value) {
+        if(!formWizard.obj.id && field === 'name' && input.value) {
             formWizard.obj.code = 'ROLE_' + input.value.split(' ')[0].toUpperCase();
         }
 
@@ -150,7 +153,7 @@ class Add extends Component {
     }
 
     checkForError() {
-        const form = this.formWizardRef;
+        // const form = this.formWizardRef;
 
         const tabPane = document.getElementById('saveForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
@@ -268,7 +271,7 @@ class Add extends Component {
                                         inputProps={{ readOnly: this.state.formWizard.obj.defaultRole ? true : false, maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
                                         helperText={errors?.name?.length > 0 ? errors?.name[0]?.msg : ""}
                                         error={errors?.name?.length > 0} value={this.state.formWizard.obj.name}
-                                        value={this.state.formWizard.obj.name} onChange={e => this.setField("name", e)} />
+                                         onChange={e => this.setField("name", e)} />
                                 </FormControl>
                             </fieldset>
 

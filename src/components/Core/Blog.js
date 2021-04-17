@@ -72,12 +72,12 @@ class Blog extends React.Component {
     }
 
     checkDuplicate(url) {
-        if (url.trim().length == 0) {
+        if (url.trim().length === 0) {
             return;
         }
-        var url = server_url + context_path + "api/blog?projection=post_summary&url=" + url;
+        var url1 = server_url + context_path + "api/blog?projection=post_summary&url=" + url;
 
-        axios.get(url).then((res) => {
+        axios.get(url1).then((res) => {
             var len = res.data._embedded.blogs.length;
             if ((len > 0 && !this.state.editFlag) || (len > 1 && this.state.editFlag)) {
                 this.setState({ urlError: 'url already used' });
@@ -330,12 +330,12 @@ class Blog extends React.Component {
 
     createImageItem = () => (
         <Col md={3} >
-            <a onClick={o => this.deleteImageItem()}>
-                {this.state.newPost.image != undefined && this.state.newPost.image.trim().length > 0 &&
-                    <img className="img-fluid mb-2" src={this.state.newPost.image} />
+            <a href="#s"  onClick={o => this.deleteImageItem()}>
+                {this.state.newPost.image !== undefined && this.state.newPost.image.trim().length > 0 &&
+                    <img className="img-fluid mb-2" alt="error" src={this.state.newPost.image} />
                 }
-                {this.state.newPost != undefined && this.state.newPost.id != undefined && this.state.newPost.id > 0 && !this.state.newPost.deleteImage &&
-                    <img className="img-fluid mb-2" src={`bp-api/blog/images/${this.state.newPost.id}.jpg`} />
+                {this.state.newPost !== undefined && this.state.newPost.id !== undefined && this.state.newPost.id > 0 && !this.state.newPost.deleteImage &&
+                    <img className="img-fluid mb-2" alt="error" src={`bp-api/blog/images/${this.state.newPost.id}.jpg`} />
                 }
             </a>
         </Col>
@@ -367,7 +367,7 @@ class Blog extends React.Component {
 
         axios.patch(server_url + context_path + "blog/" + post.id)
             .then(res => {
-                this.state.posts[idx].active = !this.state.posts[idx].active;
+                // this.state.posts[idx].active = !this.state.posts[idx].active;
                 this.setState({ posts: this.state.posts });
             }).finally(() => {
                 this.setState({ loading: false });
@@ -383,7 +383,7 @@ class Blog extends React.Component {
 
         axios.patch(server_url + context_path + "blog/" + post.id + "/comments/" + comment.id)
             .then(res => {
-                this.state.comments[idx].active = !this.state.comments[idx].active;
+                // this.state.comments[idx].active = !this.state.comments[idx].active;
                 this.setState({ comments: this.state.comments });
             }).finally(() => {
                 this.setState({ loading: false });
@@ -397,7 +397,7 @@ class Blog extends React.Component {
     }
 
     render() {
-        var itm = JSON.parse(localStorage.getItem("designbricks-store-key"));
+        // var itm = JSON.parse(localStorage.getItem("designbricks-store-key"));
 
         const ckCSS = '.ck.ck-editor__editable { min-height: 200px;}';
         const autoCSS = '.ui-widget.ui-widget-content{z-index:100;position:absolute;cursor:default;list-style:none;padding:0;margin:0;outline:0;font-family:Arial,Helvetica,sans-serif;font-size:1em;background:#fff;color:#333;max-height:300px;width:inherit;overflow-x:hidden;overflow-y:auto;border:1px solid #c5c5c5}.ui-menu .ui-menu-item{margin:0;cursor:pointer;list-style-image:url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)}.ui-menu .ui-menu-item-wrapper{position:relative;padding:3px 1em 3px .4em}';
@@ -468,7 +468,7 @@ class Blog extends React.Component {
                                                                 <Button className="btn-link" onClick={() => this.editPost(i)}>{post.title}</Button>
                                                             </td>
                                                             <td>
-                                                                <a className="btn-link" onClick={(e) => this.openUrl(post.url, e)} href="#" >{post.url}</a>
+                                                                <a className="btn-link" onClick={(e) => this.openUrl(post.url, e)} href="#s" >{post.url}</a>
                                                             </td>
                                                             <td>
                                                                 {post.hits}

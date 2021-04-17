@@ -62,9 +62,16 @@ const Menu = [
         role: 'ROLE_ADMIN',
         permission:"MG_SE_E,MG_SE_V"
     },
+    // {
+    //     name: 'Sales1',
+    //     path: '/sales1',
+    //     icon: 'fa fa-cloud-upload-alt',
+    //     role: 'ROLE_ADMIN',
+    //     permission:"MG_SE_E,MG_SE_V"
+    // },
     {
         name: 'Purchases',
-        path: '/purchases',
+        path: '/purchase',
         icon: 'fa fa-shopping-cart',
         role: 'ROLE_ADMIN',
         permission:"MG_PR_E,MG_PR_V"
@@ -90,24 +97,107 @@ const Menu = [
         heading: 'Marketing',
         role: 'ROLE_ADMIN'
     },
+  
+    // {
+    //     name: 'Leads',
+    //     path: '/leads',
+    //     icon: 'fa fa-history',
+    //     role: 'ROLE_ADMIN',
+    //     permission:"MG_CM"
+    // },
+    // {
+    //     name: 'Prospective Buyers',
+    //     path: '/ProspectiveBuyer',
+    //     icon: 'fa fa-history',
+    //     role: 'ROLE_ADMIN',
+    //     permission:"MG_CM"
+    // },
+    {
+       
+        name: 'Prospective Buyer',
+        icon: 'fas fa-caret-down',
+        role: 'ROLE_ADMIN',
+        permission:"MG_SE_E,MG_SE_V",
+        label:{
+            color: '#2b3db6',
+            icon:'fas fa-caret-down'
+        },
+        submenu:[
+            {
+                path:'/ProspectiveBuyer',
+                name:'Prospective Buyers',
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN'
+            },
+            {
+                path:'/pbsales',
+                name:'Sales',
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN',
+                permission:'MG_SE_E,MG_SE_V'
+            },
+            {
+                path:'/Orders',
+                name:'Orders',
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN',
+                permission:"MG_OR_E,MG_OR_V_,MG_AC"
+            }
+        ]
+    },
+    // {
+    //     name: 'Prospective Vendors',
+    //     path: '/prospectivevendor',
+    //     icon: 'fa fa-history',
+    //     role: 'ROLE_ADMIN',
+    //     permission:"MG_CM"
+    // },
+    {
+        name: 'Prospective Vendor',
+        path: '/prospectivevendor',
+        icon: 'fas fa-caret-down',
+        role: 'ROLE_ADMIN',
+        // permission:"MG_CM",
+        permission:"MG_PR_E,MG_PR_V",
+        label:{
+            color: '#2b3db6',
+            icon:'fas fa-caret-down'
+        },
+        submenu:[
+            {
+                path:'/prospectivevendor',
+                name:'Prospective Vendors',
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN'
+            },
+            {
+                path:'/pvpurchase',
+                name:'Purchases',
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN',
+                permission:"MG_PR_E,MG_PR_V"
+            },
+            {
+                path:'/Orders',
+                name:'Orders',
+                icon:'fa fa-history',
+                role: 'ROLE_ADMIN',
+                permission:"MG_OR_E,MG_OR_V_,MG_AC"
+            }
+        ]
+    },
     {
         name: 'Communication History',
         path: '/followups',
         icon: 'fa fa-history',
         role: 'ROLE_ADMIN'
-    },{
-        name: 'Leads',
-        path: '/leads',
-        icon: 'fa fa-history',
-        role: 'ROLE_ADMIN',
-        permission:"MG_CM"
     },
     {
         name: 'Sample Tracking',
         path: '/trackings',
         icon: 'fa fa-search-location',
         role: 'ROLE_ADMIN',
-        permission:"MG_TR"
+        permission:"MG_PR_E,MG_PR_V,MG_SE_E,MG_SE_V"
     },
     {
         name: 'Groups & Contacts',
@@ -142,16 +232,31 @@ const Menu = [
         icon: 'fa fa-bell'
     },
     {
+        name: 'Sales Approvals',
+        path: '/sales-approval-alerts',
+        icon: 'fa fa-bell',
+        role: 'ROLE_ADMIN',
+        permission:"MG_SE_E,MG_SE_V"
+    },
+    {
+        name: 'Purchases Approvals',
+        path: '/purchases-approval-alerts',
+        icon: 'fa fa-bell',
+        role: 'ROLE_ADMIN',
+        permission:"MG_PR_E,MG_PR_V"
+    },
+    
+    {
         name: 'Profile',
         path: '/profile',
         icon: 'fa fa-user'
     },
-    // {
-    //     name: 'Reports',
-    //     path: '/reports',
-    //     icon: 'fa fa-signal',
-    //     role: 'ROLE_ADMIN'
-    // },
+    {
+        name: 'Reports',
+        path: '/reports',
+        icon: 'fa fa-signal',
+        role: 'ROLE_ADMIN'
+    },
 
 
     // {
@@ -166,18 +271,18 @@ const Menu = [
     //     icon: 'icon-layers',
     //     role: 'ROLE_ADMIN'
     // },
-    // {
-    //     name: 'Feedbacks',
-    //     path: '/feedbacks',
-    //     icon: 'fa fa-copy',
-    //     role: 'ROLE_ADMIN'
-    // },
-    // {
-    //     name: 'Subscribers',
-    //     path: '/subscribers',
-    //     icon: 'icon-envelope',
-    //     role: 'ROLE_ADMIN'
-    // },
+    {
+        name: 'Feedbacks',
+        path: '/feedbacks',
+        icon: 'fa fa-copy',
+        role: 'ROLE_ADMIN'
+    },
+    {
+        name: 'Subscribers',
+        path: '/subscribers',
+        icon: 'icon-envelope',
+        role: 'ROLE_ADMIN'
+    },
 ];
 
 export default Menu;

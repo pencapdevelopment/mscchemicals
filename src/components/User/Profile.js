@@ -2,17 +2,17 @@ import { server_url, context_path } from '../Common/constants';
 import React, { Component } from 'react';
 import PageLoader from '../Common/PageLoader';
 import ContentWrapper from '../Layout/ContentWrapper';
-import classnames from 'classnames';
+// import classnames from 'classnames';
 import {
     Row,
     Col,
     Table,
-    Nav,
+   
     Input,
 } from 'reactstrap';
 
 import TabPanel from '../Common/TabPanel';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { Button, Tab, Tabs, AppBar } from '@material-ui/core';
 
 import swal from 'sweetalert';
 import axios from 'axios';
@@ -132,9 +132,9 @@ class Profile extends Component {
         }
 
         if (this.state.password.newPassword !== this.state.password.confirmNewPassword) {
-            var pwd = this.state.password;
-            pwd.errorMessage = 'New Password and confirm password not matching';
-            this.setState({ password: pwd });
+            var pwd1 = this.state.password;
+            pwd1.errorMessage = 'New Password and confirm password not matching';
+            this.setState({ password: pwd1 });
             return;
         }
         var bodyFormData = new FormData();

@@ -342,10 +342,10 @@ class BulkSMS extends Component {
     }
 
     render() {
-        const { selectedSender } = this.state;
+        // const { selectedSender } = this.state;
         const { selectedGroup } = this.state;
-        const { selectedTemplate } = this.state;
-        const { selectedLanguage } = this.state;
+        // const { selectedTemplate } = this.state;
+        // const { selectedLanguage } = this.state;
 
         return (
             <ContentWrapper>

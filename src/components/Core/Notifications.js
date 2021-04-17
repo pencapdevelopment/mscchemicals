@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import ContentWrapper from '../Layout/ContentWrapper';
 import { connect } from 'react-redux';
 import swal from 'sweetalert';
@@ -11,8 +11,8 @@ import Sorter from '../Common/Sorter';
 import FileDownload from '../Common/FileDownload';
 
 import CustomPagination from '../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter, getUniqueCode } from '../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { server_url, context_path, defaultDateFilter } from '../Common/constants';
+import { Button, TextField, Select, MenuItem, InputLabel, FormControl,  } from '@material-ui/core';
 
 import MomentUtils from '@date-io/moment';
 import {
@@ -288,7 +288,7 @@ class Notifications extends Component {
                                             <tr key={obj.id}>
                                                 <td>{i + 1}</td>
                                                 <td>
-                                                    <Link to={`/${obj.url}/${obj.id}`}>
+                                                    <Link to={obj.url}>
                                                         {obj.description}
                                                     </Link>
                                                 </td>
@@ -296,7 +296,7 @@ class Notifications extends Component {
                                                     {obj.type}
                                                 </td>
                                                 <td>
-                                                    <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
+                                                    {obj.creationDate?<Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>:'NA'}
                                                 </td>
                                                 <td>
                                                     <Button className="d-none" variant="contained" color="warning" size="xs" onClick={() => this.patchObj(i)}>{obj.active ? 'InActivate' : 'Activate'}</Button>

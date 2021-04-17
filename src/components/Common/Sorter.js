@@ -59,7 +59,7 @@ class Sorter extends Component {
 
     render() {
         const CSS1 = '.sorter{font-size:14px;font-weight:bold;position:relative;cursor:pointer}.sorter::after,.sorter::before{position:absolute;bottom:.9em;display:block;opacity:.3}.sorter::before{right:1em;content:"\\2191"}.sorter::after{right:.5em;content:"\\2193"}.sorter.asc::before{opacity:1}.sorter.desc::after{opacity:1}';
-        const CSS2 = '.sorter{font-size:14px;font-weight:bold;position:relative;cursor:pointer}.sorter::after{font-family:Fontawesome;position:relative;left:10px;font-size:10px;font-weight:bold;content:"\\2191\\2193";opacity:.3}.sorter.asc::after{content:"\\2191";opacity:1}.sorter.desc::after{content:"\\2193";opacity:1}';
+        // const CSS2 = '.sorter{font-size:14px;font-weight:bold;position:relative;cursor:pointer}.sorter::after{font-family:Fontawesome;position:relative;left:10px;font-size:10px;font-weight:bold;content:"\\2191\\2193";opacity:.3}.sorter.asc::after{content:"\\2191";opacity:1}.sorter.desc::after{content:"\\2193";opacity:1}';
 
         return (
             <tr>

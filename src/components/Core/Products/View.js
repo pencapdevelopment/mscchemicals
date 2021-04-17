@@ -1,36 +1,32 @@
 import React, { Component } from 'react';
-import ContentWrapper from '../../Layout/ContentWrapper';
+// import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
 import axios from 'axios';
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
-import PageLoader from '../../Common/PageLoader';
-import { Row, Col, Modal,
+// import PageLoader from '../../Common/PageLoader';
+import {  Modal,
     ModalHeader,
     ModalBody } from 'reactstrap';
 import Sorter from '../../Common/Sorter';
-
 import CustomPagination from '../../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-
+import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
+import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
-
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 import TabPanel from '../../Common/TabPanel';
-
 import Add from './Add';
 import Upload from '../Common/Upload';
  import AddFlow from './AddFlow';
 
-const json2csv = require('json2csv').parse;
+// const json2csv = require('json2csv').parse;
 
 class View extends Component {
     state = {
@@ -63,15 +59,12 @@ class View extends Component {
             });
         }
     }
-
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
 
@@ -92,46 +85,34 @@ class View extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/product-flow?projection=product_flow_list&&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&product.id=" + this.props.currentId;
-
         if (this.state.filters.search) {
             url += "&name=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         url = defaultDateFilter(this.state, url);
-
         axios.get(url)
-            .then(res => {
-                this.setState({
-                    subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                    subPage: res.data.page
-                });
+        .then(res => {
+            this.setState({
+                subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                subPage: res.data.page
+            });
 
-                if (callBack) {
-                    callBack();
-                }
-            })
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
-
-
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id).then(res => {
             this.setState({ obj: res.data });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
@@ -213,7 +194,7 @@ class View extends Component {
                                 <div className="card b">
                                     <div className="card-header">
                                         <div className="float-right mt-2">
-                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                            {this.props.user.role==='ROLE_ADMIN'?<Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>:null}
                                         </div>
                                         <h4 className="my-2">
                                             <span>{this.state.obj.name}</span>
@@ -226,40 +207,49 @@ class View extends Component {
                                                     <td>
                                                         <strong>Code</strong>
                                                     </td>
-                                                    <td>{this.state.obj.name}</td>
+                                                    <td>{this.state.obj.code?this.state.obj.code:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Categories</strong>
                                                     </td>
-                                                    <td>{this.state.obj.category}</td>
+                                                    <td>{this.state.obj.category?this.state.obj.category:"-NA-"}</td>
                                                 </tr>
+                                                {this.state.obj.subCategory &&
                                                 <tr>
                                                     <td>
                                                         <strong>Sub Categories</strong>
                                                     </td>
-                                                    <td>{this.state.obj.subCategory}</td>
-                                                </tr>
+                                                    <td>{this.state.obj.subCategory?this.state.obj.subCategory:"-NA-"}</td>
+                                                </tr>}
+                                                {this.state.obj.type==='Registered' && this.state.obj.specification &&
                                                 <tr>
                                                     <td>
                                                         <strong>Specification</strong>
                                                     </td>
-                                                    <td>{this.state.obj.specification}</td>
-                                                </tr>
+                                                    <td>{this.state.obj.specification?this.state.obj.specification:"-NA-"}</td>
+                                                </tr>}
+                                                {this.state.obj.type==='Registered' && this.state.obj.make &&
                                                 <tr>
                                                     <td>
                                                         <strong>Makes</strong>
                                                     </td>
-                                                    <td>{this.state.obj.make}</td>
-                                                </tr>
+                                                    <td>{this.state.obj.make?this.state.obj.make:"-NA-"}</td>
+                                                </tr>}
                                                 <tr>
                                                     <td>
                                                         <strong>Types</strong>
                                                     </td>
                                                     <td>{this.state.obj.type}</td>
                                                 </tr>
-                                                 
+                                                {this.state.obj.type==='Food grade' && this.state.obj.countryOfOrigin &&
                                                 <tr>
+                                                    <td>
+                                                        <strong>Country Of Origin</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.countryOfOrigin?this.state.obj.countryOfOrigin:"--NA"}</td>
+                                                </tr>}
+                                                {/* <tr>
                                                     <td>
                                                         <strong>HSN Code</strong>
                                                     </td>
@@ -276,7 +266,7 @@ class View extends Component {
                                                         <strong>UOM</strong>
                                                     </td>
                                                     <td>{this.state.obj.uom}</td>
-                                                </tr>
+                                                </tr> */}
                                             </tbody>
                                         </table>
                                     </div>
@@ -325,7 +315,7 @@ class View extends Component {
                                                                 {obj.type}
                                                             </td>
                                                             <td>
-                                                                {obj.refType == 'ORDER' &&
+                                                                {obj.refType === 'ORDER' &&
                                                                 <Link to={`/orders/${obj.reference}`}>Order</Link>}
                                                                 {obj.refType !== 'ORDER' &&
                                                                 <span>{obj.refType}</span>
@@ -335,9 +325,10 @@ class View extends Component {
                                                                 {obj.quantity}
                                                             </td>
                                                             <td>
+                                                                {this.props.user.role === 'ROLE_ADMIN'?
                                                                 <Link to={`/users/${obj.createdBy.id}`}>
                                                                     {obj.createdBy.name}
-                                                                </Link>
+                                                                </Link>:obj.createdBy.name}
                                                             </td>
                                                             <td>
                                                                 <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>

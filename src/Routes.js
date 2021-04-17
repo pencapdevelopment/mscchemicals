@@ -39,31 +39,35 @@ const Subscribers = lazy(() => import('./components/Website/Subscribers'));
 
 const Categories = lazy(() => import('./components/Core/Categories'));
 const Notifications = lazy(() => import('./components/Core/Notifications'));
+const SalesNotifications = lazy(() => import('./components/Core/SalesNotifications'));
+const PurchaseNotifications = lazy(() => import('./components/Core/PurchaseNotifications'));
+
 
 
 // Core Features
 const Template = lazy(() => import('./components/Core/Template/Template'));
 
 const Companies = lazy(() => import('./components/Core/Companies/Companies'));
-// const Branches = lazy(() => import('./components/Core/branches'));
+const Branches = lazy(() => import('./components/Core/Companies/Branches'));
 const Contacts = lazy(() => import('./components/Core/CompanyContacts/CompanyContacts'));
 const Products = lazy(() => import('./components/Core/Products/Products'));
 const SalesEnquiry = lazy(() => import('./components/Core/SalesEnquiry/SalesEnquiry'));
+const PbSalesEnquiry = lazy(() => import('./components/Core/PbSalesEnquiry/SalesEnquiry'));
 const PurchaseEnquiry = lazy(() => import('./components/Core/PurchaseEnquiry/PurchaseEnquiry'));
+const PvPurchaseEnquiry = lazy(() => import('./components/Core/PvPurchaseEnquiry/PurchaseEnquiry'));
 const Followups = lazy(() => import('./components/Core/Followups/Followups'));
-
 const Lead = lazy(() => import('./components/Core/Lead/Lead'));
 const Tracking = lazy(() => import('./components/Core/Tracking/Tracking'));
 const Order = lazy(() => import('./components/Core/Orders/Order'));
 const Event = lazy(() => import('./components/Core/Events/Event'));
 const CostAccount = lazy(() => import('./components/Core/CostAccount'));
-
+const Approvals = lazy(() => import('./components/Core/Approvals/Approval'));
+const PurchaseApprovals = lazy(() => import('./components/Core/PurchaseApproval/Approval'));
 const Invoices = lazy(() => import('./components/Core/Invoices'));
-
 const Reports = lazy(() => import('./components/Core/Reports'));
-
-
-
+const ProspectiveBuyers = lazy(()=> import('./components/Core/ProspectiveBuyer/ProspectiveBuyer'))
+const ProspectiveVendor = lazy(()=> import('./components/Core/ProspectiveVendors/ProspectiveVendor'))
+// const Sales1 = lazy(()=> import('./components/Core/Sales1/Add1'))
 // List of routes that uses the page layout
 // listed here to Switch between layouts
 // depending on the current pathname
@@ -147,8 +151,8 @@ const Routes = ({ location }) => {
                                     {/* Core Features */}
                                     <PrivateRoute path="/companies/:objId" component={waitFor(Companies)} />
                                     <PrivateRoute path="/companies" component={waitFor(Companies)} />
-                                    {/* <PrivateRoute path="/branches/:objId" component={waitFor(Branches)} />
-                                    <PrivateRoute path="/branches" component={waitFor(Branches)} /> */}
+                                    <PrivateRoute path="/branches/:objId" component={waitFor(Branches)} />
+                                    <PrivateRoute path="/branches" component={waitFor(Branches)} />
                                     <PrivateRoute path="/company-contact/:objId" component={waitFor(Contacts)} />
                                    
                                     <PrivateRoute path="/company-contact" component={waitFor(Contacts)} />
@@ -156,15 +160,26 @@ const Routes = ({ location }) => {
                                     <PrivateRoute path="/products" component={waitFor(Products)} />
                                     <PrivateRoute path="/sales/:objId" component={waitFor(SalesEnquiry)} />
                                     <PrivateRoute path="/sales" component={waitFor(SalesEnquiry)} />
-                                    <PrivateRoute path="/purchases/:objId" component={waitFor(PurchaseEnquiry)} />
-                                    <PrivateRoute path="/purchases" component={waitFor(PurchaseEnquiry)} />
+                                    <PrivateRoute path="/pbsales/:objId" component={waitFor(PbSalesEnquiry)} />
+                                    <PrivateRoute path="/pbsales" component={waitFor(PbSalesEnquiry)} />
+                                    <PrivateRoute path="/purchase/:objId" component={waitFor(PurchaseEnquiry)} />
+                                    <PrivateRoute path="/purchase" component={waitFor(PurchaseEnquiry)} />
+                                    <PrivateRoute path="/pvpurchase/:objId" component={waitFor(PvPurchaseEnquiry)} />
+                                    <PrivateRoute path="/pvpurchase" component={waitFor(PvPurchaseEnquiry)} />
                                     <PrivateRoute path="/followups/:objId" component={waitFor(Followups)} />
                                     <PrivateRoute path="/followups" component={waitFor(Followups)} />
 
                                     <PrivateRoute path="/leads/:objId" component={waitFor(Lead)} />
                                     <PrivateRoute path="/leads" component={waitFor(Lead)} />
-
-
+                                    <PrivateRoute path="/prospective-buyer/:objId" component={waitFor(ProspectiveBuyers)} />
+                                    <PrivateRoute path="/ProspectiveBuyer" component={waitFor(ProspectiveBuyers)} />
+                                    <PrivateRoute path="/prospective-vendor/:objId" component={waitFor(ProspectiveVendor)} />
+                                    <PrivateRoute path="/ProspectiveVendor" component={waitFor(ProspectiveVendor)} />
+                                    {/* <PrivateRoute path="/sales1" component={waitFor(Sales1)} /> */}
+                                    <PrivateRoute path="/sales-approval-alerts" component={waitFor(SalesNotifications)} />
+                                    <PrivateRoute path="/purchases-approval-alerts" component={waitFor(PurchaseNotifications)} />
+                                    <PrivateRoute path="/approvals" component={waitFor(Approvals)}/>
+                                    <PrivateRoute path="/PurchaseApprovals" component={waitFor(PurchaseApprovals)} />
                                     <PrivateRoute path="/trackings/:objId" component={waitFor(Tracking)} />
                                     <PrivateRoute path="/trackings" component={waitFor(Tracking)} />
                                     <PrivateRoute path="/orders/:objId" component={waitFor(Order)} />

@@ -4,13 +4,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Modal,
-
     ModalBody, ModalHeader
 } from 'reactstrap';
 import swal from 'sweetalert';
 import { context_path, server_url } from '../../Common/constants';
-
-
+import Chip from '@material-ui/core/Chip';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 class Status extends Component {
     state = {
         modal: false,
@@ -19,28 +18,21 @@ class Status extends Component {
         selectedStatus: '',
         statusNotes:''
     }
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
-        // console.log('status component did mount');
-        // console.log(this.props.currentId);
         this.props.onRef(this);
-
         this.setState({
             selectedStatus: this.props.status,
             statusNotes: this.props.statusNotes
         })
     }
-
     patchStatus = e => {
         e.preventDefault();
 
@@ -88,20 +80,35 @@ class Status extends Component {
                                     onChange={e => this.setState({ statusNotes: e.target.value })} 
                                     value={this.state.statusNotes}
                                     defaultValue={this.state.statusNotes}
-                                     
-                                />
+
+/>
                             </FormControl>
                         </fieldset>}
 
                         <fieldset>
                             <div className="form-group text-center">
-                                <Button variant="contained" color="primary" type="submit" className="btn btn-raised btn-primary">Save</Button>
+                                <Button variant="contained" color="primary" type="submit" className="btn btn-raised btn-primary" >Save</Button>
                             </div>
                         </fieldset>
                     </form>
                 </ModalBody>
             </Modal>
-            <Button className="ml-2 mr-2" variant="contained" color="warning" size="xs" onClick={this.toggleModal}>Update {this.props.statusType} Status</Button>
+<p style={{  textTransform: 'none', fontWeight: 'normal', marginLeft: 0, marginTop: -42, }}></p><span title="Status"  style={{  textTransform: 'none', fontWeight: 'normal', marginLeft: 0, marginTop: -50, }}  onClick={this.toggleModal}><ArrowDropDownIcon /></span>
+                                                           
+            {/* <button variant="contained" color="warning"  size="small"onClick={this.toggleModal}>
+           <Chip 
+                    className="ml-2 mr-2"  
+                            label= "On going"
+                            color="dark"
+                            style={{ color:" #000"}}
+                            variant="contained"
+                /> 
+                On going
+                 <ArrowDropDownIcon />  
+
+            </button>
+                       */}
+            {/* <Button className="ml-2 mr-2" variant="contained" color="warning" size="xs" onClick={this.toggleModal}> {this.props.statusType} Status</Button> */}
         </span>)
     }
 }

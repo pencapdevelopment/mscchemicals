@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
-import ContentWrapper from '../../Layout/ContentWrapper';
+// import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
 import axios from 'axios';
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
-import PageLoader from '../../Common/PageLoader';
-import { Row, Col, Modal,
+// import PageLoader from '../../Common/PageLoader';
+import {  Modal,
     ModalHeader,
     ModalBody } from 'reactstrap';
 import Sorter from '../../Common/Sorter';
-
+import EditIcon from '@material-ui/icons/Edit';
 import CustomPagination from '../../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
+import { Button, Tab, Tabs, AppBar } from '@material-ui/core';
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 
 import TabPanel from '../../Common/TabPanel';
 
@@ -30,7 +32,7 @@ import Add from './Add';
 import Upload from '../Common/Upload';
 // import AddSub from './AddSub';
 
-const json2csv = require('json2csv').parse;
+// const json2csv = require('json2csv').parse;
 
 class View extends Component {
     state = {
@@ -209,7 +211,7 @@ class View extends Component {
                                 <div className="card b">
                                     <div className="card-header">
                                         <div className="float-right mt-2">
-                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                            <button style={{ backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius:"5px"}} variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}><EditIcon style={{color:"#fff"}} fontSize="small" /></button>
                                         </div>
                                         <h4 className="my-2">
                                             <span>{this.state.obj.name}</span>
@@ -252,16 +254,41 @@ class View extends Component {
                                                 </tr>
                                                 <tr>
                                                     <td>
+                                                        <strong>Email Date</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.emailDate}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>Address </strong>
+                                                    </td>
+                                                    <td>{this.state.obj.address}</td>
+                                                </tr>
+                                                {/* <tr>
+                                                    <td>
                                                         <strong>Courier Company</strong>
                                                     </td>
                                                     <td>{this.state.obj.courierCompany}</td>
-                                                </tr>
-                                                <tr>
+                                                </tr> */}
+                                                {/* <tr>
                                                     <td>
                                                         <strong>Dispatch Date</strong>
                                                     </td>
                                                     <td><Moment format="DD MMM YY">{this.state.obj.dispatchDate}</Moment></td>
+                                                </tr> */}
+                                                   <tr>
+                                                    <td>
+                                                        <strong>Phone</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.phone}</td>
                                                 </tr>
+                                                
+                                                <tr>
+                                                    <td>
+                                                        <strong>Email</strong>
+                                                    </td>
+                                                    <td>{this.state.obj.email}</td>
+                                                </tr>           
                                                 <tr>
                                                     <td>
                                                         <strong>Received Date</strong>

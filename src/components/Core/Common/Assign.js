@@ -12,7 +12,7 @@ import swal from 'sweetalert';
 import AutoSuggest from '../../Common/AutoSuggest';
 import { context_path, server_url } from '../../Common/constants';
 import CustomPagination from '../../Common/CustomPagination';
-
+import PageLoader from '../../Common/PageLoader';
 
 
 
@@ -71,6 +71,7 @@ class Assign extends Component {
             reference: "/" + this.props.baseUrl + "/" + this.props.currentId
         };
 
+        this.setState({ loading: true });
         axios.post(server_url + context_path + "api/" + this.props.baseUrl + "-user", user)
             .then(res => {
                 this.loadObjects();
@@ -118,6 +119,7 @@ class Assign extends Component {
     render() {
         return (
             <div className="card b">
+                  {this.state.loading && <PageLoader />}
                 <div className="card-header">
                     <h4>Assigned Users</h4>
                 </div>

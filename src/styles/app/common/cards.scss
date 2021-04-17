@@ -4,6 +4,7 @@
 
 .card {
     margin-bottom: 1.25rem; //20px
+   
 }
 
 //
@@ -19,7 +20,7 @@
     &.card-transparent {
         border: 0;
         background-color: transparent;
-        box-shadow: 0 0 0 #000;
+        //box-shadow: 0 0 0 #000;
         .card-header,
         .card-body {
             background-color: transparent;

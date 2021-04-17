@@ -4,13 +4,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Modal,
-
     ModalBody, ModalHeader
 } from 'reactstrap';
 import swal from 'sweetalert';
 import { context_path, server_url } from '../../Common/constants';
-
-
 class InvoiceHistory extends Component {
     state = {
         modal: false,
@@ -22,32 +19,35 @@ class InvoiceHistory extends Component {
         history:[],
         paymentType:[{value:'Cash',label:'Cash'},{value:'Cheque',label:'Cheque'},{value:'Bank Transfer',label:'Bank Transfer'}]
     }
-
     toggleModal = () => {
+        if(!this.state.modal){this.loadInvoiceHistory()};
         this.setState({
-            modal: !this.state.modal
+            modal: !this.state.modal,
+            amount:0,
+            selectedStatus: '',
+            statusNotes:'',
+            selectedTypePayment:'',
+            other:''
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         // console.log('status component did mount');
         // console.log(this.props.currentId);
         this.props.onRef(this);
-
         this.setState({
             selectedStatus: this.props.status,
             statusNotes: this.props.statusNotes
         })
-
-        axios.get(server_url + context_path + "api/invoice-history?sort=creationDate,desc&invoiceNo=" + this.props.currentId ).then(res=>{
-            this.setState({history: res.data['_embedded']['invoice-history']})
-        })
+        this.loadInvoiceHistory();
     }
-
+    loadInvoiceHistory = () => {
+        axios.get(server_url + context_path + "api/invoice-history?sort=creationDate,desc&invoice=" + this.props.currentId ).then(res=>{
+            this.setState({history: res.data['_embedded']['invoice-history']})
+        });
+    }
     patchStatus = e => {
         e.preventDefault();
         var invoiceObj={};
@@ -57,15 +57,10 @@ class InvoiceHistory extends Component {
         invoiceObj.typeOfPayment=this.state.selectedTypePayment;
         invoiceObj.other=this.state.other;
         axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId, { status: this.state.selectedStatus,statusNotes:this.state.statusNotes })
-            .then(res => {
-
-                axios.post(server_url + context_path + "api/invoice-history",invoiceObj ).then(g=>{
-                    this.props.onUpdate(this.state.selectedStatus);
-                })
-               
-
-
-
+        .then(res => {
+            axios.post(server_url + context_path + "api/invoice-history",invoiceObj ).then(g=>{
+                this.props.onUpdate(this.state.selectedStatus);
+            })
             }).finally(() => {
                 this.setState({ loading: false });
                 this.toggleModal();
@@ -74,7 +69,6 @@ class InvoiceHistory extends Component {
                 swal("Unable to Patch!", err.response.data.globalErrors[0], "error");
             })
     }
-
     render() {
         return (<span>
             <Modal isOpen={this.state.modal} toggle={this.toggleModal}>
@@ -113,14 +107,11 @@ class InvoiceHistory extends Component {
                         </fieldset>
                         <fieldset>
                         <TextField type="number" name="amount" label="Amount Paid" required={true} fullWidth={true}
-                                    value={this.state.amount} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                     
-                                    onChange={e => this.setState({ amount: e.target.value })} />
+                            value={this.state.amount} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                            onChange={e => this.setState({ amount: e.target.value })} />
                         </fieldset>
-                        
                          <fieldset>
                             <FormControl>
-                                
                                 <TextareaAutosize
                                     label="Notes"
                                     placeholder="Notes"
@@ -128,46 +119,31 @@ class InvoiceHistory extends Component {
                                     onChange={e => this.setState({ other: e.target.value })} 
                                     value={this.state.other}
                                     defaultValue={this.state.other}
-                                     
                                 />
                             </FormControl>
                         </fieldset>
-
                         <fieldset>
                             <div className="form-group text-center">
                                 <Button variant="contained" color="primary" type="submit" className="btn btn-raised btn-primary">Save</Button>
                             </div>
                         </fieldset>
                         <fieldset>
-                                   
-                                            <table className="table">
-                                        <thead>
-                                            <tr>
-                                                <td>
-                                                    Payment Type
-                                                </td>
-                                                <td>
-                                                    Amount
-                                                </td>
-                                                <td>
-                                                    Other
-                                                </td>
-                                            </tr>
-                                            </thead>
-                                            {this.state.history.map(g=>{
-                                        return (<tr>
-
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <td>Payment Type</td>
+                                        <td>Amount</td>
+                                        <td>Other</td>
+                                    </tr>
+                                </thead>
+                                {this.state.history.map(g=>{
+                                    return (<tr>
                                         <td>{g.typeOfPayment}</td>
                                         <td>{g.amount}</td>
                                         <td>{g.other}</td>
-
-                                        </tr>)})}
-                                            </table>
-
-
-                                        
-                                    
-
+                                    </tr>)})
+                                }
+                            </table>
                         </fieldset>
                     </form>
                 </ModalBody>
@@ -176,12 +152,10 @@ class InvoiceHistory extends Component {
         </span>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(InvoiceHistory);

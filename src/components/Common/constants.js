@@ -31,11 +31,23 @@ export const APP_MEDIAQUERY = {
 };
 
 
-export const server_url = 'https://https://mscservices.herokuapp.com/';
-export const context_path = 'msc-api/'
+
+//Local Server (Change localhost to system IP to connect with other computer which has server)
+//export const server_url = 'http://localhost:8080/';
+
+
+//Remote Server 
+ export const server_url = 'http://139.59.10.206:8080/';
+
+ //Server Context path
+ export const context_path = 'msc-api/';
+
 
 export function getSqlDate(date) {
     return moment(date, "DD/MM/YYYY").format('YYYY/MM/DD');
+}
+export function getTodayDate() {
+    return moment().format();  
 }
 
 export function updateSqlDates(obj, fields) {

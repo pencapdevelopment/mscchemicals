@@ -1,40 +1,36 @@
 import React, { Component } from 'react';
-import ContentWrapper from '../../Layout/ContentWrapper';
+// import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
 import axios from 'axios';
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
-import PageLoader from '../../Common/PageLoader';
-import { Row, Col, Modal,
+// import PageLoader from '../../Common/PageLoader';
+import {  Modal,
     ModalHeader,
     ModalBody } from 'reactstrap';
 import Sorter from '../../Common/Sorter';
-
 import CustomPagination from '../../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-
+import { server_url, context_path, defaultDateFilter,  } from '../../Common/constants';
+import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
-
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 import TabPanel from '../../Common/TabPanel';
-
+import PageLoader from '../../Common/PageLoader';
 import Add from './Add';
 import Upload from '../Common/Upload';
 import Image from '../Common/Image';
 // import AddSub from './AddSub';
-
-const json2csv = require('json2csv').parse;
-
+// const json2csv = require('json2csv').parse;
 class View extends Component {
     state = {
+        loading:false,
         activeTab: 0,
         editFlag: false,
         editSubFlag: false,
@@ -55,7 +51,6 @@ class View extends Component {
         },
         fileTypes: []
     }
-
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
@@ -63,27 +58,21 @@ class View extends Component {
             });
         }
     }
-
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if(e) {
             filters[field + 'Date'] = e.format();
         } else {
             filters[field + 'Date'] = null;
         }
-
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
-
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadSubObjs)
@@ -92,100 +81,76 @@ class View extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
     loadSubObjs(offset, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/branches?projection=branch_details&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         url += "&company=" + this.props.currentId;
-
         if (this.state.filters.search) {
             url += "&name=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         url = defaultDateFilter(this.state, url);
-
         axios.get(url)
-            .then(res => {
-                this.setState({
-                    subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                    subPage: res.data.page
-                });
-
-                if (callBack) {
-                    callBack();
-                }
-            })
+        .then(res => {
+            this.setState({
+                subObjs: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                subPage: res.data.page
+            });
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
-
-
     loadObj(id) {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + "?projection=company_contact_edit").then(res => {
-            this.setState({ obj: res.data });
+            this.setState({ obj: res.data,
+            loading:false });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
-        console.log('view component did mount');
-        console.log(this.props.currentId);
-
         this.loadObj(this.props.currentId);
         this.props.onRef(this);
+        this.setState({loading:true})
     }
-
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
         })
     }
-
     saveSuccess(id) {
-        this.setState({ editFlag: false });
+        this.setState({loading:true, editFlag: false });
+        this.loadObj(id);
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
     addSubObj = () => {
         this.setState({ editSubFlag: false });
-
         this.toggleModal();
     }
-
     editSubObj = (i) => {
         var obj = this.state.subObjs[i].id;
-
         this.setState({ editSubFlag: true, subId: obj }, this.toggleModal);
     }
-
     saveObjSuccess(id) {
         this.setState({ editSubFlag: true });
         this.toggleModal();
         this.loadSubObjs();
     }
-
     render() {
         return (
             <div>
+                 {this.state.loading && <PageLoader />}
                 <div className="content-heading">Company Contact</div>
                 {!this.state.editFlag &&
                     <div className="row">
@@ -209,9 +174,12 @@ class View extends Component {
                             <TabPanel value={this.state.activeTab} index={0}>
                                 <div className="card b">
                                     <div className="card-header">
+                                    {this.props.user.role === 'ROLE_ADMIN' &&
                                         <div className="float-right mt-2">
-                                            <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
-                                        </div>
+                                        <Button variant="contained" color="warning" size="xs" onClick={() => this.updateObj()}>Edit</Button>
+                                    </div>
+                                    }
+                                        
                                         <h4 className="my-2">
                                             <span>{this.state.obj.name}</span>
                                         </h4>
@@ -225,7 +193,7 @@ class View extends Component {
                                                     </td>
                                                     <td>
                                                         <Image onRef={ref => (this.imgRef = ref)} baseUrl={this.props.baseUrl}
-                                                        parentObj={this.state.obj}></Image>
+                                                        parentObj={this.state.obj?this.state.obj:"-NA-"}></Image>
                                                     </td>
                                                 </tr>
                                                 {this.state.obj.type ==='C' && <tr>
@@ -234,93 +202,92 @@ class View extends Component {
                                                     </td>
                                                     <td>
                                                         <Link to={`/companies/${this.state.obj.company.id}`}>
-                                                            {this.state.obj.company.name}
+                                                            {this.state.obj.company.name?this.state.obj.company.name:"-NA-"}
                                                         </Link>
                                                     </td>
                                                 </tr>}
                                                 {this.state.obj.type !=='C' && <tr>
                                                     <td>
                                                         <strong>Broker</strong>
-                                                    </td>
-                                                    
+                                                    </td>                                               
                                                 </tr>}
                                                 <tr>
                                                     <td>
                                                         <strong>Name</strong>
                                                     </td>
-                                                    <td>{this.state.obj.name}</td>
+                                                    <td>{this.state.obj.name?this.state.obj.name:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Email</strong>
                                                     </td>
-                                                    <td>{this.state.obj.email}</td>
+                                                    <td>{this.state.obj.email?this.state.obj.email:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Phone</strong>
                                                     </td>
-                                                    <td>{this.state.obj.phone}</td>
+                                                    <td>{this.state.obj.phone?this.state.obj.phone:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Gender</strong>
                                                     </td>
-                                                    <td>{this.state.obj.gender == 'M' ? 'Male' : 'Female'}</td>
+                                                    <td>{this.state.obj.gender === 'M' ? 'Male' : 'Female'}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Department</strong>
                                                     </td>
-                                                    <td>{this.state.obj.department}</td>
+                                                    <td>{this.state.obj.department?this.state.obj.department:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>About Work</strong>
                                                     </td>
-                                                    <td>{this.state.obj.aboutWork}</td>
+                                                    <td>{this.state.obj.aboutWork?this.state.obj.aboutWork:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Reports To</strong>
                                                     </td>
-                                                    <td>{this.state.obj.reportsTo}</td>
+                                                    <td>{this.state.obj.reportsTo?this.state.obj.reportsTo:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>First Met</strong>
                                                     </td>
-                                                    <td>{this.state.obj.firstMet}</td>
+                                                    <td>{this.state.obj.firstMet?this.state.obj.firstMet:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Whats App</strong>
                                                     </td>
-                                                    <td>{this.state.obj.whatsapp}</td>
+                                                    <td>{this.state.obj.whatsapp?this.state.obj.whatsapp:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Wechat</strong>
                                                     </td>
-                                                    <td>{this.state.obj.wechat}</td>
+                                                    <td>{this.state.obj.wechat?this.state.obj.wechat:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>QQ</strong>
                                                     </td>
-                                                    <td>{this.state.obj.qq}</td>
+                                                    <td>{this.state.obj.qq?this.state.obj.qq:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>LinkedIn</strong>
                                                     </td>
-                                                    <td>{this.state.obj.linkedin}</td>
+                                                    <td>{this.state.obj.linkedin?this.state.obj.linkedin:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <strong>Previous Company</strong>
                                                     </td>
-                                                    <td>{this.state.obj.previousCompany}</td>
+                                                    <td>{this.state.obj.previousCompany?this.state.obj.previousCompany:"-NA-"}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
@@ -395,15 +362,17 @@ class View extends Component {
                                                             <td>
                                                                 <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
                                                             </td>
+                                                            {this.props.user.role === 'ROLE_ADMIN' &&
                                                             <td>
+                                                            
                                                                 <Button variant="contained" color="warning" size="xs" onClick={() => this.editSubObj(i)}>Edit</Button>
-                                                            </td>
+                                              
+                                                                </td>}
                                                         </tr>
                                                     )
                                                 })}
                                             </tbody>
                                         </Table>
-
                                         <CustomPagination page={this.state.subPage} onChange={(x) => this.loadSubObjs(x)} />
                                     </div>
                                 </div>
@@ -423,12 +392,10 @@ class View extends Component {
             </div>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(View);

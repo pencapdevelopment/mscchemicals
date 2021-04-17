@@ -6,13 +6,14 @@ import axios from 'axios';
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
-import PageLoader from '../../Common/PageLoader';
+// import PageLoader from '../../Common/PageLoader';
 import Sorter from '../../Common/Sorter';
 import FileDownload from '../../Common/FileDownload';
 
 import CustomPagination from '../../Common/CustomPagination';
 import * as Const from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { Button, TextField, Select, MenuItem, InputLabel, FormControl,  } from '@material-ui/core';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 
 import 'react-datetime/css/react-datetime.css';
 import MomentUtils from '@date-io/moment';
@@ -109,7 +110,7 @@ class List extends Component {
             url += '&sort=' + this.state.orderBy;
         }
 
-        if( this.props.user.permissions.indexOf(Const.MG_AC) ===-1) {
+        if( this.props.user.role !== 'ROLE_ADMIN') {
             url += "&uid=" + this.props.user.id;
         }
 
@@ -145,6 +146,7 @@ class List extends Component {
                 }
             })
     }
+  
 
     componentWillUnmount() {
         this.props.onRef(undefined);
@@ -161,10 +163,10 @@ class List extends Component {
         this.props.onUpdateRequest(obj.id);
     }
 
-    editObj(idx) {
-        var obj = this.state.objects[idx];
-        this.props.onUpdateRequest(obj.id);
-    }
+    // editObj(idx) {
+    //     var obj = this.state.objects[idx];
+    //     this.props.onUpdateRequest(obj.id);
+    // }
 
     patchObj(idx) {
         var obj = this.state.objects[idx];
@@ -327,7 +329,7 @@ class List extends Component {
                                     <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
                                 </td>
                                 <td>
-                        {  this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button> }
+                        {this.props.user.role === 'ROLE_ADMIN' &&  this.props.user.permissions.indexOf(Const.MG_SE_E) >=0 && <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button> }
                                     <Button className="d-none" variant="contained" color="warning" size="xs" onClick={() => this.patchObj(i)}>{obj.active ? 'InActivate' : 'Activate'}</Button>
                                     {obj.order && 
                                     <Link to={`/orders/${obj.order}`}>

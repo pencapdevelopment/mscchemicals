@@ -22,7 +22,10 @@ body:not(.aside-collapsed) .topnavbar .navbar-header .navbar-brand {
 
 
 .wrapper .aside-container .aside-inner {
-    padding-top: 75px;
+    padding-top:75px;
+    height: 100%;
+    width: 235px;
+    overflow: hidden;
 }
 
 .layout-fixed .wrapper .section-container {
@@ -44,12 +47,12 @@ table .badge {
 
 .card-body>.btn,
 .content-wrapper .btn {
-    margin: 0 4px 4px 0
+    margin: 0 4px 4px 0;
 }
 
-a:hover .card {
-    text-decoration: none !important;
-}
+/*a:hover .card {
+    input-group-decoration: none !important;
+}*/
 
 
 .smooth-scroll::-webkit-scrollbar {
@@ -150,3 +153,53 @@ a.btn-link {
     overflow-x: hidden !important;
 }
 
+.activate{
+    color:white !important;
+    background-color: green !important;
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+}
+.inactivate{
+    color:white !important;
+    background-color: red !important;
+}
+.hidden { display:none; }
+
+.login1{
+    background: #fff;
+    // padding: 5px; //4em 4em 2em;
+     width: 950px;
+     height: 450px;
+     margin: 50px auto;
+     box-shadow: 0 0 1em #222;
+     border-radius: 20px;
+}
+.img1{
+    width: 470px;
+    height: 450px;
+    margin-left: -15px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+  }
+
+  
+//   .wrapper {
+//     //background: #595a5e !important;
+//     background-image: url(../sunset.jpg) !important;
+//     background-repeat: no-repeat !important;
+//     background-size: cover !important;
+//     object-fit: contain !important;
+// }
+.backimg {
+        //background: #595a5e !important;
+        //background-image: url(../sunset.jpg) !important;
+        background-image: url(../MSCB2.jpg) !important;
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }

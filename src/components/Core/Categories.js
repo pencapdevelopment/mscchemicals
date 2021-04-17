@@ -15,8 +15,8 @@ import {
 import swal from 'sweetalert';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import Moment from 'react-moment';
-import { Link } from 'react-router-dom';
+// import Moment from 'react-moment';
+// import { Link } from 'react-router-dom';
 import CustomPagination from '../Common/CustomPagination';
 import CategoryTree from '../Common/CategoryTree';
 import { server_url, context_path } from '../Common/constants';

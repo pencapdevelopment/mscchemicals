@@ -3,10 +3,8 @@ import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
 import swal from 'sweetalert';
 import axios from 'axios';
-
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-
+import { server_url, context_path,  } from '../../Common/constants';
+import { Button, TextField, Select, MenuItem, InputLabel, FormControl,  } from '@material-ui/core';
 import 'react-datetime/css/react-datetime.css';
 import MomentUtils from '@date-io/moment';
 import {
@@ -14,26 +12,22 @@ import {
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import Event from '@material-ui/icons/Event';
-
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
+// import ListItemText from '@material-ui/core/ListItemText';
+// import Checkbox from '@material-ui/core/Checkbox';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-
 import FormValidator from '../../Forms/FormValidator';
-import { Card, CardHeader, CardBody, Input, TabContent, TabPane, Nav, NavItem, NavLink, Form, CustomInput } from 'reactstrap';
-
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-
-const json2csv = require('json2csv').parse;
-
+import {  Form } from 'reactstrap';
+import PageLoader from '../../Common/PageLoader';
+// import Radio from '@material-ui/core/Radio';
+// import RadioGroup from '@material-ui/core/RadioGroup';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import FormLabel from '@material-ui/core/FormLabel';
+// const json2csv = require('json2csv').parse;
 class Add extends Component {
-
     state = {
         formWizard: {
             editFlag: false,
+            loading: false,
             globalErrors: [],
             msg: '',
             errors: {},
@@ -49,7 +43,6 @@ class Add extends Component {
                 reference: this.props.reference,
             }
         },
-
         followUpType: [
             { label: 'Visit', value: 'visit' },
             { label: 'Email', value: 'email' },
@@ -69,16 +62,12 @@ class Add extends Component {
             { label: 'phone', value: 'phone' },
             { label: 'chat', value: 'chat' }
         ]
-
     }
-
     loadData() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id)
             .then(res => {
                 var formWizard = this.state.formWizard;
-                
                 var newobj = res.data;
-                
                 if (!newobj.type) {
                     newobj.type = '';
                 }
@@ -88,41 +77,31 @@ class Add extends Component {
                 if (!newobj.nextFollowupType) {
                     newobj.nextFollowupType = '';
                 }
-
                 formWizard.obj = newobj;
-
                 this.setState({ formWizard });
             });
     }
-
     createNewObj() {
         var formWizard = {
             globalErrors: [],
             msg: '',
             errors: {},
             obj: {
-
             }
         }
-
         this.setState({ formWizard });
     }
-
     updateObj(id) {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
         formWizard.editFlag = true;
-
         this.setState({ formWizard }, this.loadData);
     }
-
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.obj[field] = e.target.value;
         this.setState({ formWizard });
-
         if (!noValidate) {
             const result = FormValidator.validate(input);
             formWizard.errors[input.name] = result;
@@ -131,33 +110,26 @@ class Add extends Component {
             });
         }
     }
-
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
-
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
-
         if(e) {
             formWizard.obj[field] = e.format();
         } else {
             formWizard.obj[field] = null;
         }
-
         this.setState({ formWizard });
     }
-
     setAutoSuggest(field, val) {
         var formWizard = this.state.formWizard;
         formWizard.obj[field] = val;
         formWizard['selected' + field] = val;
         this.setState({ formWizard });
     }
-
     checkForError() {
-        const form = this.formWizardRef;
-
+        // const form = this.formWizardRef;
         const tabPane = document.getElementById('saveForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
@@ -168,19 +140,17 @@ class Add extends Component {
 
         return hasError;
     }
-
     saveDetails() {
         var hasError = this.checkForError();
         if (!hasError) {
+            this.setState({ loading: true });
             var newObj = this.state.formWizard.obj;
             var promise = undefined;
-
             if (!this.state.editFlag) {
                 promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
             } else {
                 promise = axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id, newObj)
             }
-
             promise.then(res => {
                 var formw = this.state.formWizard;
                 formw.obj.id = res.data.id;
@@ -199,7 +169,6 @@ class Add extends Component {
                         formWizard.globalErrors.push(e);
                     });
                 }
-
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
@@ -225,23 +194,19 @@ class Add extends Component {
         }
         return true;
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.props.onRef(this);
         this.setState({ loding: false })
     }
-
     render() {
         const errors = this.state.formWizard.errors;
-
         return (
             <ContentWrapper>
+                {this.state.loading && <PageLoader />}
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
-
                     <div className="row">
                         <div className="col-md-6 offset-md-3">
                             <fieldset>
@@ -257,7 +222,6 @@ class Add extends Component {
                                     value={this.state.formWizard.obj.contact}
                                     onChange={e => this.setField('contact', e)} />
                             </fieldset>
-
                             <fieldset>
                                 <MuiPickersUtilsProvider utils={MomentUtils}>
                                     <DatePicker 
@@ -287,7 +251,6 @@ class Add extends Component {
                                     )} />
                                 </MuiPickersUtilsProvider>
                             </fieldset>
-
                             <fieldset>
                                 <FormControl>
                                     <InputLabel>Follow up type</InputLabel>
@@ -318,7 +281,6 @@ class Add extends Component {
                                     </Select>
                                 </FormControl>
                             </fieldset>
-
                             <fieldset>
                                 <TextareaAutosize placeholder="Summary" name="response" fullWidth={true} rowsMin={3}
                                     inputProps={{ maxLength: 500, "data-validate": '[{ "key":"required"},{ "key":"maxlen","param:500},{ "key":"minlen","param:10}]' }}
@@ -326,7 +288,6 @@ class Add extends Component {
                                     error={errors?.response?.length > 0}
                                     value={this.state.formWizard.obj.response} onChange={e => this.setField("response", e)} />
                             </fieldset>
-
                             <fieldset>
                                 <MuiPickersUtilsProvider utils={MomentUtils}>
                                     <DatePicker 
@@ -355,12 +316,10 @@ class Add extends Component {
                                     )}/>
                                 </MuiPickersUtilsProvider>
                             </fieldset>
-
                             <fieldset>
                                 <FormControl>
                                     <InputLabel>Next follow up type</InputLabel>
                                     <Select name="nextFollowupType" label="Next follow up type"
-
                                         helperText={errors?.nextFollowupType?.length > 0 ? errors?.nextFollowupType[0]?.msg : ""}
                                         error={errors?.nextFollowupType?.length > 0} value={this.state.formWizard.obj.nextFollowupType}
                                         onChange={e => this.setSelectField('nextFollowupType', e)}> {this.state.followUpType.map((e, keyIndex) => {
@@ -371,7 +330,6 @@ class Add extends Component {
                                     </Select>
                                 </FormControl>
                             </fieldset>
-
                             <div className="text-center">
                                 <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
                                 <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save</Button>
@@ -382,12 +340,10 @@ class Add extends Component {
             </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Add);

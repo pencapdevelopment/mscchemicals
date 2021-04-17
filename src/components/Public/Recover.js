@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PageLoader from '../Common/PageLoader';
+// import PageLoader from '../Common/PageLoader';
 import { Input } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { server_url, context_path} from '../Common/constants';

@@ -24,19 +24,21 @@ class Header extends Component {
     }
 
     checkNewMessages() {
-        
-//             axios.get(server_url + context_path + "api/notifications?uid=" + this.props.user.id + "&sort=id,desc")
-//                 .then(res => {
-//                     this.setState({
-//                         notifications: res.data._embedded[Object.keys(res.data._embedded)[0]],
-//                     });
-//                 });
-           
-        axios.get(server_url + context_path + "notification-cnt").then(res=>{
-            
-            this.setState({newNotiCount:Number(res.data.message) });
+        // if ( this.props.user.id !== 'undefined') {
+        //     axios.get(server_url + context_path + "api/notifications?uid=" + this.props.user.id + "&sort=id,desc")
+        //         .then(res => {
+        //             this.setState({
+        //                 notifications: res.data._embedded[Object.keys(res.data._embedded)[0]],
+        //             });
+        //         });
+        // }
+
+
+        axios.get(server_url + context_path + "notification-cnt").then(res => {
+
+            this.setState({ newNotiCount: Number(res.data.message) });
         })
-    
+
 
     }
 
@@ -86,8 +88,8 @@ class Header extends Component {
     logOut = e => {
         e.preventDefault()
 
-        axios.post(server_url + context_path + "/logout").
-            then(response => {
+        axios.post(server_url + context_path + "logout")
+            .then(response => {
                 this.props.actions.logout({});
             }).catch(e => {
                 this.props.actions.logout({});
@@ -97,13 +99,13 @@ class Header extends Component {
 
 
     }
-    markRead(){
+    markRead() {
         //this.setState({newNotiCount:0 });
-        axios.post(server_url + context_path + "notification-read").
-            then(response => {
-                this.setState({newNotiCount:0 });
+        axios.post(server_url + context_path + "notification-read")
+            .then(response => {
+                this.setState({ newNotiCount: 0 });
             }).catch(e => {
-                 
+
             });
 
     }
@@ -139,11 +141,11 @@ class Header extends Component {
                     <ul className="navbar-nav mr-auto flex-row">
                         <li className="nav-item">
                             { /* Button used to collapse the left sidebar. Only visible on tablet and desktops */}
-                            <a href="" className="nav-link d-none d-md-block d-lg-block d-xl-block" onClick={this.toggleCollapsed}>
+                            <a href="#s" className="nav-link d-none d-md-block d-lg-block d-xl-block" onClick={this.toggleCollapsed}>
                                 <em className="fas fa-bars"></em>
                             </a>
                             { /* Button to show/hide the sidebar on mobile. Visible on mobile only. */}
-                            <a href="" className="nav-link sidebar-toggle d-md-none" onClick={this.toggleAside}>
+                            <a href="#s" className="nav-link sidebar-toggle d-md-none" onClick={this.toggleAside}>
                                 <em className="fas fa-bars"></em>
                             </a>
                         </li>
@@ -169,9 +171,9 @@ class Header extends Component {
 
                         { /* START Alert menu */}
                         <UncontrolledDropdown nav inNavbar className="dropdown-list">
-                            <DropdownToggle nav className="dropdown-toggle-nocaret"  onClick={this.markRead}>
+                            <DropdownToggle nav className="dropdown-toggle-nocaret" onClick={this.markRead}>
                                 <em className="fa fa-bell"></em>
-                                {this.state.newNotiCount != 0 &&
+                                {this.state.newNotiCount !== 0 &&
                                     <span className="badge badge-danger">{this.state.newNotiCount}</span>}
                             </DropdownToggle>
                             { /* START Dropdown menu */}
@@ -186,7 +188,7 @@ class Header extends Component {
                                                         <div className="media">
                                                             <div className="media-body">
                                                                 <p className="m-0">{obj.description}</p>
-                                                               
+
                                                             </div>
                                                         </div>
                                                     </Link>
@@ -195,6 +197,16 @@ class Header extends Component {
                                         <ListGroupItem action tag="a" href="notifications" onClick={e => e.preventDefault()}>
                                             <Link className="text-center" to="/notifications">
                                                 <span className="text-sm">More notifications</span>
+                                            </Link>
+                                        </ListGroupItem>
+                                        <ListGroupItem action tag="a" href="sales-approval-alerts" onClick={e => e.preventDefault()}>
+                                        <Link className="text-center" to="/sales-approval-alerts">
+                                                <span className="text-sm">Sales Approval Alert</span>
+                                            </Link>
+                                        </ListGroupItem>
+                                        <ListGroupItem action tag="a" href="purchases-approval-alerts" onClick={e => e.preventDefault()}>
+                                        <Link className="text-center" to="/purchases-approval-alerts">
+                                                <span className="text-sm">Purchases Approval Alert</span>
                                             </Link>
                                         </ListGroupItem>
                                     </ListGroup>
@@ -207,7 +219,7 @@ class Header extends Component {
 
                         { /* START Offsidebar button */}
                         <li className="nav-item d-none">
-                            <a className="nav-link" href="" onClick={this.toggleOffsidebar}>
+                            <a className="nav-link" href="#s" onClick={this.toggleOffsidebar}>
                                 <em className="fa fa-notebook"></em>
                             </a>
                         </li>

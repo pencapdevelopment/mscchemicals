@@ -6,22 +6,23 @@ import PageLoader from '../../Common/PageLoader';
 
 import TabPanel from '../../Common/TabPanel';
 
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+import {  Tab, Tabs, AppBar,Button } from '@material-ui/core';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 
 import List from './List';
 import Add from './Add';
 import View from './View';
 
-const json2csv = require('json2csv').parse;
+// const json2csv = require('json2csv').parse;
 
 class CompanyContacts extends Component {
     state = {
@@ -50,7 +51,6 @@ class CompanyContacts extends Component {
 
     updateObj(id) {
         this.toggleTab(1);
-        console.log(id);
         this.setState({ editFlag: false }, () => {
             this.addTemplateRef.updateObj(id);
         })
@@ -83,10 +83,19 @@ class CompanyContacts extends Component {
             <ContentWrapper>
                 
                 {this.state.loading && <PageLoader />}
-                {this.state.currentId == 0 && 
+                {this.state.currentId === 0 && 
                 <div>
                     {!this.props.company &&
-                    <div className="content-heading">Contacts </div>}
+                    <div className="content-heading">
+                          <h4 className="col-10 my-2" onClick={() => this.toggleTab(0)}>
+                                <span>Contacts</span>
+                            </h4>
+
+                            <div className="col-2 float-right mt-2">
+                                <Button variant="contained" color="warning" size="xs"
+                                    onClick={() => this.toggleTab(1)} > + Add Contact</Button>
+                            </div>
+                     </div>}
                     <div className="row">
                         <div className="col-md-12">
                             <AppBar position="static">
@@ -98,6 +107,7 @@ class CompanyContacts extends Component {
                                     scrollButtons="auto"
                                     aria-label="scrollable auto tabs example"
                                     value={this.state.activeTab}
+                                    style={{ display: 'none' }}
                                     onChange={(e, i) => this.toggleTab(i)} >
                                     <Tab label="List" />
                                     <Tab label="Add Contact" hidden={this.state.editFlag} />

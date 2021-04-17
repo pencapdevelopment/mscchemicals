@@ -19,21 +19,16 @@ import swal from 'sweetalert';
 import { context_path, server_url } from '../../Common/constants';
 import Sorter from '../../Common/Sorter';
 import ContentWrapper from '../../Layout/ContentWrapper';
-
-
-
-
-
-
-const json2csv = require('json2csv').parse;
-
-
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+// const json2csv = require('json2csv').parse;
 class Upload extends Component {
     state = {
         activeTab: 0,
         editFlag: false,
         editSubFlag: false,
         modal: false,
+        uploadBtnTxt:'Save',
+        disableUploadBtn:false,
         error: {},
         formWizard: {
             docs: [],
@@ -63,13 +58,11 @@ class Upload extends Component {
             'jpg': 'image/jpeg',
         }
     }
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal
         });
     }
-
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
@@ -77,7 +70,6 @@ class Upload extends Component {
             });
         }
     }
-
     loadObj() {
         axios.get(server_url + context_path + "api/docs?parent=" + this.props.currentId + "&active=true&fileFrom=" + this.props.fileFrom).then(res => {
             var formWizard = this.state.formWizard;
@@ -85,76 +77,59 @@ class Upload extends Component {
             this.setState({ formWizard });
         });
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         // console.log('upload component did mount');
         // console.log(this.props.currentId);
         this.loadObj();
-
         this.props.onRef(this);
     }
-
     updateObj() {
         this.setState({ editFlag: true }, () => {
             this.addTemplateRef.updateObj(this.props.currentId);
         })
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: false });
     }
-
     cancelSave = () => {
         this.setState({ editFlag: false });
     }
-
     addSubObj = () => {
         this.setState({ editSubFlag: false });
-
         this.toggleModal();
     }
-
-    editSubObj = (i) => {
+    editSubObj =(i)=>{
         var files = this.props.fileTypes[i];
         var formWizard = this.state.formWizard;
         formWizard.obj = {};
         formWizard.obj.label = files.label;
         formWizard.obj.enableExpiryDate = files.expiryDate;
         formWizard.obj.expiryDate = null;
-
         this.setState({ editSubFlag: true, formWizard: formWizard }, this.toggleModal);
     }
-
     saveObjSuccess(id) {
         this.setState({ editSubFlag: true });
         this.toggleModal();
         this.loadSubObjs();
     }
-
     searchSubObj = e => {
         var str = e.target.value;
         var filters = this.state.filters;
-
         filters.search = str;
         this.setState({ filters }, o => { this.loadSubObjs() });
     }
-
     filterByDate(e, field) {
         var filters = this.state.filters;
-
         if(e) {
             filters[field + 'Date'] = e.format();
         } else {
             filters[field + 'Date'] = null;
         }
-
         this.setState({ filters: filters }, g => { this.loadObjects(); });
     }
-
     onSort(e, col) {
         if (col.status === 0) {
             this.setState({ orderBy: 'id,desc' }, this.loadSubObjs)
@@ -163,7 +138,6 @@ class Upload extends Component {
             this.setState({ orderBy: col.param + ',' + direction }, this.loadSubObjs);
         }
     }
-
     fileSelected(name, e) {
         var file = e.target.files[0];
         var sizeinMb = file.size / (1024 * 1024);
@@ -174,7 +148,6 @@ class Upload extends Component {
         }
         this.setState({ name: file.name });
     }
-
     uploadFiles() {
         var formData = new FormData();
         var imagefile = document.querySelector('#fileUpload');
@@ -185,41 +158,54 @@ class Upload extends Component {
         if (this.state.formWizard.obj.enableExpiryDate && this.state.formWizard.obj.expiryDate) {
             formData.append("expiryDate", this.state.formWizard.obj.expiryDate);
         }
-        axios.post(server_url + context_path + 'docs/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).then(res => {
-            if (res.data.uploaded === 1) {
-                this.toggleModal();
-                this.loadObj();
-                swal("Uploaded!", "File Uploaded", "success");
-            } else {
-                swal("Unable to Upload!", "Upload Failed", "error");
-            }
-        }).catch(err => {
-            var msg = "Select File";
-            
-            if(err.response.data.globalErrors && err.response.data.globalErrors[0]) {
-                msg = err.response.data.globalErrors[0];
-            }
-
-            swal("Unable to Upload!", msg, "error");
-        })
+        if(imagefile.files.length>0){
+            this.setState({disableUploadBtn:true,uploadBtnTxt:'Please Wait...'});
+            axios.post(server_url + context_path + 'docs/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(res => {
+                this.setState({disableUploadBtn:false,uploadBtnTxt:'Save'});
+                if (res.data.uploaded === 1) {
+                    this.toggleModal();
+                    this.loadObj();
+                    swal("Uploaded!", "File Uploaded", "success");
+                } else {
+                    swal("Unable to Upload!", "Upload Failed", "error");
+                }
+            }).catch(err => {
+                this.setState({disableUploadBtn:false,uploadBtnTxt:'Save'});
+                var msg = "Select File"; 
+                if(err.response.data.globalErrors && err.response.data.globalErrors[0]) {
+                    msg = err.response.data.globalErrors[0];
+                }
+                swal("Unable to Upload!", msg, "error");
+            });
+        }
+        else{
+            swal("Unable to Upload!", "Select a File", "error");
+        }
     }
-
     getFileName = (type) => {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
         if (doc) {
             // return doc.fileName;
-            return <a className="btn-link" onClick={(e) => this.downloadFile(e, type)}>
+            return <a href="javascript:void(0);" className="btn-link" onClick={(e) => this.downloadFile(e, type)}>
                         {doc.fileName}
                     </a>
         } else {
             return "-NA-";
         }
     }
-
+    isFileExists = (type) => {
+        var doc = this.state.formWizard.docs.find(g => g.fileType === type);
+        if(this.props.user.role === 'ROLE_ADMIN') return false;
+        if (doc?.fileName) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     getExpiryDate = (type) => {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
         if (doc && doc.expiryDate) {
@@ -228,7 +214,6 @@ class Upload extends Component {
             return "-NA-";
         }
     }
-
     getCreationDate = (type) => {
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
         if (doc && doc.creationDate) {
@@ -237,34 +222,26 @@ class Upload extends Component {
             return "-NA-";
         }
     }
-
     setField(field, e) {
         var formWizard = this.state.formWizard;
-
-        var input = e.target;
+        // var input = e.target;
         formWizard.obj[field] = e.target.value;
         this.setState({ formWizard });
     }
-
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
-
         if(e) {
             formWizard.obj[field] = e.format();
         } else {
             formWizard.obj[field] = null;
         }
-
         this.setState({ formWizard });
     }
-
     downloadFile = (e, type) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-
         // var doc = this.state.docs[idx];
         var doc = this.state.formWizard.docs.find(g => g.fileType === type);
-
         axios({
             url: server_url + context_path + "docs/" + doc.id,
             method: 'GET',
@@ -272,7 +249,6 @@ class Upload extends Component {
         }).then(response => {
             var fileType = doc.fileName.substr(doc.fileName.lastIndexOf('.') + 1);
             fileType = this.state.exts[fileType];
-
             const url = window.URL.createObjectURL(new Blob([response.data], { type: fileType }));
             const link = document.createElement('a');
             link.href = url;
@@ -281,26 +257,25 @@ class Upload extends Component {
             link.click();
         });
     }
-
     render() {
         return (<ContentWrapper>
             <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="saveForm">
-
                 <div className="row">
                     <div className="col-md-12">
                         <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModal} size={'md'}>
                             <ModalHeader toggle={this.toggleModal}>
-                                Upload - {this.state.formWizard.obj.label}
+                                <CloudUploadIcon /> - {this.state.formWizard.obj.label}
                             </ModalHeader>
                             <ModalBody>
                                 <fieldset>
                                     <Button
                                         variant="contained"
-                                        component="label"> Select File
-                                    <input type="file" id="fileUpload"
+                                        component="label" color="primary"> Select File
+                                        <input type="file" id="fileUpload"
                                             name="fileUpload" accept='.doc,.docx,.pdf,.png,.jpg'
                                             onChange={e => this.fileSelected('fileUpload', e)}
-                                            style={{ display: "none" }} />
+                                            style={{ display: "none" }} 
+                                        />
                                     </Button>{this.state.name}
                                 </fieldset>
                                 <span>*Please upload .doc,.docx,.pdf,.png,.jpg files only</span>
@@ -334,7 +309,7 @@ class Upload extends Component {
                                         </MuiPickersUtilsProvider>
                                 </fieldset>}
                                 <div className="text-center">
-                                    <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Save</Button>
+                                    <Button variant="contained" color="primary" disabled={this.state.disableUploadBtn} onClick={e => this.uploadFiles()}>{this.state.uploadBtnTxt}</Button>
                                 </div>
                             </ModalBody>
                         </Modal>
@@ -343,6 +318,7 @@ class Upload extends Component {
                                 <thead>
                                     <Sorter columns={[
                                         { name: 'File Type', sortable: false },
+                                        // { name: 'File Type', sortable: false },
                                         { name: 'Action', sortable: false },
                                         { name: 'File Name', sortable: false },
                                         { name: 'Expiry Date', sortable: false },
@@ -356,14 +332,14 @@ class Upload extends Component {
                                             <tr key={obj.label} className={obj.noshow ? 'd-none' : ''}>
                                                 <td>{obj.label}</td>
                                                 <td>
-                                                    <Button variant="contained" disabled={this.props.disabled} color="warning" size="xs" onClick={() => this.editSubObj(i)}>Upload</Button>
+                                                    <Button fontSize="small" disabled={this.isFileExists(obj.label)} variant="contained" color="primary" style={{marginLeft: "-10px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={() => this.editSubObj(i)}>Upload</Button>
                                                 </td>
                                                 <td>
                                                     {this.getFileName(obj.label)}
                                                 </td>
-                                                
                                                 <td>
-                                                    {this.state.formWizard.obj.enableExpiryDate ? this.getExpiryDate(obj.label) : '-NA-'}
+                                                {/* this.state.formWizard.obj.enableExpiryDate ? : '-NA-' */}
+                                                    { this.getExpiryDate(obj.label) }
                                                 </td>
                                                 <td>
                                                     {this.getCreationDate(obj.label)}
@@ -380,12 +356,10 @@ class Upload extends Component {
         </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Upload);

@@ -6,13 +6,15 @@ import axios from 'axios';
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
-import PageLoader from '../../Common/PageLoader';
+// import PageLoader from '../../Common/PageLoader';
 import Sorter from '../../Common/Sorter';
 import FileDownload from '../../Common/FileDownload';
 
 import CustomPagination from '../../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { server_url, context_path, defaultDateFilter, getStatusBadge } from '../../Common/constants';
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { Button, TextField, Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
 
 import 'react-datetime/css/react-datetime.css';
 import MomentUtils from '@date-io/moment';
@@ -97,51 +99,43 @@ class List extends Component {
 
     loadObjects(offset, all, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/" + this.props.baseUrl + "?projection=order_list&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         if(this.props.user.role !== 'ROLE_ADMIN') {
             url += "&uid=" + this.props.user.id;
+            if(this.props.user.role === 'ROLE_ACCOUNTS'){
+                url += "&status="+encodeURIComponent('On going')+"&accountsApproval="+encodeURIComponent('!A!');
+            }
         }
-
         if (this.state.filters.search) {
             url += "&code=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         if (this.state.filters.category) {
             url += "&type=" + this.state.filters.category;
         }
-
         url = defaultDateFilter(this.state, url);
-
         if (all) {
             url += "&size=100000";
         }
-
         axios.get(url)
-            .then(res => {
-                if (all) {
-                    this.setState({
-                        all: res.data._embedded[Object.keys(res.data._embedded)[0]]
-                    });
-                } else {
-                    this.setState({
-                        objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                        page: res.data.page
-                    });
-                }
-
-                if (callBack) {
-                    callBack();
-                }
-            })
+        .then(res => {
+            if (all) {
+                this.setState({
+                    all: res.data._embedded[Object.keys(res.data._embedded)[0]]
+                });
+            } else {
+                this.setState({
+                    objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                    page: res.data.page
+                });
+            }
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
@@ -157,10 +151,10 @@ class List extends Component {
         this.props.onUpdateRequest(obj.id);
     }
 
-    editObj(idx) {
-        var obj = this.state.objects[idx];
-        this.props.onUpdateRequest(obj.id);
-    }
+    // editObj(idx) {
+    //     var obj = this.state.objects[idx];
+    //     this.props.onUpdateRequest(obj.id);
+    // }
 
     patchObj(idx) {
         var obj = this.state.objects[idx];
@@ -313,7 +307,7 @@ class List extends Component {
                                     </Link>
                                 </td>
                                 <td>
-                                    <Link to={`/${obj.type == 'Sales' ? 'sales' : 'purchases'}/${obj.enquiryId}`}>
+                                    <Link to={`/${obj.type === 'Sales' ? 'sales' : 'purchases'}/${obj.enquiryId}`}>
                                         {obj.type}
                                     </Link>
                                 </td>

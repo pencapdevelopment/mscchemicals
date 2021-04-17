@@ -1,27 +1,29 @@
 import React, { Component } from 'react';
 import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
+// import { Button } from '@material-ui/core';
 
 import PageLoader from '../../Common/PageLoader';
 
 import TabPanel from '../../Common/TabPanel';
 
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+import {  Tab, Tabs, AppBar } from '@material-ui/core';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 
 import List from './List';
 import Add from './Add';
 import View from './View';
 
-const json2csv = require('json2csv').parse;
+// const json2csv = require('json2csv').parse;
 
 class Lead extends Component {
 
@@ -74,9 +76,19 @@ class Lead extends Component {
         return (
             <ContentWrapper>
                 {this.state.loading && <PageLoader />}
-                {this.state.currentId == 0 && 
+                {this.state.currentId === 0 && 
                 <div>
-                    <div className="content-heading">Lead </div>
+                    <div className="content-heading">
+                    <h4 className="col-9 my-2" onClick={() => this.toggleTab(0)}>
+                        <span>Leads</span>
+                    </h4>
+
+                    {/* <div className="col-3 float-right mt-2">
+                        <Button variant="contained" color="warning" size="xs"
+                            onClick={() => this.toggleTab(1)} > + Add Prospective</Button>
+                    </div> */}
+                     </div>
+                   
                     <div className="row">
                         <div className="col-md-12">
                             <AppBar position="static">

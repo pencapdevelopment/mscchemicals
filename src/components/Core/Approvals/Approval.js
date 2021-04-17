@@ -1,30 +1,23 @@
 import React, { Component } from 'react';
 import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
-
 import PageLoader from '../../Common/PageLoader';
-
 import TabPanel from '../../Common/TabPanel';
-
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+import {  Tab, Tabs, AppBar } from '@material-ui/core';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
-
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 import List from './List';
 import Add from './Add';
 import View from './View';
-
-const json2csv = require('json2csv').parse;
-
+// const json2csv = require('json2csv').parse;
 class Approvals extends Component {
-
     state = {
         activeTab: 0,
         loading: true,
@@ -35,7 +28,6 @@ class Approvals extends Component {
         editFlag: false,
         currentId: 0
     }
-
     toggleTab = (tab) => {
         if (tab === 0) {
             this.setState({ editFlag: false })
@@ -46,12 +38,10 @@ class Approvals extends Component {
             });
         }
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: true, currentId: id });
         console.log(id);
     }
-
     updateObj(id) {
         this.toggleTab(1);
         console.log(id);
@@ -59,19 +49,15 @@ class Approvals extends Component {
             this.addTemplateRef.updateObj(id);
         })
     }
-
     viewObj = (id) => {
         this.setState({ editFlag: true, currentId: id });
     }
-
     viewAll = () => {
         this.setState({ editFlag: false, currentId: 0 });
     }
-
     cancelSave = () => {
         this.toggleTab(0);
     }
-
     componentDidMount() {
         if (this.props.match && this.props.match.params.objId) {
             this.setState({ editFlag: true, currentId: this.props.match.params.objId });
@@ -88,15 +74,13 @@ class Approvals extends Component {
                 })
             }
         }
-
         this.setState({ loading: false })
     }
-
     render() {
         return (
             <ContentWrapper>
                 {this.state.loading && <PageLoader />}
-                {this.state.currentId == 0 && 
+                {this.state.currentId === 0 && 
                 <div>
                     {!this.props.repository &&
                     <div className="content-heading">Communication History </div>}                    
@@ -144,12 +128,10 @@ class Approvals extends Component {
         )
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(Approvals);

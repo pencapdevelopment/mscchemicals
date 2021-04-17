@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import {  Link } from 'react-router-dom';
 import { Input } from 'reactstrap';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/actions';
-import FormValidator from '../Forms/FormValidator.js';
+// import FormValidator from '../Forms/FormValidator.js';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { server_url, context_path} from '../Common/constants';
@@ -97,7 +97,7 @@ class Recover extends Component {
                 {/* START card */}
                 <div className="card card-flat">
                     <div className="card-header text-center bg-default">
-                        <a href="">
+                        <a href="#s">
                             <img className="block-center rounded" src="img/logo.png" alt="Logo"/>
                         </a>
                     </div>

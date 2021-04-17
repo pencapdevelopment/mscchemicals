@@ -208,7 +208,7 @@ class Groups extends Component {
                                         />
                                     </div>
                                     <div className="col-md-4">
-                                        <Button className="btn btn-raised btn-primary" variant="contained" color="primary" size="xs" className="float-right" onClick={() => this.addGroup()}>Add Group</Button>
+                                        <Button className="btn btn-raised btn-primary float-right" variant="contained" color="primary" size="xs"  onClick={() => this.addGroup()}>Add Group</Button>
                                     </div>
                                 </div>
                             </div>

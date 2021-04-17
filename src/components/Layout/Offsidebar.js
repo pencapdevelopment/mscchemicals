@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../../store/actions/actions';
 
-import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+// import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 
 class Offsidebar extends Component {
 

@@ -4,21 +4,21 @@ import { connect } from 'react-redux';
 
 import PageLoader from '../Common/PageLoader';
 
-import TabPanel from '../Common/TabPanel';
+// import TabPanel from '../Common/TabPanel';
 
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../Common/constants';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 import Upload from './Common/Upload';
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
  
 
-const json2csv = require('json2csv').parse;
+// const json2csv = require('json2csv').parse;
 
 class CostAccount extends Component {
     state = {
@@ -75,7 +75,7 @@ class CostAccount extends Component {
         return (
             <ContentWrapper>
                 {this.state.loading && <PageLoader />}
-                {this.state.currentId == 0 && 
+                {this.state.currentId === 0 && 
                 <div>
                     <div className="content-heading">Cost Accounting </div>
                     <div className="row">

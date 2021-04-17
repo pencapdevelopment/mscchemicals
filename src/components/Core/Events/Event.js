@@ -3,18 +3,18 @@ import ContentWrapper from '../../Layout/ContentWrapper';
 import { Card, CardBody } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { server_url, context_path, getDateToAndFrom, getUniqueCode } from '../../Common/constants';
+import { server_url, context_path, getDateToAndFrom } from '../../Common/constants';
 // Calendar
 import {
-    Row, Col, Modal,
+     Modal,
     ModalHeader,
     ModalBody
 } from 'reactstrap';
-import HTML5Backend from 'react-dnd-html5-backend'
-import { DragDropContext } from 'react-dnd'
+// import HTML5Backend from 'react-dnd-html5-backend'
+// import { DragDropContext } from 'react-dnd'
 import BigCalendar from 'react-big-calendar'
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
-import events from '../../Common/Calendar.events'
+// import events from '../../Common/Calendar.events'
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import AddEvent from './AddEvent';

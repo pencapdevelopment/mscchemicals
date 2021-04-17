@@ -1,32 +1,33 @@
-import MomentUtils from '@date-io/moment';
+// import MomentUtils from '@date-io/moment';
  
-import Event from '@material-ui/icons/Event';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider
-} from '@material-ui/pickers';
-import axios from 'axios';
-import moment from 'moment';
+// import Event from '@material-ui/icons/Event';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider
+// } from '@material-ui/pickers';
+// import axios from 'axios';
+// import moment from 'moment';
 import React, { Component } from 'react';
 import 'react-datetime/css/react-datetime.css';
 import { connect } from 'react-redux';
-import {
-    Form, Modal,
+// import {
+//     Form, Modal,
 
-    ModalBody, ModalHeader, Table
-} from 'reactstrap';
-import swal from 'sweetalert';
-import { context_path, server_url } from '../../Common/constants';
-import Sorter from '../../Common/Sorter';
-import ContentWrapper from '../../Layout/ContentWrapper';
-import {   TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-
-
-
+//     ModalBody, ModalHeader, Table
+// } from 'reactstrap';
+// import swal from 'sweetalert';
+// import { context_path, server_url } from '../../Common/constants';
+// import Sorter from '../../Common/Sorter';
+// import ContentWrapper from '../../Layout/ContentWrapper';
+import {    Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
+// import {   TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 
 
 
-const json2csv = require('json2csv').parse;
+
+
+
+// const json2csv = require('json2csv').parse;
 
 
 class UOM extends Component {
@@ -65,6 +66,7 @@ class UOM extends Component {
                 value={this.state.selected}
                 onChange={e => this.setSelectField( e)}
                 required={true} 
+                readOnly = {this.props.isReadOnly}
             >
 
                 {this.state.vals.map((e, keyIndex) => {

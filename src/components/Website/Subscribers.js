@@ -3,33 +3,40 @@ import React, { Component } from 'react';
 import PageLoader from '../Common/PageLoader';
 import ContentWrapper from '../Layout/ContentWrapper';
 import {
-    Col,
     Card,
     CardBody,
     Table,
     Input,
-    Modal,
-    ModalHeader,
-    ModalBody
 } from 'reactstrap';
+// import {
+//     Col,
+//     Card,
+//     CardBody,
+//     Table,
+//     Input,
+//     Modal,
+//     ModalHeader,
+//     ModalBody
+// } from 'reactstrap';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
 
 
 
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import Moment from 'react-moment';
 import CustomPagination from '../Common/CustomPagination';
 import FileDownload from '../Common/FileDownload';
 
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { Button, } from '@material-ui/core';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 
 const json2csv = require('json2csv').parse;
 
@@ -76,7 +83,7 @@ class Subscribers extends Component {
         if (this.state.filters.search) {
             url += "&email=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-        url=defaultDateFilter(this.state,url);
+        url = defaultDateFilter(this.state, url);
         if (all) {
             url += "&size=100000";
         }

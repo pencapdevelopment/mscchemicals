@@ -1,41 +1,30 @@
 import React, { Component } from 'react';
 import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
-
 import PageLoader from '../../Common/PageLoader';
-
 import TabPanel from '../../Common/TabPanel';
-
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
-
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+import { Tab, Tabs, AppBar,Button } from '@material-ui/core';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
-
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 import List from './List';
-import Add from './Add';
+import Add from './Add1';
 import View from './View';
- 
-
-
-const json2csv = require('json2csv').parse;
-
-
+// const json2csv = require('json2csv').parse;
 class PurchaseEnquiry extends Component {
-
     state = {
         activeTab: 0,
         loading: true,
-        baseUrl: 'purchases',
+        baseUrl: 'purchase',
         editFlag: false,
         currentId: 0
     }
-
     toggleTab = (tab) => {
         if (tab === 0) {
             this.setState({ editFlag: false })
@@ -46,39 +35,41 @@ class PurchaseEnquiry extends Component {
             });
         }
     }
-
     saveSuccess(id) {
         this.setState({ editFlag: true, currentId: id });
-        console.log(id);
     }
-
     updateObj(id) {
         this.toggleTab(1);
         this.setState({ editFlag: false }, () => {
             this.addTemplateRef.updateObj(id);
         })
     }
-
     cancelSave = () => {
         this.toggleTab(0);
     }
-
     componentDidMount() {
         if (this.props.match.params.objId) {
             this.setState({ editFlag: true, currentId: this.props.match.params.objId });
             this.toggleTab(2);
         }
-
         this.setState({ loading: false })
     }
-
     render() {
         return (
             <ContentWrapper>
                 {this.state.loading && <PageLoader />}
-                {this.state.currentId == 0 && 
+                {this.state.currentId === 0 && 
                 <div>
-                    <div className="content-heading">Purchase Enquiry </div>
+                    <div className="content-heading">
+                            <h4 className="col-9 my-2" onClick={() => this.toggleTab(0)}>
+                                <span>Purchase Enquiry </span>
+                            </h4>
+                            {this.props.user.role === 'ROLE_ADMIN'&& 
+                            <div className="col-3 float-right mt-2">
+                             <Button variant="contained" color="warning" size="xs"
+                                onClick={() => this.toggleTab(1)} > + Add Purchase</Button>                          
+                            </div>}
+                     </div>
                     <div className="row">
                         <div className="col-md-12">
                             <AppBar position="static">
@@ -90,6 +81,7 @@ class PurchaseEnquiry extends Component {
                                     scrollButtons="auto"
                                     aria-label="scrollable auto tabs example"
                                     value={this.state.activeTab}
+                                    style={{ display: 'none' }}
                                     onChange={(e, i) => this.toggleTab(i)} >
                                     <Tab label="List" />
                                     <Tab label="Add" hidden={this.state.editFlag} />
@@ -108,7 +100,6 @@ class PurchaseEnquiry extends Component {
                                 <View baseUrl={this.state.baseUrl} onRef={ref => (this.viewTemplateRef = ref)} 
                                 onUpdateRequest={id => this.updateObj(id)} currentId={this.state.currentId} location={this.props.location}></View>
                             </TabPanel>
-
                         </div>
                     </div>
                 </div>}
@@ -119,12 +110,10 @@ class PurchaseEnquiry extends Component {
         )
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(PurchaseEnquiry);

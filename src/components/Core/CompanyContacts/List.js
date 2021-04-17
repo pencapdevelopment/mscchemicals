@@ -6,13 +6,15 @@ import axios from 'axios';
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import { Table } from 'reactstrap';
-import PageLoader from '../../Common/PageLoader';
+// import PageLoader from '../../Common/PageLoader';
 import Sorter from '../../Common/Sorter';
 import FileDownload from '../../Common/FileDownload';
 
 import CustomPagination from '../../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
+// import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
+import { Button, TextField, Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
+// import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
 
 import 'react-datetime/css/react-datetime.css';
 import MomentUtils from '@date-io/moment';
@@ -329,9 +331,12 @@ class List extends Component {
                                     <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
                                 </td>
                                 <td>
+                                {this.props.user.role === 'ROLE_ADMIN' &&
+                                <>
+                                <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button>
+                                <Button className="d-none" variant="contained" color="warning" size="xs" onClick={() => this.patchObj(i)}>{obj.active ? 'InActivate' : 'Activate'}</Button></>
+                                }
 
-                                    <Button variant="contained" color="inverse" size="xs" onClick={() => this.editObj(i)}>Edit</Button>
-                                    <Button className="d-none" variant="contained" color="warning" size="xs" onClick={() => this.patchObj(i)}>{obj.active ? 'InActivate' : 'Activate'}</Button>
                                 </td>
                             </tr>
                         )

@@ -1,36 +1,36 @@
 import React, { Component } from 'react';
-import ContentWrapper from '../../Layout/ContentWrapper';
+// import ContentWrapper from '../../Layout/ContentWrapper';
 import { connect } from 'react-redux';
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
 import axios from 'axios';
-import Moment from 'react-moment';
-import { Link } from 'react-router-dom';
-import { Table } from 'reactstrap';
-import PageLoader from '../../Common/PageLoader';
-import { Row, Col, Modal,
-    ModalHeader,
-    ModalBody } from 'reactstrap';
-import Sorter from '../../Common/Sorter';
+// import Moment from 'react-moment';
+// import { Link } from 'react-router-dom';
+// import { Table } from 'reactstrap';
+// import PageLoader from '../../Common/PageLoader';
+// import { Row, Col, Modal,
+//     ModalHeader,
+//     ModalBody } from 'reactstrap';
+// import Sorter from '../../Common/Sorter';
 import Followups from '../Followups/Followups';
-import CustomPagination from '../../Common/CustomPagination';
-import { server_url, context_path, defaultDateFilter, getUniqueCode, getStatusBadge } from '../../Common/constants';
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Tab, Tabs, AppBar } from '@material-ui/core';
+// import CustomPagination from '../../Common/CustomPagination';
+import { server_url, context_path, defaultDateFilter } from '../../Common/constants';
+import { Button,  Tab, Tabs, AppBar } from '@material-ui/core';
 
 import 'react-datetime/css/react-datetime.css';
-import MomentUtils from '@date-io/moment';
-import {
-    DatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import Event from '@material-ui/icons/Event';
+// import MomentUtils from '@date-io/moment';
+// import {
+//     DatePicker,
+//     MuiPickersUtilsProvider,
+// } from '@material-ui/pickers';
+// import Event from '@material-ui/icons/Event';
 
 import TabPanel from '../../Common/TabPanel';
 
 import Add from './Add';
-import Upload from '../Common/Upload';
+// import Upload from '../Common/Upload';
 // import AddSub from './AddSub';
 
-const json2csv = require('json2csv').parse;
+// const json2csv = require('json2csv').parse;
 
 class View extends Component {
     state = {
@@ -201,6 +201,8 @@ class View extends Component {
                                     onChange={(e, i) => this.toggleTab(i)} >
                                     <Tab label="Details" />
                                     <Tab label="Followups" />
+                                    <Tab label = "Quotation" />
+                                    <Tab label = "Negotation" />
                                   
                                 </Tabs>
                             </AppBar>
