@@ -21,8 +21,6 @@ import {
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import Event from '@material-ui/icons/Event';
-
-
 import FormValidator from '../../Forms/FormValidator';
 import {  Form } from 'reactstrap';
 // import Radio from '@material-ui/core/Radio';
@@ -33,42 +31,34 @@ import {  Form } from 'reactstrap';
 class CheckList extends Component {
     state = {
         editFlag: false,
-        // status: [],
         formWizard: {
             globalErrors: [],
             msg: '',
             errors: {},
-
             obj: {
-                invoiceNo: '', 
                 // type: this.props.parentObj.type === 'Sales' ? 'Outgoing' : 'Incoming',
-                type:"blt",
-                types:"blts",
-                courierNo: '',  
-                docketNo : '',
-                courierCompany : '',
-                coa:[],
-                blText : '',
-                phase: '',
-                batchNo: '',
-                origin: '', //address/city/state/country/ pin code
-                destination: '', //address/city/state/country/ pin code
-                eta: '',
-                lastLocation: '',
-                packagingType: '',
-                packageCount: '',
+                label:'',
+                coa:'',
+                packgingList:'',
+                coo:'',
+                blType:"telex",
+                blText:'',
+                courierNo:'',
+                docketNo:'',
+                courierCompany:'',
+                docType:'D',
+                invoiceNo:'',
+                batchNo:'',
+                quantity:'',
+                manufacturingDate:null,
+                expiryDate:null,
+                boeNO:'',
+                dutypaymentNo:'',
+                uploadChallan:'',
                 transporter: '',
                 lrDate: null,
-                manufacturingDate: null,
-                expiryDate: null,
-                lrDetails: '',
-                transportationCharges: '',
-                loadingUnloadingCharges: '',
-                proofOfDelivery: '',
-                status: '',
                 company: '',
                 order: '',
-                products: [],
             }
         },
         status: [
@@ -76,23 +66,17 @@ class CheckList extends Component {
             { label: 'Completed', value: 'Completed' },
         ],
     }
-
     loadData() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=order_inventory_edit')
-            .then(res => {
-                var formWizard = this.state.formWizard;
-                formWizard.obj = res.data;
-
-                formWizard.obj.order = formWizard.obj.order.id;
-
-                formWizard.obj.selectedCompany = res.data.company;
-                formWizard.obj.company = res.data.company.id;
-                this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
-
-
-
-                this.setState({ formWizard });
-            });
+        .then(res => {
+            var formWizard = this.state.formWizard;
+            formWizard.obj = res.data;
+            formWizard.obj.order = formWizard.obj.order.id;
+            formWizard.obj.selectedCompany = res.data.company;
+            formWizard.obj.company = res.data.company.id;
+            this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
+            this.setState({ formWizard });
+        });
     }
     uploadFiles() {
         var formData = new FormData();
@@ -151,17 +135,13 @@ class CheckList extends Component {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
         formWizard.editFlag = true;
-
         this.setState({ formWizard }, this.loadData);
     }
-
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.obj[field] = e.target.value;
         this.setState({ formWizard });
-
         if (!noValidate) {
             const result = FormValidator.validate(input);
             formWizard.errors[input.name] = result;
@@ -170,33 +150,26 @@ class CheckList extends Component {
             });
         }
     }
-
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
-
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
-
         if(e) {
             formWizard.obj[field] = e.format();
         } else {
             formWizard.obj[field] = null;
         }
-
         this.setState({ formWizard });
     }
-
     setAutoSuggest(field, val) {
         var formWizard = this.state.formWizard;
         formWizard.obj[field] = val;
         formWizard['selected' + field] = val;
         this.setState({ formWizard });
     }
-
     checkForError() {
         // const form = this.formWizardRef;
-
         const tabPane = document.getElementById('orderQuoteForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
@@ -204,25 +177,20 @@ class CheckList extends Component {
         formWizard.errors = errors;
         this.setState({ formWizard });
         console.log(errors);
-
         return hasError;
     }
-
     saveDetails() {
         var hasError = this.checkForError();
         if (!hasError) {
             var newObj = this.state.formWizard.obj;
             newObj.company = '/companies/' + newObj.company;
-            newObj.order = '/orders/' + newObj.order;
-            
+            newObj.order = '/orders/' + newObj.order;       
             var promise = undefined;
-
             if (!this.state.editFlag) {
                 promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
             } else {
                 promise = axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id, newObj)
             }
-
             promise.then(res => {
                 var formw = this.state.formWizard;
                 formw.obj.id = res.data.id;
@@ -241,7 +209,6 @@ class CheckList extends Component {
                         formWizard.globalErrors.push(e);
                     });
                 }
-
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
@@ -267,34 +234,23 @@ class CheckList extends Component {
         }
         return true;
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.props.onRef(this);
-        this.setState({ loding: false })
-
-        
+        this.setState({ loding: false })   
         if(!this.props.currentId && this.props.parentObj) {
             var formWizard = this.state.formWizard;
-
             formWizard.obj.order = this.props.parentObj.id;
-
             formWizard.obj.selectedCompany = this.props.parentObj.company;
             formWizard.obj.company = this.props.parentObj.company.id;
             this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
-
-            
-
             this.setState({ formWizard });
         } 
     }
-
     render() {
         const errors = this.state.formWizard.errors;
-
         return (
             <ContentWrapper>
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="orderQuoteForm">
@@ -305,47 +261,40 @@ class CheckList extends Component {
                     <ModalBody>
                     <div className="row">
                         <div className="col-sm-12 ">
-                        
-                                <FormControl>
-                                    <RadioGroup aria-label="type" name="types" row>
-                                        <FormControlLabel 
-                                            value="blts" checked={this.state.formWizard.obj.types === 'blts'}
-                                            label=" Draft"
-                                            onChange={e => this.setField("types", e)}
-                                            control={<Radio color="primary" />}
-                                            labelPlacement="end"
-                                        />
-                                        <FormControlLabel
-                                            value="blnts" checked={this.state.formWizard.obj.types === 'blnts'}
-                                            label="original"
-                                            onChange={e => this.setField("types", e)}
-                                            control={<Radio color="primary" />}
-                                            labelPlacement="end"
-                                        />
-                                    </RadioGroup>
-                                </FormControl>
+                            <FormControl>
+                                <RadioGroup aria-label="type" name="docType" row>
+                                    <FormControlLabel 
+                                        value="D" checked={this.state.formWizard.obj.docType === 'D'}
+                                        label=" Draft"
+                                        onChange={e => this.setField("docType", e)}
+                                        control={<Radio color="primary" />}
+                                        labelPlacement="end"
+                                    />
+                                    <FormControlLabel
+                                        value="O" checked={this.state.formWizard.obj.docType === 'O'}
+                                        label="original"
+                                        onChange={e => this.setField("docType", e)}
+                                        control={<Radio color="primary" />}
+                                        labelPlacement="end"
+                                    />
+                                </RadioGroup>
+                            </FormControl>
                         </div>
                     </div>
                         <fieldset>
-                            <Button
-                               
+                            <Button  
                                 variant="contained"
                                 component="label"> Upload File
-                                    <input type="file" id="fileUpload"
+                                <input type="file" id="fileUpload"
                                     name="fileUpload" accept='.doc,.docx,.pdf,.jpg,.png'
                                     onChange={e => this.fileSelected('fileUpload', e)}
-                                    style={{ display: "none" }} />
+                                    style={{ display: "none" }} 
+                                />
                             </Button>
-                          
                         </fieldset>
                         <div className="col-sm-12 " style={{marginBottom: 20, marginLeft: -15 }}>
-                            <TextField
-                            
-                           value={this.state.name}
-                            >
-                           </TextField>
+                            <TextField value={this.state.name}></TextField>
                         </div>
-                      
                         <span>*Please upload .doc,.docx,.pdf,.jpg,.png files only</span>
                         {/* {this.state.formWizard.obj.enableExpiryDate &&  */}
                        {/*  } */}
@@ -359,36 +308,31 @@ class CheckList extends Component {
                     <div className="row">
                         <div className="col-md-4 offset-md-3" >
                         <fieldset >
-                                <TextField type="text" name="lable" label="Lable" required={true} fullWidth={true}
-                                    inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.lable?.length > 0 ? errors?.lable[0]?.msg : ""}
-                                    error={errors?.lable?.length > 0}
-                                    value={this.state.formWizard.obj.lable} onChange={e => this.setField("lable", e)} />                         
-                                </fieldset>
+                            <TextField type="text" name="label" label="Label" required={true} fullWidth={true}
+                                inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"required","msg":"Label is required"}]' }}
+                                helperText={errors?.label?.length > 0 ? errors?.label[0]?.msg : ""}
+                                error={errors?.label?.length > 0}
+                                value={this.state.formWizard.obj.label} onChange={e => this.setField("label", e)} 
+                            />                         
+                        </fieldset>
                         </div>   
-                        <div >
-                        <Button variant="contained"
-                                component="label" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} >Upload</Button>
+                        <div>
+                            <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} onClick={e => this.toggleModal('Label')}>Upload</Button>
                         </div>   
                     </div>
                     <div className="row">
                         <div className="col-md-4  offset-md-3">
                             <fieldset >
                                 <TextField type="text" name="coa" label="COA" required={true} fullWidth={true}
-                                    inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                    inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"required","msg":"COA is required"}]' }}
                                     helperText={errors?.coa?.length > 0 ? errors?.coa[0]?.msg : ""}
                                     error={errors?.coa?.length > 0}
-                                    value={this.state.formWizard.obj.coa} onChange={e => this.setField("coa", e)} />                         
-                                </fieldset>
-                            </div>   
-                        <div >
-                        <Button variant="contained"
-                            component="label"  color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} >Upload
-                            <input type="file" id="fileUpload"
-                                name="coa" accept='.doc,.docx,.pdf,.jpg,.png'
-                                onChange={e => this.fileSelected('coa', e)}
-                                style={{ display: "none" }} />
-                        </Button>
+                                    value={this.state.formWizard.obj.coa} onChange={e => this.setField("coa", e)} 
+                                />                         
+                            </fieldset>
+                        </div>   
+                        <div>
+                            <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} onClick={e => this.toggleModal('COA')}>Upload</Button>
                         </div>  
                         <div className="col-md-3">
                             <a href="javascript:void(0);" style={{marginTop:"38px",display:"block"}} className="btn-link">
@@ -397,131 +341,135 @@ class CheckList extends Component {
                         </div>
                     </div>
                     <div className="row">
-                    <div className="col-md-4  offset-md-3">
-                        <fieldset>
-                                <TextField type="text" name="packging" label="Packing List" required={true} fullWidth={true}
-                                    inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.packging?.length > 0 ? errors?.packging[0]?.msg : ""}
-                                    error={errors?.packging?.length > 0}
-                                    value={this.state.formWizard.obj.packging} onChange={e => this.setField("packging", e)} />
+                        <div className="col-md-4  offset-md-3">
+                            <fieldset>
+                                <TextField type="text" name="packgingList" label="Packing List" required={true} fullWidth={true}
+                                    inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"required","msg":"Packing List is required"}]' }}
+                                    helperText={errors?.packgingList?.length > 0 ? errors?.packgingList[0]?.msg : ""}
+                                    error={errors?.packgingList?.length > 0}
+                                    value={this.state.formWizard.obj.packgingList} onChange={e => this.setField("packgingList", e)} />
                             </fieldset>
-                            </div>   
-                            <div >
-                            <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} >Upload</Button>
-                            </div>  
+                        </div>   
+                        <div>
+                            <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} onClick={e => this.toggleModal('Packing List')}>Upload</Button>
+                        </div>  
                     </div>
                     <div className="row">
                         <div className="col-md-4  offset-md-3">
-                        <fieldset>
-                                <TextField type="text" name="coo" label="Coo" required={true} fullWidth={true}
-                                    inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                            <fieldset>
+                                <TextField type="text" name="coo" label="COO" required={true} fullWidth={true}
+                                    inputProps={{maxLength: 30, "data-validate": '[{ "key":"required","msg":"COO is required"}]' }}
                                     helperText={errors?.coo?.length > 0 ? errors?.coo[0]?.msg : ""}
                                     error={errors?.coo?.length > 0}
-                                    value={this.state.formWizard.obj.coo} onChange={e => this.setField("coo", e)} />
+                                    value={this.state.formWizard.obj.coo} onChange={e => this.setField("coo", e)} 
+                                />
                             </fieldset>
                         </div>   
-                        <div >
-                        <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} >Upload</Button>
+                        <div>
+                            <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} onClick={e => this.toggleModal('COO')}>Upload</Button>
                         </div>   
                     </div>
                     <div className="row">
                         <div className="col-sm-4 offset-sm-3">
-                        <FormLabel component="legend">BL</FormLabel> 
-                                <FormControl>
-                                    <RadioGroup aria-label="type" name="type" row>
-                                        <FormControlLabel 
-                                            value="blt" checked={this.state.formWizard.obj.type === 'blt'}
-                                            label=" Telex"
-                                            onChange={e => this.setField("type", e)}
-                                            control={<Radio color="primary" />}
-                                            labelPlacement="end"
-                                        />
-                                        <FormControlLabel
-                                            value="blnt" checked={this.state.formWizard.obj.type === 'blnt'}
-                                            label="NonTelex"
-                                            onChange={e => this.setField("type", e)}
-                                            control={<Radio color="primary" />}
-                                            labelPlacement="end"
-                                        />
-                                    </RadioGroup>
-                                </FormControl>
+                            <FormLabel component="legend">BL</FormLabel> 
+                            <FormControl>
+                                <RadioGroup aria-label="blType" name="blType" row>
+                                    <FormControlLabel 
+                                        value="telex" checked={this.state.formWizard.obj.blType === 'telex'}
+                                        label=" Telex"
+                                        onChange={e => this.setField("blType", e)}
+                                        control={<Radio color="primary" />}
+                                        labelPlacement="end"
+                                    />
+                                    <FormControlLabel
+                                        value="nontelex" checked={this.state.formWizard.obj.blType === 'nontelex'}
+                                        label="NonTelex"
+                                        onChange={e => this.setField("blType", e)}
+                                        control={<Radio color="primary" />}
+                                        labelPlacement="end"
+                                    />
+                                </RadioGroup>
+                            </FormControl>
                         </div>
                     </div>
-                    {this.state.formWizard.obj.type === 'blt' &&
-                            <div className="col-md-5 offset-sm-3 " style={{marginBottom: "10px"}} >
-                                <TextField type="text" name="TextType" label="Bl Text"
-                                    required={true} fullWidth={true}
-                                    // value={this.state.formWizard.obj.subCategory}
-                                    inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.blText?.length > 0 ? errors?.blText[0]?.msg : ""}
-                                    error={errors?.blText?.length > 0}
-                                    value={this.state.formWizard.obj.blText} onChange={e => this.setField("blText", e)} />                            
-                            </div>      
-                            }
-                            {this.state.formWizard.obj.type === 'blnt' &&
-                            <div>
-                                <div className="row">
-                               
-                                    <div className="col-md-5 offset-sm-3">
-                                        <TextField type="text" name="courierNo" label="Courier No"
+                    {this.state.formWizard.obj.blType === 'telex' &&
+                        <div className="col-md-5 offset-sm-3 " style={{marginBottom: "10px"}} >
+                            <TextField type="text" name="blText" label="BL Text"
+                                required={true} fullWidth={true}
+                                // value={this.state.formWizard.obj.subCategory}
+                                inputProps={{ maxLength: 30, "data-validate": '[{ "key":"required","msg":"BL Text is required"}]' }}
+                                helperText={errors?.blText?.length > 0 ? errors?.blText[0]?.msg : ""}
+                                error={errors?.blText?.length > 0}
+                                value={this.state.formWizard.obj.blText} onChange={e => this.setField("blText", e)} 
+                            />                            
+                        </div>
+                    }
+                    {this.state.formWizard.obj.blType === 'nontelex' &&
+                        <div>
+                            <div className="row">
+                                <div className="col-md-5 offset-sm-3">
+                                    <TextField type="text" name="courierNo" label="Courier No"
+                                        required={true} fullWidth={true}
+                                        // value={this.state.formWizard.obj.subCategory}
+                                        inputProps={{ maxLength: 50, "data-validate": '[{ "key":"required","msg":"Courier No is required"}]' }}
+                                        helperText={errors?.courierNo?.length > 0 ? errors?.courierNo[0]?.msg : ""}
+                                        error={errors?.courierNo?.length > 0}
+                                        value={this.state.formWizard.obj.courierNo} onChange={e => this.setField("courierNo", e)} 
+                                    />
+                                </div>
+                            </div> 
+                            <div className="row">
+                                <div className="col-md-5 offset-sm-3" >
+                                    <fieldset>
+                                        <TextField type="text" name="docketNo" label="Docket No" required={true} fullWidth={true}
+                                            inputProps={{ maxLength: 13, "data-validate": '[{ "key":"required","msg":"Docket No is required"}]' }}
+                                            helperText={errors?.docketNo?.length > 0 ? errors?.docketNo[0]?.msg : ""}
+                                            error={errors?.docketNo?.length > 0}
+                                            value={this.state.formWizard.obj.docketNo} onChange={e => this.setField("docketNo", e)} 
+                                        />
+                                    </fieldset>
+                                </div>
+                            </div> 
+                            <div className="row" style={{marginTop: -15}}>
+                                <div className="col-md-5 offset-md-3"  style={{marginBottom: "10px"}} >
+                                    <fieldset>
+                                        <TextField type="text" name="courierCompany" label="Courier Company"
                                             required={true} fullWidth={true}
                                             // value={this.state.formWizard.obj.subCategory}
-                                            inputProps={{ maxLength: 50, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"50"}]' }}
-                                            helperText={errors?.courierNo?.length > 0 ? errors?.courierNo[0]?.msg : ""}
-                                            error={errors?.courierNo?.length > 0}
-
-                                            value={this.state.formWizard.obj.countryOfOrigin} onChange={e => this.setField("courierNo", e)} />
-                                    </div>
-                                </div> 
-                                <div className="row">
-                                    <div className="col-md-5 offset-sm-3" >
-                                    <fieldset>
-                                <TextField type="text" name="docketNo" label="Docket No" required={true} fullWidth={true}
-                                    inputProps={{ maxLength: 13, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"10"},{"key":"maxlen","param":"30"}]' }}
-                                    helperText={errors?.docketNo?.length > 0 ? errors?.docketNo[0]?.msg : ""}
-                                    error={errors?.docketNo?.length > 0}
-                                    value={this.state.formWizard.obj.docketNo} onChange={e => this.setField("docketNo", e)} />
-                            </fieldset>
-                                    </div>
-                                </div> 
-                                <div className="row" style={{marginTop: -15}}>
-                                    <div className="col-md-5 offset-md-3"  style={{marginBottom: "10px"}} >
-                                    <fieldset>
-                                    <TextField type="text" name="courierCompany" label="Courier Company"
-                                    required={true} fullWidth={true}
-                                    // value={this.state.formWizard.obj.subCategory}
-                                    inputProps={{ maxLength: 50, "data-validate": '[{ "key":"required"},{ "key":"minlen","param":"1"},{"key":"maxlen","param":"50"}]' }}
-                                    helperText={errors?.courierCompany?.length > 0 ? errors?.courierCompany[0]?.msg : ""}
-                                    error={errors?.courierCompany?.length > 0}
-                                    value={this.state.formWizard.obj.courierCompany} onChange={e => this.setField("courierCompany", e)} />
-                            </fieldset>
-                                    </div>
-                                </div> 
-                            </div>                        
-                        }
-                        <Divider/>
+                                            inputProps={{ maxLength: 50, "data-validate": '[{ "key":"required","msg":"Courier Company is required"}]' }}
+                                            helperText={errors?.courierCompany?.length > 0 ? errors?.courierCompany[0]?.msg : ""}
+                                            error={errors?.courierCompany?.length > 0}
+                                            value={this.state.formWizard.obj.courierCompany} onChange={e => this.setField("courierCompany", e)} 
+                                        />
+                                    </fieldset>
+                                </div>
+                            </div> 
+                        </div>                        
+                    }
+                    <Divider/>
                     </div>}
-                        {((this.props.user.role === 'ROLE_ACCOUNTS' || this.props.user.role === 'ROLE_ADMIN'||this.props.user.role === 'ROLE_PURCHASES') &&
-                            <div>
-                                <div className="row">
-                                    <div className="col-md-4  offset-md-3">
-                                        <fieldset>
-                                            <TextField type="text" name="invoiceNo" label="Invoice No" required={true} fullWidth={true}
-                                                inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
-                                                helperText={errors?.invoiceNo?.length > 0 ? errors?.invoiceNo[0]?.msg : ""}
-                                                error={errors?.invoiceNo?.length > 0}
-                                                value={this.state.formWizard.obj.invoiceNo} onChange={e => this.setField("invoiceNo", e)} />
-                                        </fieldset>
-                                    </div>   
-                                    <div >
-                                        <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}  onClick={e => this.toggleModal('Invoice No')}>Upload</Button>
-                                    </div>                        
+                    {((this.props.user.role === 'ROLE_ACCOUNTS' || this.props.user.role === 'ROLE_ADMIN'|| this.props.user.role === 'ROLE_PURCHASES') &&
+                        <div>
+                            <div className="row">
+                                <div className="col-md-4  offset-md-3">
+                                    <fieldset>
+                                        <TextField type="text" name="invoiceNo" label="Invoice No" required={true} fullWidth={true}
+                                            inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"required","msg":"Invoice No is required"}]' }}
+                                            helperText={errors?.invoiceNo?.length > 0 ? errors?.invoiceNo[0]?.msg : ""}
+                                            error={errors?.invoiceNo?.length > 0}
+                                            value={this.state.formWizard.obj.invoiceNo} onChange={e => this.setField("invoiceNo", e)} 
+                                        />
+                                    </fieldset>
+                                </div>   
+                                <div >
+                                    <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} onClick={e => this.toggleModal('InvoiceNo')}>Upload</Button>
+                                </div>                        
                                 </div>
                                 <div className="row" >
                                     <div className="col-md-5 offset-md-3" >
                                         <fieldset>
                                             <TextField type="number" name="batchNo" label="Batch No" required={true} fullWidth={true}
-                                                value={this.state.formWizard.obj.batchNo} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                value={this.state.formWizard.obj.batchNo} inputProps={{ "data-validate": '[{ "key":"required","msg":"Batch No is required"}]' }}
                                                 helperText={errors?.batchNo?.length > 0 ? errors?.batchNo[0]?.msg : ""}
                                                 error={errors?.batchNo?.length > 0}
                                                 onChange={e => this.setField("batchNo", e)} />
@@ -532,7 +480,7 @@ class CheckList extends Component {
                                     <div className="col-md-5 offset-md-3" >
                                         <fieldset>
                                             <TextField type="number" name="quantity" label="Quantity" required={true} fullWidth={true}
-                                                value={this.state.formWizard.obj.quantity} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                value={this.state.formWizard.obj.quantity} inputProps={{ "data-validate": '[{ "key":"required","msg":"Quantity is required"}]' }}
                                                 helperText={errors?.quantity?.length > 0 ? errors?.quantity[0]?.msg : ""}
                                                 error={errors?.quantity?.length > 0}
                                                 onChange={e => this.setField("quantity", e)} />
@@ -608,30 +556,31 @@ class CheckList extends Component {
                                 <Divider/>
                                 <div className="row">
                                     <div className="col-md-4  offset-md-3">
-                                    <fieldset>
+                                        <fieldset>
                                             <TextField type="text" name="boeNO" label="BOE No" required={true} fullWidth={true}
-                                                inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                                inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"required","msg":"BOE No is required"},{"key":"maxlen","param":"30"}]' }}
                                                 helperText={errors?.boeNO?.length > 0 ? errors?.boeNO[0]?.msg : ""}
                                                 error={errors?.boeNO?.length > 0}
-                                                value={this.state.formWizard.obj.boeNO} onChange={e => this.setField("boeNO", e)} />
+                                                value={this.state.formWizard.obj.boeNO} onChange={e => this.setField("boeNO", e)} 
+                                            />
                                         </fieldset>
                                     </div>   
-                                    <div >
-                                        <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} >Upload</Button>
+                                    <div>
+                                        <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} onClick={e => this.toggleModal('boeNO')}>Upload</Button>
                                     </div>                        
                                 </div>
                                 <div className="row">
                                     <div className="col-md-4  offset-md-3">
                                         <fieldset>
                                             <TextField type="text" name="dutypaymentNo" label="Duty Payment  No" required={true} fullWidth={true}
-                                                inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                                inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"required","msg":"Duty Payment No is required"}]' }}
                                                 helperText={errors?.dutypaymentNo?.length > 0 ? errors?.dutypaymentNo[0]?.msg : ""}
                                                 error={errors?.dutypaymentNo?.length > 0}
                                                 value={this.state.formWizard.obj.dutypaymentNo} onChange={e => this.setField("dutypaymentNo", e)} />
                                         </fieldset>
                                     </div>   
                                     <div>
-                                        <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />}>Upload</Button>
+                                        <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px",textTransform :"none", }}   startIcon={<CloudUploadIcon />} onClick={e => this.toggleModal('dutypaymentNo')}>Upload</Button>
                                     </div>                        
                                 </div>
                                 { (this.props.user.role === 'ROLE_ACCOUNTS' &&<div>
@@ -639,10 +588,11 @@ class CheckList extends Component {
                                     <div className="col-md-4  offset-md-3">
                                         <fieldset>
                                             <TextField type="text" name="uploadChallan" label="upload Challan" required={true} fullWidth={true}
-                                                inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"minlen","param":"5"},{"key":"maxlen","param":"30"}]' }}
+                                                inputProps={{readOnly: this.state.formWizard.obj.id ? true : false, maxLength: 30, "data-validate": '[{ "key":"required","msg":"5"}]' }}
                                                 helperText={errors?.uploadChallan?.length > 0 ? errors?.uploadChallan[0]?.msg : ""}
                                                 error={errors?.uploadChallan?.length > 0}
-                                                value={this.state.formWizard.obj.uploadChallan} onChange={e => this.setField("uploadChallan", e)} />
+                                                value={this.state.formWizard.obj.uploadChallan} onChange={e => this.setField("uploadChallan", e)} 
+                                            />
                                         </fieldset>
                                     </div>   
                                     <div>
@@ -650,7 +600,6 @@ class CheckList extends Component {
                                     </div>                        
                                 </div>
                             </div> )}
-                          
                                 <div className="row" >
                                     <div className=" col-md-12 text-center mt-3" >
                                         <Button style={{backgroundColor:"red"}} variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
@@ -659,9 +608,8 @@ class CheckList extends Component {
                                 </div>
                             </div>
                         )}
-                        
                         {/* { (this.props.user.role === 'ROLE_PURCHASES' &&
-                        <div>
+                            <div>
                                  <div className="row">
                                     <div className="col-md-4  offset-md-3">
                                         <fieldset>
@@ -722,8 +670,7 @@ class CheckList extends Component {
                                             </MuiPickersUtilsProvider>
                                         </fieldset>
                                     </div> 
-                                </div>         
-                     
+                                </div>
                             </div> )}
                              */}
                             {(this.props.user.role === 'ROLE_INVENTORY' &&       
@@ -742,7 +689,7 @@ class CheckList extends Component {
                                         <Button Size="small" variant="contained" color="primary" style={{marginTop: "30px",left: "-15px" }}   startIcon={<CloudUploadIcon />}>Upload</Button>
                                     </div>                        
                                 </div>
-                  <div className="row">
+                                <div className="row">
                                     <div className="col-md-4  offset-md-3">
                                         <fieldset>
                                             <TextField type="text" name="transporter" label="Transporter" required={true} fullWidth={true}
@@ -803,17 +750,16 @@ class CheckList extends Component {
                                         </fieldset>
                                     </div> 
                                 </div>    
-                              
                                 <div className="row" >
-                                        <div className="col-md-5 offset-md-3" >
-                                            <fieldset>
-                                                <TextField type="number" name="product" label="Product" required={true} fullWidth={true}
-                                                    value={this.state.formWizard.obj.product} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
-                                                    helperText={errors?.product?.length > 0 ? errors?.product[0]?.msg : ""}
-                                                    error={errors?.product?.length > 0}
-                                                    onChange={e => this.setField("product", e)} />
-                                             </fieldset>
-                                         </div> 
+                                    <div className="col-md-5 offset-md-3" >
+                                        <fieldset>
+                                            <TextField type="number" name="product" label="Product" required={true} fullWidth={true}
+                                                value={this.state.formWizard.obj.product} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
+                                                helperText={errors?.product?.length > 0 ? errors?.product[0]?.msg : ""}
+                                                error={errors?.product?.length > 0}
+                                                onChange={e => this.setField("product", e)} />
+                                            </fieldset>
+                                        </div> 
                                 </div>         
                                 <div className="row" >
                                     <div className="col-md-5 offset-md-3" >

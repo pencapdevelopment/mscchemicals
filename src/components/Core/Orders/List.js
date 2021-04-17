@@ -99,51 +99,43 @@ class List extends Component {
 
     loadObjects(offset, all, callBack) {
         if (!offset) offset = 1;
-
         var url = server_url + context_path + "api/" + this.props.baseUrl + "?projection=order_list&page=" + (offset - 1);
-
-
         if (this.state.orderBy) {
             url += '&sort=' + this.state.orderBy;
         }
-
         if(this.props.user.role !== 'ROLE_ADMIN') {
             url += "&uid=" + this.props.user.id;
+            if(this.props.user.role === 'ROLE_ACCOUNTS'){
+                url += "&status="+encodeURIComponent('On going')+"&accountsApproval="+encodeURIComponent('!A!');
+            }
         }
-
         if (this.state.filters.search) {
             url += "&code=" + encodeURIComponent('%' + this.state.filters.search + '%');
         }
-
         if (this.state.filters.category) {
             url += "&type=" + this.state.filters.category;
         }
-
         url = defaultDateFilter(this.state, url);
-
         if (all) {
             url += "&size=100000";
         }
-
         axios.get(url)
-            .then(res => {
-                if (all) {
-                    this.setState({
-                        all: res.data._embedded[Object.keys(res.data._embedded)[0]]
-                    });
-                } else {
-                    this.setState({
-                        objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
-                        page: res.data.page
-                    });
-                }
-
-                if (callBack) {
-                    callBack();
-                }
-            })
+        .then(res => {
+            if (all) {
+                this.setState({
+                    all: res.data._embedded[Object.keys(res.data._embedded)[0]]
+                });
+            } else {
+                this.setState({
+                    objects: res.data._embedded[Object.keys(res.data._embedded)[0]],
+                    page: res.data.page
+                });
+            }
+            if (callBack) {
+                callBack();
+            }
+        })
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }

@@ -293,57 +293,57 @@ class ProspectiveBuyerAdd extends Component {
     saveDetails() {
         var hasError = this.checkForError();
         if (!hasError) {
-        var newObj = this.state.formWizard.obj;
-        let pbProducts  = [...newObj['buyerProduct']];
-        let pbContact  = [...newObj['contact']];
-        newObj['buyerProduct'] = [];
-        newObj['contact'] = [];
-        this.setState({ loading: true });
-        var promise = undefined;
-        if (!this.state.editFlag) {
-            promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
-        } else {
-            promise = axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id, newObj)
+            var newObj = this.state.formWizard.obj;
+            let pbProducts  = [...newObj['buyerProduct']];
+            let pbContact  = [...newObj['contact']];
+            newObj['buyerProduct'] = [];
+            newObj['contact'] = [];
+            this.setState({ loading: true });
+            var promise = undefined;
+            if (!this.state.editFlag) {
+                promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
+            } else {
+                promise = axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id, newObj)
+            }
+            promise.then(res => {
+                var formWizard = this.state.formWizard;
+                formWizard.obj.id = res.data.id;
+                formWizard.msg = 'successfully Saved';
+                this.setState(formWizard);
+                this.savePbProducts(pbProducts,formWizard.obj.id,()=>{this.props.onSave(res.data.id);});
+                this.savePbContacts(pbContact,formWizard.obj.id);
+            }).finally(() => {
+                this.setState({ loading: false });
+            }).catch(err => {
+                var formWizard = this.state.formWizard;
+                formWizard.globalErrors = [];
+                if (err.response.data.globalErrors) {
+                    err.response.data.fieldError.forEach(e => {
+                        formWizard.globalErrors.push(e);
+                    });
+                }
+                var errors = {};
+                if (err.response.data.fieldError) {
+                    err.response.data.fieldError.forEach(e => {
+                        if (errors[e.field]) {
+                            errors[e.field].push(e.errorMessage);
+                        } else {
+                            errors[e.field] = [];
+                            errors[e.field].push(e.errorMessage);
+                        }
+                    });
+                }
+                // var errorMessage = "";
+                // if (err.response.data.globalErrors) {
+                //     err.response.data.globalErrors.forEach(e => {
+                //         errorMessage += e + ""
+                //     });
+                // }
+                formWizard.errors = errors;
+                this.setState({ formWizard });
+                swal("Unable to Save!", "Please resolve the errors", "error");
+            });
         }
-        promise.then(res => {
-            var formWizard = this.state.formWizard;
-            formWizard.obj.id = res.data.id;
-            formWizard.msg = 'successfully Saved';
-            this.setState(formWizard);
-            this.savePbProducts(pbProducts,formWizard.obj.id,()=>{this.props.onSave(res.data.id);});
-            this.savePbContacts(pbContact,formWizard.obj.id);
-        }).finally(() => {
-            this.setState({ loading: false });
-        }).catch(err => {
-            var formWizard = this.state.formWizard;
-            formWizard.globalErrors = [];
-            if (err.response.data.globalErrors) {
-                err.response.data.fieldError.forEach(e => {
-                    formWizard.globalErrors.push(e);
-                });
-            }
-            var errors = {};
-            if (err.response.data.fieldError) {
-                err.response.data.fieldError.forEach(e => {
-                    if (errors[e.field]) {
-                        errors[e.field].push(e.errorMessage);
-                    } else {
-                        errors[e.field] = [];
-                        errors[e.field].push(e.errorMessage);
-                    }
-                });
-            }
-            // var errorMessage = "";
-            // if (err.response.data.globalErrors) {
-            //     err.response.data.globalErrors.forEach(e => {
-            //         errorMessage += e + ""
-            //     });
-            // }
-            formWizard.errors = errors;
-            this.setState({ formWizard });
-            swal("Unable to Save!", "Please resolve the errors", "error");
-        });
-    }
         return true;
     }
  

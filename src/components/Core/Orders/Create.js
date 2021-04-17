@@ -22,9 +22,8 @@ export function createOrder(type, obj, baseUrl) {
             prod.id = null;
             prod.product = prod.product.id;
         });
-        var uId=0;
         for(let i of orderUsers){
-            uId=i.user.id;
+            let uId=i.user.id;
             axios.post(server_url + context_path + "api/orders-user/", {"reference": '/orders/' + res.data.id,"user" : '/users/'+ uId, "active": true}).then(res => {
                 //this.setState({obj2: res.data, modalnegatation:false, loading: false, loadData:true }, ()=>console.log("After Setting Data==>>", this.state.obj2));
             })

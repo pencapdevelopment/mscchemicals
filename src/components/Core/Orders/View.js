@@ -5,7 +5,6 @@ import axios from 'axios';
 import swal from 'sweetalert';
 // import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
-// import PageLoader from '../../Common/PageLoader';
 import Chip from '@material-ui/core/Chip';
 import Box from '@material-ui/core/Box';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
@@ -55,10 +54,13 @@ import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider'
+import { Form } from 'reactstrap';
+import FormValidator from '../../Forms/FormValidator';
 // const json2csv = require('json2csv').parse;
 class View extends Component {
     state = {
         loading:false,
+        accApprBtnDisable:false,
         activeTab: 0,
         editFlag: false,
         editSubFlag: false,
@@ -74,6 +76,10 @@ class View extends Component {
         uploadDocBtnText:'Save',
         uplodDocErr:[],
         obj: '',
+        inventoryObj: {},
+        inventoryEditFlag: false,
+        inventoryFormErrs: {},
+        globalErrors: [],
         user:"",
         subObjs: [],
         newSubObj: {},
@@ -96,25 +102,27 @@ class View extends Component {
             { label: 'On going', value: 'On going', badge: 'info' },
             { label: 'Completed', value: 'Completed', badge: 'success' },
         ],
-        purchaseFiles:[  {label: 'COA', expiryDate: false },
-        {label: 'Sales COA', expiryDate: false }],
+        purchaseFiles:[  
+            {label: 'COA', expiryDate: true },
+            {label: 'Sales COA', expiryDate: true }
+        ],
         shippingFileTypes: [ 
-            {label: 'Commercial Invoice', expiryDate: false },
-            {label: 'Packing Slip', expiryDate: false },
-            {label: 'COA', expiryDate: false },
-            {label: 'Certificate of Origin', expiryDate: false },
-            {label: 'Insurance Copy', expiryDate: false },
-            {label: 'Bill of lading', expiryDate: false },
-            {label: 'Manufacture declaration', expiryDate: false },
+            {label: 'Commercial Invoice', expiryDate: true },
+            {label: 'Packing Slip', expiryDate: true },
+            {label: 'COA', expiryDate: true },
+            {label: 'Certificate of Origin', expiryDate: true },
+            {label: 'Insurance Copy', expiryDate: true },
+            {label: 'Bill of lading', expiryDate: true },
+            {label: 'Manufacture declaration', expiryDate: true },
         ],
         bankingFileTypes: [
-            {label: 'Commercial Invoice', expiryDate: false },
-            {label: 'Packing Slip', expiryDate: false },
-            {label: 'Bill of Lading', expiryDate: false },
-            {label: 'Direct Remittance request', expiryDate: false },
-            {label: 'Declaration Cum identity', expiryDate: false },
-            {label: 'Advance Remittance request', expiryDate: false },
-            {label: 'PDC', expiryDate: false },
+            {label: 'Commercial Invoice', expiryDate: true },
+            {label: 'Packing Slip', expiryDate: true },
+            {label: 'Bill of Lading', expiryDate: true },
+            {label: 'Direct Remittance request', expiryDate: true },
+            {label: 'Declaration Cum identity', expiryDate: true },
+            {label: 'Advance Remittance request', expiryDate: true },
+            {label: 'PDC', expiryDate: true },
         ],
         orderDocs:[],
         exts: {
@@ -223,6 +231,26 @@ class View extends Component {
             document.body.appendChild(link);
             link.click();
         });
+    }
+    setField(field, e) {
+        var obj = this.state.obj;
+        obj[field] = e.target.value;
+        this.setState({ obj });
+    }
+    accountsApproval = (accApproval,e) => {
+        let odrObj = {...this.state.obj};
+        let updateOdrObj = new Object();
+        updateOdrObj.id = odrObj.id;
+        updateOdrObj.accountsApproval = accApproval;
+        if(odrObj.accountsRemark !== ''){
+            updateOdrObj.accountsRemark = odrObj.accountsRemark;
+        }
+        this.setState({loading:true,accApprBtnDisable:true});
+        axios.patch(server_url+context_path+"api/orders/"+odrObj.id,updateOdrObj).then(res =>{
+            this.setState({loading:false,accApprBtnDisable:false,modal: false});
+            this.loadObj(this.props.currentId);
+            swal("Updated!", "Status has been updated successfully", "success");
+        })
     }
     setEstdDispatchDateField(field, e) {
         var obj = this.state.obj;
@@ -337,13 +365,43 @@ class View extends Component {
             }
         })
     }
-    loadObj(id,callBack) {
+    cancelOrder = ()=>{
+        swal({
+            title: "Are you sure?",
+            text: "Are you sure to cancell this order",
+            icon: "warning",
+            button: {
+                text: "Yes, Cancell!",
+                closeModal: true,
+            }
+        })
+        .then(willCancell => {
+            if (willCancell) {
+                axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.props.currentId,{id:this.props.currentId,status:'Cancelled'})
+                .then(res => {this.loadObj(this.props.currentId)});
+            }
+        });   
+    }
+    loadObj = (id,callBack) => {
+        if(this.props.user.role === 'ROLE_INVENTORY'){
+            this.loadOrderInventoryObj(id);
+        }
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + id + '?projection=order_edit').then(res => {
-            this.setState({ 
-                obj: res.data,
-                loading:false
-             },()=>{if(callBack){callBack()}});
-
+            this.setState({ obj: res.data,loading:false},()=>{
+                if(callBack){callBack()}
+            });
+        });
+    }
+    loadOrderInventoryObj = (orderId) => {
+        axios.get(server_url + context_path + "api/inventory/?order.id="+orderId+"&projection=order_inventory_edit").then(res => {
+            let inventoryList = res.data._embedded[Object.keys(res.data._embedded)[0]];
+            if(inventoryList.length) {
+                let inventoryEditFlag = this.state.inventoryEditFlag;
+                if(inventoryList[0].id){
+                    inventoryEditFlag = true;
+                }
+                this.setState({inventoryObj: inventoryList[0],inventoryEditFlag,loading:false});
+            }
         });
     }
     orderUser(id) {
@@ -452,7 +510,81 @@ class View extends Component {
             link.click();
         });
     }
+    setInvFormField(field, e, noValidate) {
+        let inventoryObj = this.state.inventoryObj;
+        let inventoryFormErrs = this.state.inventoryFormErrs;
+        let input = e.target;
+        inventoryObj[field] = e.target.value;
+        this.setState({ inventoryObj });
+        if(!noValidate) {
+            const result = FormValidator.validate(input);
+            inventoryFormErrs[input.name] = result;
+            this.setState({inventoryFormErrs});
+        }
+    }
+    setInvFormDateField(field, e) {
+        let inventoryObj = this.state.inventoryObj;
+        if (e) {
+            inventoryObj[field] = e.format();
+        } else {
+            inventoryObj[field] = null;
+        }
+        this.setState({ inventoryObj });
+    }
+    checkForError() {
+        const tabPane = document.getElementById('salesInventoryForm');
+        const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
+        const { errors, hasError } = FormValidator.bulkValidate(inputs);
+        let inventoryFormErrs = this.state.inventoryFormErrs;
+        inventoryFormErrs = errors;
+        this.setState({ inventoryFormErrs });
+        console.log(errors);
+        return hasError;
+    }
+    saveInventory = () => {
+        let hasError = this.checkForError();
+        if (!hasError) {
+            let inventoryObj = {...this.state.inventoryObj};
+            inventoryObj.company = '/companies/'+this.state.obj.company.id;
+            inventoryObj.order = '/orders/'+this.state.obj.id;
+            this.setState({ loading: true });
+            let promise = undefined;
+            if (!this.state.inventoryEditFlag) {
+                promise = axios.post(server_url + context_path + "api/inventory", inventoryObj)
+            } else {
+                promise = axios.patch(server_url + context_path + "api/inventory" + "/" + inventoryObj.id, inventoryObj)
+            }
+            promise.then(res => {
+                this.loadOrderInventoryObj(this.state.obj.id);
+                swal("Success", "Saved Successfully", "success");
+            }).finally(() => {
+                this.setState({ loading: false });
+            }).catch(err => {
+                let globalErrors = this.state.globalErrors;
+                globalErrors = [];
+                if (err.response.data.globalErrors) {
+                    err.response.data.fieldError.forEach(e => {
+                        globalErrors.push(e);
+                    });
+                }
+                let inventoryFormErrs = {};
+                if (err.response.data.fieldError) {
+                    err.response.data.fieldError.forEach(e => {
+                        if (inventoryFormErrs[e.field]) {
+                            inventoryFormErrs[e.field].push(e.errorMessage);
+                        } else {
+                            inventoryFormErrs[e.field] = [];
+                            inventoryFormErrs[e.field].push(e.errorMessage);
+                        }
+                    });
+                }
+                this.setState({ inventoryFormErrs, globalErrors });
+                swal("Unable to Save!", "Please resolve the errors", "error");
+            });
+        }
+    }
     render() {
+        const inventoryFormErrs = this.state.inventoryFormErrs;
         return (
             <div>
                  {this.state.loading && <PageLoader />}
@@ -490,28 +622,27 @@ class View extends Component {
                     </ModalBody>
                 </Modal>
                 <Modal isOpen={this.state.modalSales} backdrop="static" toggle={this.toggleModalSales} size={'lg'}>
-                    <ModalHeader toggle={this.toggleModal}>
+                    <ModalHeader toggle={this.toggleModalSale}>
                         Add inventory - {this.state.currentProd.product?.name}
                     </ModalHeader>
                     <ModalBody>
                         <SalesInventory orderProduct={this.state.currentProd} orderStatus={this.state.obj.status} orderType={this.state.obj.type} orderId={this.state.obj.id} onRef={ref => (this.addInventoryRef = ref)} onCancel={e=> this.toggleModalSales()} baseUrl='product-flow'></SalesInventory>
                     </ModalBody>
                 </Modal>
-                <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModalSale} size={'md'}>
+                <Modal isOpen={this.state.modal} backdrop="static" toggle={this.toggleModal} size={'md'}>
                     <ModalHeader toggle={this.toggleModal}></ModalHeader>
                     <ModalBody>
                         <fieldset>
-                            <TextareaAutosize placeholder="Remark" fullWidth={true} rowsMin={3} name="Remark"
+                            <TextareaAutosize placeholder="Remarks" fullWidth={true} rowsMin={3} name="accountsRemark"
                                 style={{padding: 10}}
                                 inputProps={{ maxLength: 100, "data-validate": '[{maxLength:100}]' }} required={true}
                                 // helperText={errors?.description?.length > 0 ? errors?.description[0]?.msg : ""}
                                 // error={errors?.description?.length > 0}
-                                // value={this.state.formWizard.obj.description} onChange={e => this.setField("description", e)} 
-                                // value={this.state.orderData.instructions} onChange={this.Instructions}
+                                value={this.state.obj.accountsRemark} onChange={e => this.setField("accountsRemark", e)} 
                                 />
                         </fieldset>
                         <div className="text-center">
-                            <Button variant="contained" color="primary" onClick={e => this.uploadFiles()}>Submit</Button>
+                            <Button variant="contained" color="primary" disabled={this.state.accApprBtnDisable || this.state.obj.accountsApproval === 'A'} onClick={e => this.accountsApproval('H')}>Submit</Button>
                         </div>
                     </ModalBody>
                 </Modal>
@@ -562,10 +693,14 @@ class View extends Component {
                                 <div className="card-header">     
                                     <div className=" mt-2">
                                         <div className="row" >
-                                            <div className="col-sm-2"><button style={{backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} title="status" size="small" variant="contained"><span style={{color:"#fff"}}>Status</span></button></div>
+                                            <div className="col-sm-2"><button style={{backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} title="Order Status" size="small" variant="contained"><span style={{color:"#fff"}}>{this.state.obj.status}</span></button></div>
                                             <div className="col-sm-9"></div>
                                             {(this.props.user.role !== 'ROLE_ACCOUNTS'&& this.props.user.role !== 'ROLE_INVENTORY' &&
-                                                <div className="col-sm-1" ><button style={{backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} variant="contained" size="small"><CloseSharpIcon style={{color:"#fff"}} fontSize="small" /></button></div>
+                                                <div className="col-sm-1" >
+                                                    <button onClick={this.cancelOrder} disabled={this.state.obj.status==='Cancelled' || this.state.obj.status==='Completed'} title="Cancell the Order" style={{backgroundColor: "#2b3db6", border:"1px solid #2b3db6", borderRadius: 5}} variant="contained" size="small">
+                                                        <CloseSharpIcon style={{color:"#fff"}} fontSize="small" />
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                         <h4 className="my-2"><span>{this.state.obj.name}</span></h4>
@@ -714,228 +849,235 @@ class View extends Component {
                                         <div>
                                             <Divider />
                                             <div className="row" style={{marginTop: 10, marginLeft: 2}}>
-                                                <div className="col-sm-3"><Button variant="contained" color="primary" size="xs" >Approve</Button></div>
+                                                <div className="col-sm-3"><Button variant="contained" disabled={this.state.accApprBtnDisable || this.state.obj.accountsApproval === 'A'} color="primary" size="xs" onClick={e => this.accountsApproval('A',e)}>Approve</Button></div>
                                                 <div className="col-sm-3"></div>
                                                 <div className="col-sm-3"></div>
-                                                <div className="col-sm-3"><Button variant="contained" color="primary" size="xs" onClick={e => this.toggleModal()}  >Hold</Button></div>
+                                                <div className="col-sm-3"><Button variant="contained" disabled={this.state.accApprBtnDisable || this.state.obj.accountsApproval === 'A'} color="primary" size="xs" onClick={e => this.toggleModal()}  >Hold</Button></div>
                                             </div>
                                         </div>)}
-                                        {(this.props.user.role === 'ROLE_INVENTORY'&& 
+                                        {((this.props.user.role === 'ROLE_INVENTORY' && this.state.inventoryObj) && 
                                         <div>
                                             <Divider/>
-                                            <div className="row" style={{marginTop: "8px"}}>
-                                                <div className="col-sm-12">
-                                                    <h4 style={{fontSize: "16px"}}>Invoice Details</h4>                                
-                                                </div>
-                                            </div> 
-                                            <Divider />
-                                            <div className="row">
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="invoiceNo" label="Invoice No" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                            <TextField type="text" name="invoiceDate" label="Invoice Date" required={true} fullWidth={true}
-                                                                inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                                // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
+                                            <Form className="form-horizontal" innerRef={this.formRef} name="inventoryObj" id="salesInventoryForm">
+                                                <div className="row" style={{marginTop: "8px"}}>
+                                                    <div className="col-sm-12">
+                                                        <h4 style={{fontSize: "16px"}}>Invoice Details</h4>                                
+                                                    </div>
+                                                </div> 
+                                                <Divider />
+                                                <div className="row">
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="text" name="invoiceNo" label="Invoice No" required={true} fullWidth={true} onChange={e => this.setInvFormField('invoiceNo', e)}
+                                                                value={this.state.inventoryObj.invoiceNo} inputProps={{"data-validate": '[{ "key":"required","msg":"Invoice No is required"}]' }}
+                                                                helperText={inventoryFormErrs?.invoiceNo?.length > 0 ? inventoryFormErrs?.invoiceNo[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.invoiceNo?.length > 0}
                                                             />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="billQuantity" label="Bill Quantity" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="balanceQuantity" label="Balance Quantity" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="taxable" label="Taxable Value" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="frightCharges" label="Fright Charges" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                                <DatePicker
+                                                                    autoOk
+                                                                    clearable
+                                                                    label="Invoice Date"
+                                                                    format="DD/MM/YYYY"
+                                                                    value={this.state.inventoryObj.invoiceDate?this.state.inventoryObj.invoiceDate:null}
+                                                                    onChange={e => this.setInvFormDateField('invoiceDate', e)}
+                                                                    TextFieldComponent={(props) => (
+                                                                        <TextField
+                                                                            type="text"
+                                                                            name="invoiceDate"
+                                                                            id={props.id}
+                                                                            label={props.label}
+                                                                            onClick={props.onClick}
+                                                                            value={props.value}
+                                                                            disabled={props.disabled}
+                                                                            {...props.inputProps}
+                                                                            InputProps={{
+                                                                                endAdornment: (
+                                                                                    <Event />
+                                                                                ),
+                                                                            }}
+                                                                        />
+                                                                    )} />
+                                                            </MuiPickersUtilsProvider>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="text" name="billedQuantity" label="Billed Quantity" required={true} fullWidth={true} onChange={e => this.setInvFormField('billedQuantity', e)}
+                                                                value={this.state.inventoryObj.billedQuantity} inputProps={{"data-validate": '[{ "key":"required","msg":"Billed Quantity is required"}]' }}
+                                                                helperText={inventoryFormErrs?.billedQuantity?.length > 0 ? inventoryFormErrs?.billedQuantity[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.billedQuantity?.length > 0}
                                                             />
-                                                    </fieldset>
+                                                        </fieldset>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="gst" label="GST" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="delivery" label="Delivery" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
+                                                <div className="row">
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="text" name="balanceQuantity" label="Balance Quantity" required={true} fullWidth={true} onChange={e => this.setInvFormField('balanceQuantity', e)}
+                                                                value={this.state.inventoryObj.balanceQuantity} inputProps={{"data-validate": '[{ "key":"required","msg":"Balance Quantity is required"}]' }}
+                                                                helperText={inventoryFormErrs?.balanceQuantity?.length > 0 ? inventoryFormErrs?.balanceQuantity[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.balanceQuantity?.length > 0}
                                                             />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="total" label="Total" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="number" name="taxableVaue" label="Taxable Value" required={true} fullWidth={true} onChange={e => this.setInvFormField('taxableVaue', e)}
+                                                                value={this.state.inventoryObj.taxableVaue} inputProps={{"data-validate": '[{ "key":"required","msg":"Taxable value is required"}]' }}
+                                                                helperText={inventoryFormErrs?.taxableVaue?.length > 0 ? inventoryFormErrs?.taxableVaue[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.taxableVaue?.length > 0}
                                                             />
-                                                    </fieldset>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="number" name="freightCharges" label="Freight Charges" required={true} fullWidth={true} onChange={e => this.setInvFormField('freightCharges', e)}
+                                                                value={this.state.inventoryObj.freightCharges} inputProps={{"data-validate": '[{ "key":"required","msg":"Freight Charges are required"}]' }}
+                                                                helperText={inventoryFormErrs?.freightCharges?.length > 0 ? inventoryFormErrs?.freightCharges[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.freightCharges?.length > 0}
+                                                            />
+                                                        </fieldset>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <span  style={{fontSize: 14, margin: "40px"}}></span>
-                                            <Divider />
-                                            <div className="row"  style={{marginTop: "8px"}}>
-                                                <div className="col-sm-12">
-                                                    <h4 style={{fontSize: "16px"}}>Dispatch</h4>
+                                                <div className="row">
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="number" name="gst" label="GST" required={true} fullWidth={true} onChange={e => this.setInvFormField('gst', e)}
+                                                                value={this.state.inventoryObj.gst} inputProps={{"data-validate": '[{ "key":"required","msg":"GST is required"}]' }}
+                                                                helperText={inventoryFormErrs?.gst?.length > 0 ? inventoryFormErrs?.gst[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.gst?.length > 0}
+                                                            />
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="text" name="placeOfDelivery" label="Place Of Delivery" required={true} fullWidth={true} onChange={e => this.setInvFormField('placeOfDelivery', e)}
+                                                                value={this.state.inventoryObj.placeOfDelivery} inputProps={{"data-validate": '[{ "key":"required","msg":"Place of Delivery is required"}]' }}
+                                                                helperText={inventoryFormErrs?.placeOfDelivery?.length > 0 ? inventoryFormErrs?.placeOfDelivery[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.placeOfDelivery?.length > 0}
+                                                            />
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="number" name="total" label="Total" required={true} fullWidth={true} onChange={e => this.setInvFormField('total', e)}
+                                                                value={this.state.inventoryObj.total} inputProps={{"data-validate": '[{ "key":"required","msg":"Total is required"}]' }}
+                                                                helperText={inventoryFormErrs?.total?.length > 0 ? inventoryFormErrs?.total[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.total?.length > 0}
+                                                            />
+                                                        </fieldset>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <Divider />
-                                            <div className="row">
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="lrnumber" label="LR Number" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
+                                                <span  style={{fontSize: 14, margin: "40px"}}></span>
+                                                <Divider />
+                                                <div className="row"  style={{marginTop: "8px"}}>
+                                                    <div className="col-sm-12">
+                                                        <h4 style={{fontSize: "16px"}}>Dispatch</h4>
+                                                    </div>
                                                 </div>
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="date" label="Date" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
+                                                <Divider />
+                                                <div className="row">
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="text" name="lrNumber" label="LR Number" required={true} fullWidth={true} onChange={e => this.setInvFormField('lrNumber', e)}
+                                                                value={this.state.inventoryObj.lrNumber} inputProps={{"data-validate": '[{ "key":"required","msg":"LR Number is required"}]' }}
+                                                                helperText={inventoryFormErrs?.lrNumber?.length > 0 ? inventoryFormErrs?.lrNumber[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.lrNumber?.length > 0}
+                                                            />
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                                <DatePicker
+                                                                    autoOk
+                                                                    clearable
+                                                                    label="LR Date"
+                                                                    format="DD/MM/YYYY"
+                                                                    value={this.state.inventoryObj.lrDate?this.state.inventoryObj.lrDate:null}
+                                                                    onChange={e => this.setInvFormDateField('lrDate', e)}
+                                                                    TextFieldComponent={(props) => (
+                                                                        <TextField
+                                                                            type="text"
+                                                                            name="lrDate"
+                                                                            id={props.id}
+                                                                            label={props.label}
+                                                                            onClick={props.onClick}
+                                                                            value={props.value}
+                                                                            disabled={props.disabled}
+                                                                            {...props.inputProps}
+                                                                            InputProps={{
+                                                                                endAdornment: (
+                                                                                    <Event />
+                                                                                ),
+                                                                            }}
+                                                                        />
+                                                                    )} />
+                                                            </MuiPickersUtilsProvider>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="text" name="transporter" label="Transporter" required={true} fullWidth={true} onChange={e => this.setInvFormField('transporter', e)}
+                                                                value={this.state.inventoryObj.transporter} inputProps={{"data-validate": '[{ "key":"required","msg":"Transporter is required"}]' }}
+                                                                helperText={inventoryFormErrs?.transporter?.length > 0 ? inventoryFormErrs?.transporter[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.transporter?.length > 0}
+                                                            />
+                                                        </fieldset>
+                                                    </div>
                                                 </div>
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="transporter" label="Transporter" required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
+                                                <div className="row">
+                                                    <div className="col-sm-4">
+                                                        <fieldset>
+                                                            <TextField type="number" name="numberOfBoxes" label="Number of boxes/drums" required={true} onChange={e => this.setInvFormField('numberOfBoxes', e)}
+                                                                value={this.state.inventoryObj.numberOfBoxes} inputProps={{"data-validate": '[{ "key":"required","msg":"Number of boxes/drums is required"}]' }}
+                                                                helperText={inventoryFormErrs?.numberOfBoxes?.length > 0 ? inventoryFormErrs?.numberOfBoxes[0]?.msg : ""}
+                                                                error={inventoryFormErrs?.numberOfBoxes?.length > 0}
+                                                            />
+                                                        </fieldset>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-4">
-                                                    <fieldset>
-                                                        <TextField type="text" name="numberOfBox" label="Boxes Count " required={true} fullWidth={true}
-                                                            inputProps={{ maxLength: 8, "data-validate": '[{ "key":"required"},{"key":"maxlen","param":"10"}]' }}
-                                                            // helperText={errors?.quantity?.length > 0 ? errors?.quantity[i]?.msg : ""}
-                                                            // error={errors?.quantity?.length > 0}
-                                                        />
-                                                    </fieldset>
+                                                <div className="text-center" style={{marginTop: -40,marginBottom:" 10px"}}  >
+                                                    <Button Size="small" variant="contained" color="primary" onClick={e => this.saveInventory()} style={{marginTop: "30px",left: "-15px" }}>Save</Button>
                                                 </div>
-                                            </div>
+                                            </Form>
                                             <div>
-                                            <span style={{fontSize: 14, margin: "40px"}}></span>
-                                            <Divider/>
-                                            <div className="row"  style={{marginTop: "8px"}}>
-                                                <div className="col-sm-12">
-                                                            <h4 style={{fontSize: "16px"}}>Upload Documents</h4>                                
+                                                <span style={{fontSize: 14, margin: "40px"}}></span>
+                                                <Divider/>
+                                                <div className="row"  style={{marginTop: "8px"}}>
+                                                    <div className="col-sm-12">
+                                                        <h4 style={{fontSize: "16px"}}>Upload Documents</h4>                                
+                                                    </div>
+                                                </div> 
+                                                <Divider />
+                                                <div className="row">
+                                                    <div className="col-md-3">
+                                                        {this.getFileName('LR',<span style={{marginTop:"38px",display:"block"}}>Upload LR</span>)}
+                                                    </div>   
+                                                    <div >
+                                                        <Button Size="small" onClick={e =>{this.setState({upoloadDocLabal:'LR'}); this.toggleModalUploadDocs();}} variant="contained" color="primary" style={{marginTop: "30px",left: "-15px", width: "183px" }} startIcon={<CloudUploadIcon />} >LR Document</Button>
+                                                    </div>  
                                                 </div>
-                                            </div> 
-                                            <Divider />
-                                                <div className="row m-0 p-2">
-                                                    <TextField
-                                                        name="customerDeclaration"
-                                                        type="text"
-                                                        label="LR"
-                                                        // required={true}
-                                                        // fullWidth={true}
-                                                        // inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License or Customer Declaration is required"}]' }}
-                                                        // helperText={errors?.customerDeclaration?.length > 0 ? errors?.customerDeclaration[0]?.msg : ''}
-                                                        // error={errors?.customerDeclaration?.length > 0}
-                                                        className="col-md-3"
-                                                        // value={this.state.formWizard.obj.customerDeclaration}
-                                                        // onBlur={e => this.optionalValidator('customerDeclaration', e)}
-                                                        // onChange={e => this.setField('customerDeclaration', e)}
-                                                    />
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        // onClick={e => this.toggleModal('Customer Declaration')}
-                                                        className= "col-md-2 p-2"
-                                                        startIcon={<CloudUploadIcon />}
-                                                    >Upload </Button>
-                                                            {/* <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
+                                                <div className="row">
+                                                    <div className="col-md-3">
+                                                        {this.getFileName('Invoice',<span style={{marginTop:"38px",display:"block"}}>Upload Invoice</span>)}
+                                                    </div>   
+                                                    <div >
+                                                        <Button Size="small" onClick={e =>{this.setState({upoloadDocLabal:'Invoice'}); this.toggleModalUploadDocs();}} variant="contained" color="primary" style={{marginTop: "30px",left: "-15px", width: "183px"}} startIcon={<CloudUploadIcon />} >Invoice</Button>
+                                                    </div>  
                                                 </div>
-                                                <div className="row m-0 p-2">
-                                                    <TextField
-                                                        name="customerDeclaration"
-                                                        type="text"
-                                                        label="Invoice"                                                             
-                                                        className="col-md-3"
-                                                    />
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        // onClick={e => this.toggleModal('Customer Declaration')}
-                                                        className= "col-md-2 p-2"
-                                                        startIcon={<CloudUploadIcon />}
-                                                    >Upload </Button>
-                                                    {/* <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
-                                                </div>
-                                                <div className="row m-0 p-2">
-                                                    <TextField
-                                                        name="customerDeclaration"
-                                                        type="text"
-                                                        label="EWAY Bill"
-                                                        // required={true}
-                                                        // fullWidth={true}
-                                                        // inputProps={{ "data-validate": '[{ "key":"required","msg":"Either of one FSSAI or Drug License or Customer Declaration is required"}]' }}
-                                                        // helperText={errors?.customerDeclaration?.length > 0 ? errors?.customerDeclaration[0]?.msg : ''}
-                                                        // error={errors?.customerDeclaration?.length > 0}
-                                                        className="col-md-3"
-                                                        // value={this.state.formWizard.obj.customerDeclaration}
-                                                        // onBlur={e => this.optionalValidator('customerDeclaration', e)}
-                                                        // onChange={e => this.setField('customerDeclaration', e)}
-                                                    />
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        // onClick={e => this.toggleModal('Customer Declaration')}
-                                                        className= "col-md-2 p-2"
-                                                        startIcon={<CloudUploadIcon />}
-                                                    >Upload </Button>
-                                                    {/* <img onClick={e => this.toggleModal('Customer Declaration')} className="col-sm-1 p-2"  src="img/upload.png" /> */}
+                                                <div className="row">
+                                                    <div className="col-md-3">
+                                                        {this.getFileName('EWAY Bill',<span style={{marginTop:"38px",display:"block"}}>Upload EWAY Bill</span>)}
+                                                    </div>   
+                                                    <div >
+                                                        <Button Size="small" onClick={e =>{this.setState({upoloadDocLabal:'EWAY Bill'}); this.toggleModalUploadDocs();}} variant="contained" color="primary" style={{marginTop: "30px",left: "-15px", width: "183px"}} startIcon={<CloudUploadIcon />} >EWAY Bill</Button>
+                                                    </div>  
                                                 </div>
                                             </div>
                                         </div>)}

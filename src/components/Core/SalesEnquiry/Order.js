@@ -228,7 +228,6 @@ class Order extends Component {
             if (res.data.uploaded === 1) {
                 this.convertToOrder();
                 // this.toggleModal(this.state.label);
-                this.convertToOrder();
                 var joined = this.state.uploadedFiles.concat(res.data);
                 this.setState({ uploadedFiles: joined });
                 this.closetoggleModal();
@@ -258,7 +257,21 @@ class Order extends Component {
         orderData1.poNumber=orderData.poNumber;
         orderData1.instructions=orderData.instructions;
         orderData1.poDate=orderData.poDate;
-        createOrder('Sales', orderData1, this.props.baseUrl);
+        orderData1.accountsApproval='N';
+        orderData1.inventoryUpdate='N';
+        axios.get(server_url + context_path + '/api/users/?projection=user_details_mini&role.code=ROLE_ACCOUNTS')
+        .then(res=>{
+            let accountsUsers = res.data._embedded.users;
+            if(accountsUsers && Array.isArray(accountsUsers)){
+                accountsUsers.forEach(accUsr =>{
+                    if(Array.isArray(orderData1.users) && orderData1.users.findIndex(u => u.user.id === accUsr.id) === -1){
+                        let accountUser = {name:accUsr.name,id:accUsr.id}
+                        orderData1.users.push({user:accountUser});
+                    }
+                })
+            }
+            createOrder('Sales', orderData1, this.props.baseUrl);
+        });
     }
     render() {
         return (

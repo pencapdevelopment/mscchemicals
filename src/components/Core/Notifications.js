@@ -288,7 +288,7 @@ class Notifications extends Component {
                                             <tr key={obj.id}>
                                                 <td>{i + 1}</td>
                                                 <td>
-                                                    <Link to={`/${obj.url}/${obj.id}`}>
+                                                    <Link to={obj.url}>
                                                         {obj.description}
                                                     </Link>
                                                 </td>
@@ -296,7 +296,7 @@ class Notifications extends Component {
                                                     {obj.type}
                                                 </td>
                                                 <td>
-                                                    <Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>
+                                                    {obj.creationDate?<Moment format="DD MMM YY HH:mm">{obj.creationDate}</Moment>:'NA'}
                                                 </td>
                                                 <td>
                                                     <Button className="d-none" variant="contained" color="warning" size="xs" onClick={() => this.patchObj(i)}>{obj.active ? 'InActivate' : 'Activate'}</Button>

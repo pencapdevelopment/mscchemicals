@@ -4,42 +4,33 @@ import { connect } from 'react-redux';
 import swal from 'sweetalert';
 import axios from 'axios';
 import AutoSuggest from '../../Common/AutoSuggest';
-
 import { server_url, context_path,  } from '../../Common/constants';
 import { Button, TextField, Select, MenuItem, InputLabel, FormControl,  } from '@material-ui/core';
-
 import 'react-datetime/css/react-datetime.css';
 import MomentUtils from '@date-io/moment';
 import {
     DatePicker,
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
+import PageLoader from '../../Common/PageLoader';
 import Event from '@material-ui/icons/Event';
-
-
 import FormValidator from '../../Forms/FormValidator';
 import {  Form } from 'reactstrap';
-
 // import Radio from '@material-ui/core/Radio';
 // import RadioGroup from '@material-ui/core/RadioGroup';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
 // import FormLabel from '@material-ui/core/FormLabel';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-
 // const json2csv = require('json2csv').parse;
-
-
-
 class AddAccounts extends Component {
-
     state = {
+        loading:false,
         editFlag: false,
         // status: [],
         formWizard: {
             globalErrors: [],
             msg: '',
             errors: {},
-
             obj: {
                 invoiceNo: '', 
                 type: this.props.parentObj.type === 'Sales' ? 'Outgoing' : 'Incoming',
@@ -73,40 +64,29 @@ class AddAccounts extends Component {
             { label: 'Completed', value: 'Completed' },
         ],
     }
-
     loadData() {
         axios.get(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id + '?projection=order_accounts_edit')
-            .then(res => {
-                var formWizard = this.state.formWizard;
-                formWizard.obj = res.data;
-
-                formWizard.obj.order = formWizard.obj.order.id;
-
-                formWizard.obj.selectedCompany = res.data.company;
-                formWizard.obj.company = res.data.company.id;
-                this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
-
-
-
-                this.setState({ formWizard });
-            });
+        .then(res => {
+            var formWizard = this.state.formWizard;
+            formWizard.obj = res.data;
+            formWizard.obj.order = formWizard.obj.order.id;
+            formWizard.obj.selectedCompany = res.data.company;
+            formWizard.obj.company = res.data.company.id;
+            this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
+            this.setState({ formWizard,loading:false });
+        });
     }
-
     updateObj(id) {
         var formWizard = this.state.formWizard;
         formWizard.obj.id = id;
         formWizard.editFlag = true;
-
         this.setState({ formWizard }, this.loadData);
     }
-
     setField(field, e, noValidate) {
         var formWizard = this.state.formWizard;
-
         var input = e.target;
         formWizard.obj[field] = e.target.value;
         this.setState({ formWizard });
-
         if (!noValidate) {
             const result = FormValidator.validate(input);
             formWizard.errors[input.name] = result;
@@ -115,33 +95,26 @@ class AddAccounts extends Component {
             });
         }
     }
-
     setSelectField(field, e) {
         this.setField(field, e, true);
     }
-
     setDateField(field, e) {
         var formWizard = this.state.formWizard;
-
         if(e) {
             formWizard.obj[field] = e.format();
         } else {
             formWizard.obj[field] = null;
         }
-
         this.setState({ formWizard });
     }
-
     setAutoSuggest(field, val) {
         var formWizard = this.state.formWizard;
         formWizard.obj[field] = val;
         formWizard['selected' + field] = val;
         this.setState({ formWizard });
     }
-
     checkForError() {
         // const form = this.formWizardRef;
-
         const tabPane = document.getElementById('orderQuoteForm');
         const inputs = [].slice.call(tabPane.querySelectorAll('input,select'));
         const { errors, hasError } = FormValidator.bulkValidate(inputs);
@@ -149,30 +122,25 @@ class AddAccounts extends Component {
         formWizard.errors = errors;
         this.setState({ formWizard });
         console.log(errors);
-
         return hasError;
     }
-
     saveDetails() {
         var hasError = this.checkForError();
         if (!hasError) {
             var newObj = this.state.formWizard.obj;
             newObj.company = '/companies/' + newObj.company;
             newObj.order = '/orders/' + newObj.order;
-
             var promise = undefined;
-
+            this.setState({loading:true});
             if (!this.state.formWizard.editFlag) {
                 promise = axios.post(server_url + context_path + "api/" + this.props.baseUrl, newObj)
             } else {
                 promise = axios.patch(server_url + context_path + "api/" + this.props.baseUrl + "/" + this.state.formWizard.obj.id, newObj)
             }
-
             promise.then(res => {
                 var formw = this.state.formWizard;
                 formw.obj.id = res.data.id;
                 formw.msg = 'successfully Saved';
-
                 this.props.onSave(res.data.id);
             }).finally(() => {
                 this.setState({ loading: false });
@@ -186,7 +154,6 @@ class AddAccounts extends Component {
                         formWizard.globalErrors.push(e);
                     });
                 }
-
                 var errors = {};
                 if (err.response.data.fieldError) {
                     err.response.data.fieldError.forEach(e => {
@@ -205,39 +172,28 @@ class AddAccounts extends Component {
         }
         return true;
     }
-
     componentWillUnmount() {
         this.props.onRef(undefined);
     }
-
     componentDidMount() {
         this.props.onRef(this);
-        this.setState({ loding: false })
-
-        
+        this.setState({ loding: true });   
         if(!this.props.currentId && this.props.parentObj) {
             var formWizard = this.state.formWizard;
-
             formWizard.obj.order = this.props.parentObj.id;
-
             formWizard.obj.selectedCompany = this.props.parentObj.company;
             formWizard.obj.company = this.props.parentObj.company.id;
             formWizard.obj.paymentTerm = this.props.parentObj.company.paymentTerms;
             this.companyASRef.setInitialField(formWizard.obj.selectedCompany);
-
-            
-
             this.setState({ formWizard });
         }
     }
-
     render() {
         const errors = this.state.formWizard.errors;
-
         return (
             <ContentWrapper>
+                {this.state.loading && <PageLoader />}
                 <Form className="form-horizontal" innerRef={this.formRef} name="formWizard" id="orderQuoteForm">
-
                     <div className="row">
                         <div className="col-md-6 offset-md-3">
                             <fieldset>
@@ -273,7 +229,6 @@ class AddAccounts extends Component {
                                         queryString="&name" ></AutoSuggest>
                                 </FormControl>
                             </fieldset>
-
                             <fieldset>
                                 <TextField type="text" name="bankName" label="Bank Name" required={true} fullWidth={true} 
                                     inputProps={{ "data-validate": '[{ "key":"required"}]' }}
@@ -281,7 +236,6 @@ class AddAccounts extends Component {
                                     error={errors?.bankName?.length > 0}
                                     value={this.state.formWizard.obj.bankName} onChange={e => this.setField("bankName", e)} />
                             </fieldset>                       
-                            
                             <fieldset>
                                 <TextField type="number" name="accountNo" label="Account No" required={true} fullWidth={true}
                                     value={this.state.formWizard.obj.accountNo} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
@@ -289,7 +243,6 @@ class AddAccounts extends Component {
                                     error={errors?.accountNo?.length > 0}
                                     onChange={e => this.setField("accountNo", e)} />
                             </fieldset>
-
                             <fieldset>
                                 <TextField type="text" name="paymentType" label="Payment Type" required={true} fullWidth={true} 
                                     inputProps={{ "data-validate": '[{ "key":"required"}]' }}
@@ -297,7 +250,6 @@ class AddAccounts extends Component {
                                     error={errors?.paymentType?.length > 0}
                                     value={this.state.formWizard.obj.paymentType} onChange={e => this.setField("paymentType", e)} />
                             </fieldset>                       
-                            
                             <fieldset>
                                 <TextField type="number" name="referenceNo" label="Reference No" required={true} fullWidth={true}
                                     value={this.state.formWizard.obj.referenceNo} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
@@ -305,16 +257,13 @@ class AddAccounts extends Component {
                                     error={errors?.referenceNo?.length > 0}
                                     onChange={e => this.setField("referenceNo", e)} />
                             </fieldset>
-
                             <fieldset>
                                 <FormControl>
                                 <InputLabel>Select PaymentTerms</InputLabel>
                                     <Select
-                                        name="paymentTerm"
-                                        
+                                        name="paymentTerm" 
                                         helperText={errors?.paymentTerm?.length > 0 ? errors?.paymentTerm[0]?.msg : ""}
                                         error={errors?.paymentTerm?.length > 0}
-
                                         label="Select paymentTerm..."
                                         value={this.state.formWizard.obj.paymentTerm}
                                         onChange={e => this.setSelectField('paymentTerm', e)}
@@ -327,7 +276,6 @@ class AddAccounts extends Component {
                                     </Select>
                                 </FormControl>
                             </fieldset>                       
-                            
                             <fieldset>
                                 <TextField type="number" name="amountPaid" label="Amount Paid" required={true} fullWidth={true}
                                     value={this.state.formWizard.obj.amountPaid} inputProps={{ "data-validate": '[{ "key":"required"}]' }}
@@ -335,9 +283,6 @@ class AddAccounts extends Component {
                                     error={errors?.amountPaid?.length > 0}
                                     onChange={e => this.setField("amountPaid", e)} />
                             </fieldset>
-                            
-
-
                             <fieldset>
                                 <MuiPickersUtilsProvider utils={MomentUtils}>
                                     <DatePicker 
@@ -389,8 +334,6 @@ class AddAccounts extends Component {
                                 error={errors?.description?.length > 0}
                                 value={this.state.formWizard.obj.description} onChange={e => this.setField("description", e)} />
                             </fieldset>
-
-
                             <div className="text-center">
                                 <Button variant="contained" color="secondary" onClick={e => this.props.onCancel()}>Cancel</Button>
                                 <Button variant="contained" color="primary" onClick={e => this.saveDetails()}>Save</Button>
@@ -401,12 +344,10 @@ class AddAccounts extends Component {
             </ContentWrapper>)
     }
 }
-
 const mapStateToProps = state => ({
     settings: state.settings,
     user: state.login.userObj
 })
-
 export default connect(
     mapStateToProps
 )(AddAccounts);
